@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FileCheckInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileCorruptException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IconDefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleEvents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TableData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="TableData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleEvents.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileCorruptException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileCheckInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssemblyInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Icons\Application.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\BlueDot.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\Book.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\Circle.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\FolderClosed.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\FolderOpen.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\GreenDot.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\Null.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\Objects.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\Properties.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\RedDot.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\Script.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\Square.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\Star.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\Table.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\Text.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\ic_fluent_molecule_24_regular.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>
