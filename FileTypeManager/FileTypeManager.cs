@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.Data.OleDb;
 using System.Reflection;
 using System.Collections;
@@ -7,7 +6,7 @@ using System.IO;
 
 namespace UniversalFileExplorer
 {
-	public struct CACHED_ASSEMBLY
+	public struct CachedAssembly
 	{
 		public string path;
 		public Assembly assembly;
@@ -118,7 +117,7 @@ namespace UniversalFileExplorer
 			return null;
 		}
 
-		public FileType GetNewClassInstance(string classId)
+		public Ufex.API.FileType GetNewClassInstance(string classId)
 		{
 			FILETYPE_CLASS fileTypeClass = m_fileTypeClassesDb.GetFileTypeClass(classId);
 
@@ -131,7 +130,7 @@ namespace UniversalFileExplorer
 			if(assembly == null)
 				return null;
 
-			return (FileType)(assembly.CreateInstance(fileTypeClass.fullTypeName, true));
+			return (Ufex.API.FileType)(assembly.CreateInstance(fileTypeClass.fullTypeName, true));
 		}
 
 		private Assembly GetAssembly(string assemblyPath)
@@ -142,7 +141,7 @@ namespace UniversalFileExplorer
 				throw new Exception("Failed to load assembly: File Not Found");
 
 			// Look for the assembly in the cache
-			foreach(CACHED_ASSEMBLY cachedAssembly in m_assemblyCache)
+			foreach(CachedAssembly cachedAssembly in m_assemblyCache)
 			{
 				if(cachedAssembly.path.ToLower().Equals(assemblyPath.ToLower()))
 					return cachedAssembly.assembly;
@@ -152,7 +151,7 @@ namespace UniversalFileExplorer
 			// Load the assembly into the cache
 			Assembly newAssembly = Assembly.LoadFile(fullPath);
 
-			CACHED_ASSEMBLY cachedAss = new CACHED_ASSEMBLY();
+			CachedAssembly cachedAss = new CachedAssembly();
 			cachedAss.path = fullPath;
 			cachedAss.assembly = newAssembly;
 

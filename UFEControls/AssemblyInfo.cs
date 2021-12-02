@@ -7,11 +7,11 @@ using System.Runtime.CompilerServices;
 // associated with an assembly.
 //
 [assembly: AssemblyTitle("UFEControls Dynamic Link Library")]
-[assembly: AssemblyDescription("Controls used by UFE")]
+[assembly: AssemblyDescription("Controls used by Ufex")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Edward Potocko")]
+[assembly: AssemblyCompany("Eddie Potocko")]
 [assembly: AssemblyProduct("Universal File Explorer")]
-[assembly: AssemblyCopyright("Copyright (C) Edward Potocko 2005")]
+[assembly: AssemblyCopyright("Copyright (C) Eddie Potocko 2005 - 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 
@@ -26,7 +26,7 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("1.1.0")]
+[assembly: AssemblyVersion("1.2.0.0")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 
@@ -56,3 +56,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDelaySign(false)]
 [assembly: AssemblyKeyFile("")]
 [assembly: AssemblyKeyName("")]
+[assembly: AssemblyFileVersion("1.2.0.0")]

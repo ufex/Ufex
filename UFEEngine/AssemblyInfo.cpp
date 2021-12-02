@@ -8,12 +8,12 @@ using namespace System::Runtime::CompilerServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("UFE Engine DLL")];
+[assembly:AssemblyTitleAttribute("Ufex Engine DLL")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("Release")];
-[assembly:AssemblyCompanyAttribute("Edward Potocko")];
+[assembly:AssemblyCompanyAttribute("Eddie Potocko")];
 [assembly:AssemblyProductAttribute("Universal File Explorer")];
-[assembly:AssemblyCopyrightAttribute("Copyright (C) Edward Potocko 2005 - 2021")];
+[assembly:AssemblyCopyrightAttribute("Copyright (C) Eddie Potocko 2005 - 2021")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 
@@ -28,7 +28,7 @@ using namespace System::Runtime::CompilerServices;
 // You can specify all the value or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly:AssemblyVersionAttribute("1.1.0")];
+[assembly:AssemblyVersionAttribute("1.2.0.0")];
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

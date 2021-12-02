@@ -162,7 +162,6 @@
     <ClInclude Include="GUIUtil.h" />
     <ClInclude Include="IconCollection.h" />
     <ClInclude Include="QuickInfoTable.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
     <ClInclude Include="StringPack.h" />
     <ClInclude Include="StrTableData.h" />

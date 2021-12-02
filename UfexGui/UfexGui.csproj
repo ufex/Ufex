@@ -76,10 +76,6 @@
       <Project>{39ea0e78-d2c0-463d-a5ae-f919e114193d}</Project>
       <Name>FileTypeManager</Name>
     </ProjectReference>
-    <ProjectReference Include="..\FileType\FileType.vcxproj">
-      <Project>{d7109579-bd9e-4e2d-b23e-e225f1761e55}</Project>
-      <Name>FileType</Name>
-    </ProjectReference>
     <ProjectReference Include="..\UFEControls\UFEControls.csproj">
       <Project>{1fb55bd4-5d2d-4a7c-93c5-9c7c3a2ceee2}</Project>
       <Name>UFEControls</Name>

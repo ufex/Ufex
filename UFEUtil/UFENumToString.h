@@ -48,12 +48,26 @@ namespace UniversalFileExplorer
 		void SetHexFormat(bool leadX, bool zeros, bool caps) { m_HexShowLeadX = leadX; m_HexShowLeadZeros = zeros; m_HexCaps = caps; };
 		void SetDecFormat(bool commas) { m_DecCommas = commas; };
 
+		/*
+		String^ Byte(const Byte x) { return this->GetStrByte(x); };
+		String^ UInt8(const Byte x) { return this->GetStrByte(x); };
+		String^ UInt16(const UInt16 x) { return this->GetStrUInt16(x); }
+		String^ UInt32(const UInt32 x) { return this->GetStrUInt32(x); }
+		String^ UInt64(const UInt64 x) { return this->GetStrUInt64(x); }
+		String^ SByte(const ::SByte x) { return this->GetStrByte(x); };
+		String^ SInt8(const ::SByte x) { return this->GetStrByte(x); };
+		String^ SInt16(const Int16 x) { return this->GetStrInt16(x); }
+		String^ SInt32(const Int32 x) { return this->GetStrInt32(x); }
+		String^ SInt64(const Int64 x) { return this->GetStrInt64(x); }
+		*/
+
 		String^ GetStrObject(Object^ x);
 
 		// Convert Numbers To Strings
 		String^ GetStrBool(const bool x);
 		
 		String^ GetStrByte(const Byte x);
+		String^ GetStrUInt8(const Byte x);
 		String^ GetStrUInt16(const UInt16 x);
 		String^ GetStrUInt32(const UInt32 x);
 		String^ GetStrUInt64(const UInt64 x);

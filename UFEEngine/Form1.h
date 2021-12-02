@@ -19,13 +19,13 @@
 #endif
 
 // Number Formats
-#define NF_DEF		NumberFormat::Default
-#define NF_BIN		NumberFormat::Binary
-#define NF_OCT		NumberFormat::Octal
-#define NF_DEC		NumberFormat::Decimal
-#define NF_HEX		NumberFormat::Hexadecimal
-#define NF_ASC		NumberFormat::Ascii
-#define NF_UNI		NumberFormat::Unicode
+#define NF_DEF		Ufex::API::NumberFormat::Default
+#define NF_BIN		Ufex::API::NumberFormat::Binary
+#define NF_OCT		Ufex::API::NumberFormat::Octal
+#define NF_DEC		Ufex::API::NumberFormat::Decimal
+#define NF_HEX		Ufex::API::NumberFormat::Hexadecimal
+#define NF_ASC		Ufex::API::NumberFormat::Ascii
+#define NF_UNI		Ufex::API::NumberFormat::Unicode
 
 
 // Keyboard Codes
@@ -52,6 +52,7 @@ namespace UniversalFileExplorer
 	using namespace System::IO;
 
 	using namespace UFEControls;
+	using namespace Ufex::API;
 
 	/// <summary> 
 	/// Summary for Form1
@@ -1533,11 +1534,11 @@ private: System::Windows::Forms::CheckBox ^  chkAttCompressed;
 	private: UFEDebug^ m_debug;
 
  // Variable for the file data
-	private: FileType^ m_fileData;
+	private: Ufex::API::FileType^ m_fileData;
 			 
 			 FileTypeManager^ m_fileTypeMan;
 
-			 NumToString^ m_nts;
+			 Ufex::API::DataFormatter^ m_nts;
 
  // Variable for the file stream
 	private: FileStream^ m_fileStream;
@@ -1555,7 +1556,7 @@ private: System::Windows::Forms::CheckBox ^  chkAttCompressed;
 	private: bool FormattedViewSelected;
 			 bool m_closingFile;			// true if a file is being closed
 
-	private: NumberFormat m_numFormat;
+	private: Ufex::API::NumberFormat m_numFormat;
 
 	private: bool m_techViewTableExpand;	// Determines how the columns fit in the window
 
@@ -1595,7 +1596,7 @@ private: System::Windows::Forms::CheckBox ^  chkAttCompressed;
 
 	private: void ExitUFE(bool closeFile);
 
-	private: void ChangeNumFormat(NumberFormat gcnewNF);
+	private: void ChangeNumFormat(Ufex::API::NumberFormat gcnewNF);
 
 			 // Show Dialogs
 	private: void ShowFileTypeMan();

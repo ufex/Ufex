@@ -296,6 +296,11 @@ namespace UniversalFileExplorer
 		else
 			return x.ToString();	
 	}
+	
+	String^ NumToString::GetStrUInt8(Byte x)
+	{
+		return this->GetStrByte(x);
+	}
 
 	String^ NumToString::GetStrUInt16(UInt16 x)
 	{

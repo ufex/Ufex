@@ -94,6 +94,9 @@
     <Image Include="App.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="C:\Users\epotocko\Downloads\ic_fluent_search_24_filled.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="About.resX">

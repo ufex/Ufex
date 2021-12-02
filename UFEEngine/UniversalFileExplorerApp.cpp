@@ -46,7 +46,6 @@ namespace UniversalFileExplorer
 	{
 		m_LoadDialog = gcnew LoadingDialog();
 		m_LoadDialog->Show();
-
 	}
 
 	void UniversalFileExplorerApp::CloseLoadDialog()
@@ -54,6 +53,5 @@ namespace UniversalFileExplorer
 		if(m_LoadDialog != nullptr)
 			m_LoadDialog->CloseDialog();
 	}
-
 
 };

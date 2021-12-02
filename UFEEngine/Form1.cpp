@@ -29,16 +29,6 @@ namespace UniversalFileExplorer
 		m_debug = gcnew UFEDebug(L"Form1.log");
 
 		DebugOut(L"-AppInit(", cmdLineParam, L")-");
-/*
-		int rm = (static_cast<UniversalFileExplorerApp*>(pApp))->gRM();
-
-		if(rm == RM_BAD_EVAL || rm == 0x0000)
-		{
-			MessageBox::Show(L"Evaluation Period Expired!!", 
-					L"Evaluation Expired", MessageBoxButtons::OK, MessageBoxIcon::Error);
-			Application::Exit();
-		}
-*/
 
 		ProfessionalColorTable^ pct = gcnew ProfessionalColorTable();
 		pct->UseSystemColors = true;
@@ -51,7 +41,7 @@ namespace UniversalFileExplorer
 		m_fileIsOpen = false;
 		m_fileLoaded = false;
 		hexbug1 = true;
-		m_nts = gcnew NumToString();
+		m_nts = gcnew Ufex::API::DataFormatter("en-US");
 
 		m_techViewTableExpand = false;
 		
@@ -125,34 +115,6 @@ namespace UniversalFileExplorer
 
 	int Form1::CheckRunMode()
 	{
-		if(pApp == nullptr)
-		{
-			MessageBox::Show(L"pApp == NULL", L"Internal Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-			Application::Exit();
-		}
-
-		//int rm = (static_cast<UniversalFileExplorerApp^>(pApp))->gRM();
-
-		/*if (rm == RM_BAD_EVAL || rm == 0x0000)
-		{
-			try
-			{
-				this->Hide();
-				this->Visible = false;
-			}
-			catch(Exception^)
-			{
-				// Ghey
-			}
-			MessageBox::Show(L"Evaluation Period Expired!!", L"Evaluation Expired", MessageBoxButtons::OK, MessageBoxIcon::Error);
-			
-			if(debugMode)
-				MessageBox::Show(rm.ToString(), L"Evaluation Expired", MessageBoxButtons::OK, MessageBoxIcon::Error);
-
-			ExitUFE(false);
-			Application::Exit();
-		}*/
-
 		return 0;
 	}
 
@@ -559,7 +521,7 @@ namespace UniversalFileExplorer
 		return;
 	}
 
-	void Form1::ChangeNumFormat(NumberFormat newNF)
+	void Form1::ChangeNumFormat(Ufex::API::NumberFormat newNF)
 	{	
 		menuNFDefault->Checked = false;
 		menuNFBinary->Checked = false;
@@ -575,27 +537,27 @@ namespace UniversalFileExplorer
 		
 		switch(newNF)
 		{
-		case NumberFormat::Default:
+		case Ufex::API::NumberFormat::Default:
 			menuNFDefault->Checked = true;
 			tsbDefault->Checked = true;
 			break;
 		
-		case NumberFormat::Hexadecimal:
+		case Ufex::API::NumberFormat::Hexadecimal:
 			menuNFHexadecimal->Checked = true;
 			tsbHexadecimal->Checked = true;
 			break;
 
-		case NumberFormat::Decimal:
+		case Ufex::API::NumberFormat::Decimal:
 			menuNFDecimal->Checked = true;
 			tsbDecimal->Checked = true;
 			break;
 
-		case NumberFormat::Binary:
+		case Ufex::API::NumberFormat::Binary:
 			menuNFBinary->Checked = true;
 			tsbBinary->Checked = true;
 			break;
 
-		case NumberFormat::Ascii:
+		case Ufex::API::NumberFormat::Ascii:
 			menuNFASCII->Checked = true;
 			tsbAscii->Checked = true;
 			break;
@@ -626,7 +588,7 @@ namespace UniversalFileExplorer
 		if(tvFile->SelectedNode == nullptr)
 			return;
 
-		TableData^ myData;
+		Ufex::API::Tables::TableData^ myData;
 		try
 		{
 			myData = m_fileData->GetData(tvFile->SelectedNode);
@@ -640,7 +602,7 @@ namespace UniversalFileExplorer
 		{
 			dataGrid1->TableStyles->Clear();
 			dataGrid1->TableStyles->Add(myData->GetDataGridTableStyle(dataGrid1->Width));
-			m_nts->SetNumFormat(m_numFormat);
+			m_nts->NumFormat = m_numFormat;
 			dataGrid1->DataSource = myData->GetDataTable(m_nts);
 		}
 		else
@@ -729,7 +691,7 @@ namespace UniversalFileExplorer
 
 	void Form1::LoadFileCheckInfo()
 	{
-		FileCheckInfo^ fci = m_fileData->FileCheck;
+		Ufex::API::FileCheckInfo^ fci = m_fileData->FileCheck;
 		array<String^>^ fileCheckInfoText = fci->GetInfo();
 		if(fileCheckInfoText != nullptr)
 		{
@@ -760,7 +722,7 @@ namespace UniversalFileExplorer
 
 	void Form1::LoadQuickInfoTable()
 	{
-		TableData^ quickInfoTD = m_fileData->GetQuickInfo();
+		Ufex::API::Tables::TableData^ quickInfoTD = m_fileData->GetQuickInfo();
 		if(quickInfoTD != nullptr)
 		{
 			quickInfoTD->GetColumnHeaderCollection(listViewQuickInfo);
@@ -874,7 +836,6 @@ namespace UniversalFileExplorer
 	void Form1::HideShowTabs(bool showQuickInfo, bool showHex, bool showTechnical, 
 							 bool showImage, bool showFileCheck)
 	{
-
 		TabPage^ selectedTab = tabControlViews->SelectedTab;
 
 		HideShowTab(showQuickInfo, tabPageQuickInfo);
