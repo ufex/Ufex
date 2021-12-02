@@ -78,9 +78,9 @@ namespace Ufex.API
 		public string UInt16(UInt16 x)
 		{
 			if(endian == Endian.Little)
-            {
+			{
 				x = DataManip.SwapEndian(x);
-            }
+			}
 			UInt16 t = x;
 			Byte n1 = (byte)(t % 16);
 			t /= 16;

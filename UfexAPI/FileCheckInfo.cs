@@ -16,37 +16,37 @@ namespace Ufex.API
 		}
 		
 		public void Message(string message)
-        {
+		{
 			m_FileCheckData.Add(message);
 		}
 
 		public void Warning(string message)
-        {
+		{
 			m_FileCheckData.Add("Warning: " + message);
 			m_NumWarnings++;
 		}
 
 		public void Error(string message)
-        {
+		{
 			m_FileCheckData.Add("Error: " + message);
 			m_NumErrors++;
 		}
 
 		[Obsolete("Use Message instead")]
 		public void NewMessage(String message)
-        {
+		{
 			this.Message(message);
-        }
+		}
 
 		[Obsolete("Use Warning instead")]
 		public void NewWarning(String message)
-        {
+		{
 			Warning(message);
 		}
 		
 		[Obsolete("Use Error instead")]
 		public void NewError(String message)
-        {
+		{
 			Error(message);
 		}
 
@@ -61,7 +61,7 @@ namespace Ufex.API
 		}
 
 		public String[] GetInfo()
-        {
+		{
 			String[] info = new String[m_FileCheckData.Count + 1];
 			for (int i = 0; i < m_FileCheckData.Count; i++)
 			{

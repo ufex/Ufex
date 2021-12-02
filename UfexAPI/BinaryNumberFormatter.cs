@@ -26,9 +26,9 @@ namespace Ufex.API
 		}
 
 		private string Pad(string s, int n)
-        {
+		{
 			return leadZeros ? s.PadLeft(n, '0') : s;
-        }
+		}
 
 		public string UInt8(Byte x)
 		{
