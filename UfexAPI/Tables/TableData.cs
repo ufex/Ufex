@@ -165,21 +165,21 @@ namespace Ufex.API.Tables
 		}
 
 		public int NumRows
-        {
+		{
 			get { return m_NumRows; }
-        }
+		}
 
 		public int Capacity
-        {
+		{
 			get { return m_RowData.Capacity; }
 			set { m_RowData.Capacity = value; }
-        }
+		}
 
 		public bool IsDynamic
-        {
+		{
 			get { return m_isDynamic; }
 			protected set { m_isDynamic = value; }
-        }
+		}
 
 		public void SetCapacity(int numRows) 
 		{
@@ -441,7 +441,7 @@ namespace Ufex.API.Tables
 		protected abstract string[] GetRow(int r, DataFormatter nts);
 
 		protected String GetColumnMappingName(String colName, int colWidth, int colAlign)
-        {
+		{
 			return String.Format("N{0}W{1}A{2}", colName, colWidth, colAlign);
 		}
 

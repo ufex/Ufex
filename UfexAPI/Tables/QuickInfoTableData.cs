@@ -2,21 +2,21 @@
 
 namespace Ufex.API.Tables
 {
-    public class QuickInfoTableData : Ufex.API.Tables.TableData
-    {
+	public class QuickInfoTableData : Ufex.API.Tables.TableData
+	{
 		struct QuickInfoRow
 		{
 			public string[] data;
 		}
 
 		public QuickInfoTableData()
-        {
-            AddColumn("Property", 200, ColumnAlignment.Left);
-            AddColumn("Value", 200, ColumnAlignment.Left);
-        }
+		{
+			AddColumn("Property", 200, ColumnAlignment.Left);
+			AddColumn("Value", 200, ColumnAlignment.Left);
+		}
 		
 		public void AddRow(string property, string value)
-        {
+		{
 			// Create a new ROW object
 			QuickInfoRow newRow = new QuickInfoRow();
 
@@ -32,7 +32,7 @@ namespace Ufex.API.Tables
 		}
 
 		protected override string[] GetRow(int r, DataFormatter nts)
-        {
+		{
 			return ((QuickInfoRow)m_RowData[r]).data;
 		}
 	}

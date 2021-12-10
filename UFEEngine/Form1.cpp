@@ -153,7 +153,7 @@ namespace UniversalFileExplorer
 		if(fileType != nullptr)
 		{
 			// Set the file type description text box
-			txtFileType->Text = fileType->description;
+			txtFileType->Text = fileType->Description;
 		}
 		else
 			txtFileType->Text = L"Unknown file type";
@@ -198,17 +198,18 @@ namespace UniversalFileExplorer
 		if(fileType != nullptr)
 		{
 			// If there is a binding: load the module
-			if(fileType->bind)
+			array<FILETYPE_CLASS^>^ fileTypeClasses = m_fileTypeMan->GetFileTypeClassesByFileType(fileType->ID);
+			if(fileTypeClasses->Length > 0)
 			{
-
+				FILETYPE_CLASS^ fileTypeClass = fileTypeClasses[0];
 				try
 				{
-					m_fileData = m_fileTypeMan->GetNewClassInstance(fileType->fileTypeClassId);
+					m_fileData = m_fileTypeMan->GetNewClassInstance(fileTypeClass->ID);
 				}
 				catch(Exception^ e)
 				{
 					MessageBox::Show(e->Message, L"Error Loading Module", MessageBoxButtons::OK, MessageBoxIcon::Error);
-					DebugOut(L"!!Error Loading Module: ", fileType->fileTypeClassId);
+					DebugOut(L"!!Error Loading Module: ", fileTypeClass->ID);
 					ExceptionOut(e);
 					statusBar->Text = L"";
 					return -1;
@@ -217,7 +218,7 @@ namespace UniversalFileExplorer
 				// If the class could not be loaded
 				if(m_fileData == nullptr)
 				{
-					DebugOut(String::Concat(L"Failed to load type: ", fileType->fileTypeClassId));
+					DebugOut(String::Concat(L"Failed to load type: ", fileTypeClass->ID));
 					SetStatusBar(L"");
 					return -1;
 				}
@@ -627,7 +628,7 @@ namespace UniversalFileExplorer
 	void Form1::ShowFileTypeMan()
 	{
 		//this->Enabled = false;
-		FTMForm^ frmFTM = gcnew FTMForm(m_fileTypeMan->FileTypes);
+		FTMForm^ frmFTM = gcnew FTMForm(m_fileTypeMan);
 		frmFTM->ShowDialog(this);
 		//this->Enabled = true;
 	}

@@ -111,7 +111,7 @@ namespace Ufex.API.Tables
 		}
 
 		protected override string[] GetRow(int r, DataFormatter nts)
-        {
+		{
 			string[] rowData = new string[m_NumColumns];
 
 			// Create a temporary row

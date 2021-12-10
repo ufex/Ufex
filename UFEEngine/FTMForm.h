@@ -24,7 +24,11 @@ namespace UniversalFileExplorer
 	public ref class FTMForm : public System::Windows::Forms::Form
 	{
 	private:
-		//Instance of the FileTypeManager
+
+		// Instance of the File Type Manager
+		FileTypeManager^ m_FileTypeManager;
+
+		//Instance of the FileTypeDb
 		FileTypeDb^ m_FileTypesDB;
 
 		// Contains the FILETYPE objects that were loaded from the XML file
@@ -67,24 +71,25 @@ namespace UniversalFileExplorer
 			InitializeComponent();
 		}
 
-		FTMForm(FileTypeDb^ ftdb)
+		FTMForm(FileTypeManager^ ftMgr)
 		{
-			
 			InitializeComponent();
+			
+			m_FileTypeManager = ftMgr;
 			
 			// Create an array to hold gcnew types
 			m_NewTypes = gcnew ArrayList();
 			
-			m_FileTypesDB = ftdb;
+			m_FileTypesDB = ftMgr->FileTypes;
 
-			m_FileTypes = m_FileTypesDB->GetFileTypes();
+			m_FileTypes = m_FileTypesDB->GetFileTypes(false);
 
 
 			if(m_FileTypes != nullptr)
 			{
 				for(int i = 0; i < m_FileTypes->Length; i++)
 				{
-					lstFileTypes->Items->Add(m_FileTypes[i]->id);
+					lstFileTypes->Items->Add(m_FileTypes[i]->ID);
 				}
 			}
 			m_CurTypeMod = false;
@@ -258,7 +263,7 @@ namespace UniversalFileExplorer
 			this->label6->Name = L"label6";
 			this->label6->Size = System::Drawing::Size(80, 16);
 			this->label6->TabIndex = 10;
-			this->label6->Text = L"General Type:";
+			this->label6->Text = L"Category:";
 			// 
 			// label2
 			// 
@@ -338,11 +343,12 @@ namespace UniversalFileExplorer
 				// Record the last type if it was edited
 				if(m_CurTypeMod)
 				{
-					m_CurFileType->update = true;
-					m_CurFileType->description = txtTypeDesc->Text;
-					m_CurFileType->id = txtTypeID->Text;
+					//m_CurFileType->update = true;
+					m_CurFileType->Description = txtTypeDesc->Text;
+					m_CurFileType->ID = txtTypeID->Text;
 
-					if(cmbBind->Text->Equals(L"True"))
+					/*
+					if (cmbBind->Text->Equals(L"True"))
 						m_CurFileType->bind = true;
 					else if(cmbBind->Text->Equals(L"False"))
 						m_CurFileType->bind = false;
@@ -351,6 +357,7 @@ namespace UniversalFileExplorer
 						m_CurFileType->fileTypeClassId = cmbFileTypeClassID->Text;
 					else
 						m_CurFileType->fileTypeClassId = L"";
+					*/
 
 					//m_FileTypes[m_CurTypeIndex] = m_CurFileType;
 					if(m_CurTypeIndex < m_FileTypes->Length)
@@ -378,14 +385,21 @@ namespace UniversalFileExplorer
 					m_CurFileType = static_cast<FILETYPE^>(m_NewTypes[i]);
 				}
 				m_CurTypeIndex = lstFileTypes->SelectedIndex;
-				txtTypeID->Text = m_CurFileType->id;
-				txtTypeDesc->Text = m_CurFileType->description;
-				cmbBind->Text = m_CurFileType->bind.ToString();
-				txtMIMEType->Text = m_CurFileType->mimeType;
-				cmbFileTypeClassID->Text = m_CurFileType->fileTypeClassId;
-
-				m_CurTypeMod = false;
+				array<FILETYPE_CLASS^>^ fileTypeClasses = m_FileTypeManager->GetFileTypeClassesByFileType(m_CurFileType->ID);
 				
+				txtTypeID->Text = m_CurFileType->ID;
+				txtTypeDesc->Text = m_CurFileType->Description;
+				//cmbBind->Text = m_CurFileType->bind.ToString();
+				cmbGenType->Text = m_CurFileType->Category;
+			
+				txtMIMEType->Text = m_CurFileType->MIMETypes->Length > 0 ? m_CurFileType->MIMETypes[0] : "";
+				array<String^>^ fileTypeClassIds = gcnew array<String^>(fileTypeClasses->Length);
+				for (int i = 0; i < fileTypeClasses->Length; i++) {
+					fileTypeClassIds[i] = fileTypeClasses[i]->ID;
+				}
+				cmbFileTypeClassID->Text = String::Join(", ", fileTypeClassIds);
+
+				m_CurTypeMod = false;				
 			 }
 
 	private: System::Void buttonCancel_Click(System::Object ^  sender, System::EventArgs ^  e)

@@ -31,7 +31,7 @@ using namespace System::Text;
 
 namespace UniversalFileExplorer
 {
-	public ref class IDFileType : public FileTypeIdentifier
+	public ref class IDFileType : public FileTypeClassifier
 	{
 	public:
 		IDFileType(void);

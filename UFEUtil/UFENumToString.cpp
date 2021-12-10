@@ -590,7 +590,7 @@ namespace UniversalFileExplorer
 				prefix = String::Concat(prefix, "000");
 			else if(x < 0x1000000)
 				prefix = String::Concat(prefix, "00");
-			else if(x < 0100000000)
+			else if(x < 0x10000000)
 				prefix = String::Concat(prefix, "0");
 		}
 

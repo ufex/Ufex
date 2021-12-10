@@ -41,7 +41,7 @@ namespace UniversalFileExplorer
 
 		// If only one file type was returned, return it
 		if(fileTypes->Length == 1)
-			return fileTypes[0]->id;
+			return fileTypes[0]->ID;
 
 		return FileTypeUnknown;
 	}

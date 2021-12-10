@@ -1,6 +1,6 @@
 using System;
-using System.Data;
-using System.Data.OleDb;
+using System.IO;
+using Ufex.API;
 
 namespace UniversalFileExplorer
 {
@@ -9,16 +9,10 @@ namespace UniversalFileExplorer
 	/// </summary>
 	public abstract class UFEDatabase
 	{
-		private OleDbConnection m_dbConn;
-		private UFEDebug m_debug;
+		protected FileInfo[] configFiles;
+		private Logger m_debug;
 
-		public OleDbConnection DbConn
-		{
-			get { return m_dbConn; }
-			set { m_dbConn = value; }
-		}
-
-		public UFEDebug Debug
+		public Logger Debug
 		{
 			get { return m_debug; }
 			set { m_debug = value; }
@@ -29,9 +23,9 @@ namespace UniversalFileExplorer
 
 		}
 
-		public UFEDatabase(OleDbConnection dbConn)
+		public UFEDatabase(FileInfo[] configFiles)
 		{
-			this.m_dbConn = dbConn;
+			this.configFiles = configFiles;
 		}
 	}
 }

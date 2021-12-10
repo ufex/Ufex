@@ -6,15 +6,15 @@ namespace UniversalFileExplorer
 	/// <summary>
 	/// Summary description for FileTypeIdentifier.
 	/// </summary>
-	public abstract class FileTypeIdentifier
+	public abstract class FileTypeClassifier
 	{
-		private FileTypeDb m_fileTypeDb;
+		private FileTypeDb fileTypeDb;
 		private static string FT_UNKNOWN = "FT_UNKNOWN";
 
 		public FileTypeDb FileTypes
 		{
-			get { return m_fileTypeDb; }
-			set { m_fileTypeDb = value; }
+			get { return fileTypeDb; }
+			set { fileTypeDb = value; }
 		}
 
 		public string FileTypeUnknown
@@ -22,11 +22,9 @@ namespace UniversalFileExplorer
 			get { return FT_UNKNOWN; }
 		}
 
-		public FileTypeIdentifier()
+		public FileTypeClassifier()
 		{
-			//
-			// TODO: Add constructor logic here
-			//
+
 		}
 
 		public abstract string GetFileType(string filePath, FileStream fileStream);

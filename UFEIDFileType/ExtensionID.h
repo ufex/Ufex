@@ -4,7 +4,7 @@ using namespace System::Text;
 
 namespace UniversalFileExplorer
 {
-	public ref class ExtensionID : public FileTypeIdentifier
+	public ref class ExtensionID : public FileTypeClassifier
 	{
 	public:
 		ExtensionID(void);

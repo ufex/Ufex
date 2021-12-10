@@ -457,7 +457,23 @@ namespace Ufex.API
 			else
 				return x.ToString();
 		}
-		
+
+		public string ASCIIString(string x)
+		{
+			if (m_numFormat == NumberFormat.Default)
+				return '"' + x + '"';
+			else if (m_numFormat == NumberFormat.Hexadecimal)
+				return gsASCH(Encoding.ASCII.GetBytes(x));
+			else if (m_numFormat == NumberFormat.Decimal)
+				return gsASCD(Encoding.ASCII.GetBytes(x));
+			else if (m_numFormat == NumberFormat.Binary)
+				return gsASCA(Encoding.ASCII.GetBytes(x));
+			else if (m_numFormat == NumberFormat.Ascii)
+				return gsASCA(Encoding.ASCII.GetBytes(x));
+			else
+				return x.ToString();
+		}
+
 		private string gsASCA(byte[] x)
 		{
 			StringBuilder result = new StringBuilder(x.Length + 2);

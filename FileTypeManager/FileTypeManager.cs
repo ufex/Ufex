@@ -1,8 +1,8 @@
 using System;
-using System.Data.OleDb;
 using System.Reflection;
 using System.Collections;
 using System.IO;
+using Ufex.API;
 
 namespace UniversalFileExplorer
 {
@@ -21,13 +21,6 @@ namespace UniversalFileExplorer
 		public const string FILETYPE_UNKNOWN = "FT_UNKNOWN";
 
 		private string m_appPath;
-
-		/// <summary>
-		/// The database connection.
-		/// </summary>
-		private OleDbConnection m_dbConn;
-
-		private string m_dbConnectionString;
 		
 		private FileTypeDb m_fileTypeDb;
 		private FileTypeClassesDb m_fileTypeClassesDb;
@@ -37,7 +30,7 @@ namespace UniversalFileExplorer
 
 		private ArrayList m_assemblyCache;
 
-		private UFEDebug m_debug;
+		private Logger m_debug;
 
 		#region Properties
 
@@ -53,17 +46,13 @@ namespace UniversalFileExplorer
 
 		public FileTypeManager(string applicationPath)
 		{
-			m_debug = new UFEDebug("FileTypeManager.log");
+			m_debug = new Logger("FileTypeManager.log");
 
 			m_appPath = String.Copy(applicationPath);
 
 			m_assemblyCache = new ArrayList();
 			m_idLibsCache = new ArrayList();
 
-			// Get the database settings
-			m_dbConnectionString = Settings.GetSetting("Database", "ConnectionString");
-
-			OpenDatabaseConnection();
 			InitializeDatabases();
 			LoadIDLibs();
 		}
@@ -76,27 +65,13 @@ namespace UniversalFileExplorer
 		
 		protected virtual void Dispose(bool disposing) 
 		{
-			if (disposing) 
-			{			
-				if(m_dbConn != null)	
-				{
-					try
-					{
-						m_dbConn.Close();
-					}
-					catch(Exception e)
-					{
-						m_debug.NewException(e, "Failed to close connection to database");
-					}
-				}
-			}
 		}
 
 		public FILETYPE GetFileType(string filePath)
 		{
 			FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-			m_debug.NewInfo("m_idLibsCache.Count = " + m_idLibsCache.Count.ToString());
-			foreach(FileTypeIdentifier ftid in m_idLibsCache)
+			m_debug.Info("m_idLibsCache.Count = " + m_idLibsCache.Count.ToString());
+			foreach(FileTypeClassifier ftid in m_idLibsCache)
 			{
 				try
 				{
@@ -117,6 +92,11 @@ namespace UniversalFileExplorer
 			return null;
 		}
 
+		public FILETYPE_CLASS[] GetFileTypeClassesByFileType(string fileTypeId)
+        {
+			return m_fileTypeClassesDb.GetFileTypeClassesByFileType(fileTypeId);
+        }
+
 		public Ufex.API.FileType GetNewClassInstance(string classId)
 		{
 			FILETYPE_CLASS fileTypeClass = m_fileTypeClassesDb.GetFileTypeClass(classId);
@@ -125,12 +105,12 @@ namespace UniversalFileExplorer
 				return null;
 
 			// Get the assembly
-			Assembly assembly = GetAssembly(fileTypeClass.assemblyPath);
+			Assembly assembly = GetAssembly(fileTypeClass.AssemblyPath);
 
 			if(assembly == null)
 				return null;
 
-			return (Ufex.API.FileType)(assembly.CreateInstance(fileTypeClass.fullTypeName, true));
+			return (Ufex.API.FileType)(assembly.CreateInstance(fileTypeClass.FullTypeName, true));
 		}
 
 		private Assembly GetAssembly(string assemblyPath)
@@ -146,7 +126,6 @@ namespace UniversalFileExplorer
 				if(cachedAssembly.path.ToLower().Equals(assemblyPath.ToLower()))
 					return cachedAssembly.assembly;
 			}
-
 
 			// Load the assembly into the cache
 			Assembly newAssembly = Assembly.LoadFile(fullPath);
@@ -174,7 +153,7 @@ namespace UniversalFileExplorer
 					try
 					{
 						Assembly tempAssembly = Assembly.LoadFile(path);
-						FileTypeIdentifier newIDLib = (FileTypeIdentifier)(tempAssembly.CreateInstance(idLib.fullTypeName, true));
+						FileTypeClassifier newIDLib = (FileTypeClassifier)(tempAssembly.CreateInstance(idLib.fullTypeName, true));
 						newIDLib.FileTypes = m_fileTypeDb;
 						m_idLibsCache.Add(newIDLib);
 					}
@@ -185,7 +164,7 @@ namespace UniversalFileExplorer
 				}
 				else
 				{
-					m_debug.NewError("Failed to find idLib: " + idLib.assemblyPath);
+					m_debug.Error("Failed to find idLib: " + idLib.assemblyPath);
 				}
 			}
 		}
@@ -207,21 +186,16 @@ namespace UniversalFileExplorer
 
 			}
 			actualPath = Path.GetFullPath(actualPath);
-			m_debug.NewInfo("ResolvePath: " + path + ", " + actualPath);
+			m_debug.Info("ResolvePath: " + path + ", " + actualPath);
 			return actualPath;
-		}
-
-		private void OpenDatabaseConnection()
-		{
-			m_dbConn = new OleDbConnection(m_dbConnectionString);
-			m_dbConn.Open();
 		}
 
 		private void InitializeDatabases()
 		{
-			m_fileTypeDb = new FileTypeDb(m_dbConn);
-			m_fileTypeClassesDb = new FileTypeClassesDb(m_dbConn);
-			m_idLibsDb = new IDLibsDb(m_dbConn);
+			DirectoryInfo di = new DirectoryInfo("D:\\code\\ufex\\ufex\\config"); // TODO
+			m_fileTypeDb = new FileTypeDb(di.GetFiles("*.xml"));
+			m_fileTypeClassesDb = new FileTypeClassesDb(di.GetFiles("*.xml"));
+			m_idLibsDb = new IDLibsDb();
 		}
 
 	}

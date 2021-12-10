@@ -95,7 +95,7 @@ namespace Ufex.API
 			return (Int64)SwapEndian((UInt64)x);
 		}
 
-		public UInt16 BytesToUInt16(Byte[] data, int offset, Endian endian)
+		public static UInt16 BytesToUInt16(Byte[] data, int offset, Endian endian)
 		{
 			if (endian == Endian.Little)
 				return (ushort)(data[offset] + (data[offset + 1] * 0x100u));
@@ -104,7 +104,7 @@ namespace Ufex.API
 			else
 				return (ushort)BadEndian();
 		}
-		public UInt32 BytesToUInt32(Byte[] data, int offset, Endian endian)
+		public static UInt32 BytesToUInt32(Byte[] data, int offset, Endian endian)
 		{
 			if (endian == Endian.Little)
 			{
@@ -123,7 +123,7 @@ namespace Ufex.API
 			return 0;
 		}
 
-		private int BadEndian()
+		private static int BadEndian()
 		{
 			throw new Exception("Invalid Endian");
 			return 0;
