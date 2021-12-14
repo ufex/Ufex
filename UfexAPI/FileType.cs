@@ -4,7 +4,6 @@ using System.Resources;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
-using UniversalFileExplorer;
 using System.IO;
 
 namespace Ufex.API
@@ -216,7 +215,7 @@ namespace Ufex.API
 		// Functions for interfacing with the ArrayToNum Class
 		public void SetATNEndian(Endian endian) 
 		{ 
-			m_atn.DataEndian = endian == Endian.Little ? UniversalFileExplorer.Endian.Little : UniversalFileExplorer.Endian.Big; 
+			m_atn.DataEndian = endian == Endian.Little ? Endian.Little : Endian.Big; 
 		}
 
 		// ExceptionOut(Exception* e)

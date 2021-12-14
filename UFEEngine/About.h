@@ -152,24 +152,13 @@ namespace UniversalFileExplorer
 
 	private: void AddFileVersions()
 			 {
-				/*
-				String* DLL_Files[] = { L"UniversalFileExplorer.exe",
-										S"UFEIDFileType.dll", 
-										S"UFEUtil.dll", 
-										S"FileType.dll",
-										S"FileTypeMan.dll"
-										};
-				*/
-				array<String^>^ DLL_Files = gcnew array<String^>(8);
-				DLL_Files[0] = L"UniversalFileExplorer.exe";
+				array<String^>^ DLL_Files = gcnew array<String^>(6);
+				DLL_Files[0] = L"UfexGui.exe";
 				DLL_Files[1] = L"UFEEngine.dll";
 				DLL_Files[2] = L"UFEControls.dll";
-				DLL_Files[3] = L"FileType.dll";
-				DLL_Files[4] = L"UFEUtil.dll";
-				DLL_Files[5] = L"FileTypeMan.dll";
-				DLL_Files[6] = L"UFEIDFileType.dll";
-				DLL_Files[7] = L"MS_IDFileType.dll";
-
+				DLL_Files[3] = L"FileTypeManager.dll";
+				DLL_Files[4] = L"UfexAPI.dll";
+				DLL_Files[5] = L"UFEUtil.dll";
 
 				for(int i = 0; i < DLL_Files->Length; i++)
 				{
@@ -195,7 +184,7 @@ namespace UniversalFileExplorer
 				array<String^>^ mod_Files = gcnew array<String^>(10);
 				mod_Files[0] = L"BMP.dll";
 				mod_Files[1] = L"GIF.dll";
-				mod_Files[2] = L"JFIF.dll";
+				mod_Files[2] = L"JPEG.dll";
 				mod_Files[3] = L"PNG.dll";
 				mod_Files[4] = L"WMF.dll";
 				mod_Files[5] = L"EXE.dll";
@@ -210,7 +199,7 @@ namespace UniversalFileExplorer
 					String^ fullName = L"";
 					try
 					{
-						x = Assembly::LoadFile(String::Concat(Path::GetDirectoryName(Application::ExecutablePath), L"\\", mod_Files[i]));
+						x = Assembly::LoadFile(String::Concat(Path::GetDirectoryName(Application::ExecutablePath), L"\\modules\\", mod_Files[i]));
 						fullName = x->FullName;
 						fullName = fullName->Substring(0, fullName->IndexOf(L", Culture"));
 						addLine(String::Concat(fullName, L""));
@@ -220,7 +209,6 @@ namespace UniversalFileExplorer
 					{
 					}
 				}
-
 
 			 }
 

@@ -144,9 +144,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UFEUtil\UFEUtil.vcxproj">
-      <Project>{26b8821f-2f4c-4db3-9761-502bf5f55425}</Project>
-      <Name>UFEUtil</Name>
+    <ProjectReference Include="..\UfexAPI\UfexAPI.csproj">
+      <Project>{cae1ec26-6450-4fa1-b92f-4a066f1f1a9d}</Project>
+      <Name>UfexAPI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

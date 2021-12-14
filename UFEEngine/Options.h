@@ -249,6 +249,7 @@ namespace UniversalFileExplorer
 			this->tabPageFileTypeDB->Size = System::Drawing::Size(504, 262);
 			this->tabPageFileTypeDB->TabIndex = 3;
 			this->tabPageFileTypeDB->Text = L"File Type Database";
+			this->tabPageFileTypeDB->Visible = false;
 			// 
 			// groupBox2
 			// 

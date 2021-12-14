@@ -5,9 +5,9 @@ using System.Drawing;
 using System.Data;
 using System.Windows.Forms;
 using System.IO;
-using UniversalFileExplorer;
+using Ufex.API;
 
-namespace UFEControls
+namespace Ufex.Controls
 {
 	/// <summary>
 	/// Summary description for HexViewControl.
@@ -82,7 +82,7 @@ namespace UFEControls
 
 		public String debugText;
 		private bool debugMode;
-		private UFEDebug debug;
+		private Logger debug;
 
 
 		//private bool showStatusBar;
@@ -91,9 +91,9 @@ namespace UFEControls
 		//   Should be equal to: "X" or "x"
 		private String formatter;
 
-		private UFEControls.StringGrid strgdAddressBar;
-		private UFEControls.StringGrid strgdHexData;
-        private UFEControls.StringGrid strgdTextData;
+		private Ufex.Controls.StringGrid strgdAddressBar;
+		private Ufex.Controls.StringGrid strgdHexData;
+        private Ufex.Controls.StringGrid strgdTextData;
 		private System.Windows.Forms.VScrollBar vScrollBar;
 		private System.Windows.Forms.StatusBar statusDebug;
 		private System.Windows.Forms.StatusBarPanel debugPanel1;
@@ -110,7 +110,7 @@ namespace UFEControls
 			InitializeComponent();
 
 			// TODO: Add any initialization after the InitComponent call
-			debug = new UFEDebug("UFEControls_HexViewControl.log");
+			debug = new Logger("UFEControls_HexViewControl.log");
 
 			debugText = "-HexViewDebug-";
 			DebugOut("-HexViewControl()-");
@@ -157,9 +157,9 @@ namespace UFEControls
 		private void InitializeComponent()
 		{
 			this.vScrollBar = new System.Windows.Forms.VScrollBar();
-			this.strgdAddressBar = new UFEControls.StringGrid();
-			this.strgdHexData = new UFEControls.StringGrid();
-			this.strgdTextData = new UFEControls.StringGrid();
+			this.strgdAddressBar = new Ufex.Controls.StringGrid();
+			this.strgdHexData = new Ufex.Controls.StringGrid();
+			this.strgdTextData = new Ufex.Controls.StringGrid();
 			this.statusDebug = new System.Windows.Forms.StatusBar();
 			this.debugPanel1 = new System.Windows.Forms.StatusBarPanel();
 			this.debugPanel2 = new System.Windows.Forms.StatusBarPanel();
@@ -532,7 +532,7 @@ namespace UFEControls
 		***************************************************/
 		private void InitializeFile()
 		{
-			debug.NewInfo("InitializeFile()");
+			debug.Info("InitializeFile()");
 			fileLoaded = true;
 			fileSize = fileStream.Length;
 
@@ -591,7 +591,7 @@ namespace UFEControls
 		/// </summary>
 		private void ReloadBuffer(Int64 position)
 		{
-			debug.NewInfo(String.Concat("ReloadBuffer(", position.ToString(), ")"));
+			debug.Info(String.Concat("ReloadBuffer(", position.ToString(), ")"));
 			// The buffer is reloaded so that the position 
 			//   is in the middle of the buffer
 			bufferStartPosition = position - (bufferSize / 2);
@@ -626,7 +626,7 @@ namespace UFEControls
 				return;
 
 			debugText = String.Concat(debugText, "\r\n", text);
-			debug.NewInfo(text);
+			debug.Info(text);
 			StatusDebug(1, text);
 		}
 
@@ -725,12 +725,12 @@ namespace UFEControls
 		{
 			if(position >= fileSize)
 			{
-				debug.NewError("position is greater than or equal to fileSize", "HexView", "GotoPosition(" + position.ToString() + ")", "Invalid value for position");
+				debug.Error("position is greater than or equal to fileSize", "HexView", "GotoPosition(" + position.ToString() + ")", "Invalid value for position");
 				return;
 			}
 			if((fileSize - position) < (numCols * numRows))
 			{
-				debug.NewInfo("(fileSize - position) < filePosition + (numCols * numRows)");
+				debug.Info("(fileSize - position) < filePosition + (numCols * numRows)");
 				vScrollBar.Value = (int)((fileSize - (numCols * numRows)) / (long)numCols);
 			}
 			else

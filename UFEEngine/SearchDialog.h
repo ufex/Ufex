@@ -42,7 +42,7 @@ namespace UniversalFileExplorer
 	private: System::Windows::Forms::Button^  btnFindNext;
 
 	public: FileStreamSearch^ m_fileStreamSearch;
-	public: UFEControls::HexViewControl^  hexView;
+	public: Ufex::Controls::HexViewControl^  hexView;
 	private: System::Windows::Forms::RadioButton^  radText;
 	private: System::Windows::Forms::RadioButton^  radHex;
 	private: System::Windows::Forms::Button^  btnCancel;

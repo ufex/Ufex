@@ -51,7 +51,7 @@ namespace UniversalFileExplorer
 	using namespace System::Drawing::Imaging;
 	using namespace System::IO;
 
-	using namespace UFEControls;
+	using namespace Ufex::Controls;
 	using namespace Ufex::API;
 
 	/// <summary> 
@@ -121,7 +121,7 @@ namespace UniversalFileExplorer
 	private: System::Windows::Forms::Button ^  btnClearDebug;
 	private: System::Windows::Forms::Button ^  btnRefresh;
 	private: System::Windows::Forms::ListView ^  listViewQuickInfo;
-	private: UFEControls::HexViewControl ^  hexView;
+	private: Ufex::Controls::HexViewControl ^  hexView;
 	private: System::Windows::Forms::TextBox ^  textFileSize;
 	private: System::Windows::Forms::TextBox ^  textFileName;
 	private: System::Windows::Forms::TextBox ^  textFileExt;
@@ -265,7 +265,7 @@ private: System::Windows::Forms::CheckBox ^  chkAttCompressed;
 			this->tabFileCheck = (gcnew System::Windows::Forms::TabPage());
 			this->textFileCheck = (gcnew System::Windows::Forms::TextBox());
 			this->tabPageHex = (gcnew System::Windows::Forms::TabPage());
-			this->hexView = (gcnew UFEControls::HexViewControl());
+			this->hexView = (gcnew Ufex::Controls::HexViewControl());
 			this->tabPageDebug = (gcnew System::Windows::Forms::TabPage());
 			this->tabDebug = (gcnew System::Windows::Forms::TabControl());
 			this->tabForm = (gcnew System::Windows::Forms::TabPage());
@@ -1482,8 +1482,6 @@ private: System::Windows::Forms::CheckBox ^  chkAttCompressed;
 		System::Void Form1_Load(System::Object^ sender, System::EventArgs^  e)
 		{
 				debugMode = DEFAULT_DEBUG;
-				
-				CheckRunMode();
 
 				DebugOut(L"-Application Vars-");
 				DebugOut(L"ProductName: ", Application::ProductName);
@@ -1494,8 +1492,8 @@ private: System::Windows::Forms::CheckBox ^  chkAttCompressed;
 				DebugOut(L"CommonAppDataPath: ", Application::CommonAppDataPath);
 				//DebugOut(L"CommonAppDataRegistry: ", Application::CommonAppDataRegistry->ToString());
 				DebugOut(L"UserAppDataPath: ", Application::UserAppDataPath);
-				DebugOut(L"UserAppDataPath: ", Application::UserAppDataRegistry->ToString());
-				
+				DebugOut(L"UserAppDataRegistry: ", Application::UserAppDataRegistry->ToString());
+
 				//DebugOut( String::Concat( L"Loaded ModuleL", Assembly::GetLoadedModules ) );
 				
 				// This should fix the bug where the horizontal 
@@ -1582,7 +1580,6 @@ private: System::Windows::Forms::CheckBox ^  chkAttCompressed;
 	// AppInit - Initializes the application
 	private: void AppInit(String^ cmdLineParam);
 
-	private: int CheckRunMode();
 	private: void HideLoadDialog();
 
 	// ResizeAll - Resizes all the objects on the form

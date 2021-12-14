@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using UniversalFileExplorer;
 
 namespace Ufex.API.Tables
 {

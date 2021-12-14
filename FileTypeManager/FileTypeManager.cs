@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections;
 using System.IO;
 using Ufex.API;
+using System.Collections.Generic;
 
 namespace UniversalFileExplorer
 {
@@ -15,63 +16,43 @@ namespace UniversalFileExplorer
 	/// <summary>
 	/// Summary description for FileTypeManager.
 	/// </summary>
-	public class FileTypeManager : IDisposable
+	public class FileTypeManager
 	{
-
 		public const string FILETYPE_UNKNOWN = "FT_UNKNOWN";
 
-		private string m_appPath;
-		
-		private FileTypeDb m_fileTypeDb;
-		private FileTypeClassesDb m_fileTypeClassesDb;
-		private IDLibsDb m_idLibsDb;
-
-		private ArrayList m_idLibsCache;
-
-		private ArrayList m_assemblyCache;
-
-		private Logger m_debug;
+		private FileTypeClassesDb fileTypeClassesDb;
+		private IDLibsDb idLibsDb;
+		private ArrayList idLibsCache;
+		private ArrayList assemblyCache;
 
 		#region Properties
 
-		public FileTypeDb FileTypes
-		{
-			get { return m_fileTypeDb; }
-		}
-
+		public FileTypeDb FileTypes { get; protected set; }
+		public string ApplicationPath { get; protected set; }
+		public string[] ConfigDirectories { get; set; }
+		public Logger Logger { get; protected set; }
 
 		#endregion
 
-
-
-		public FileTypeManager(string applicationPath)
+		public FileTypeManager(string applicationPath, string[] configDirectories)
 		{
-			m_debug = new Logger("FileTypeManager.log");
+			Logger = new Logger("FileTypeManager.log");
 
-			m_appPath = String.Copy(applicationPath);
+			ApplicationPath = string.Copy(applicationPath);
+			ConfigDirectories = (string[])configDirectories.Clone();
 
-			m_assemblyCache = new ArrayList();
-			m_idLibsCache = new ArrayList();
+			assemblyCache = new ArrayList();
+			idLibsCache = new ArrayList();
 
 			InitializeDatabases();
 			LoadIDLibs();
 		}
 
-		public void Dispose() 
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this); 
-		}
-		
-		protected virtual void Dispose(bool disposing) 
-		{
-		}
-
 		public FILETYPE GetFileType(string filePath)
 		{
 			FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-			m_debug.Info("m_idLibsCache.Count = " + m_idLibsCache.Count.ToString());
-			foreach(FileTypeClassifier ftid in m_idLibsCache)
+			Logger.Info("m_idLibsCache.Count = " + idLibsCache.Count.ToString());
+			foreach(FileTypeClassifier ftid in idLibsCache)
 			{
 				try
 				{
@@ -80,12 +61,12 @@ namespace UniversalFileExplorer
 					if(!fileType.Equals(FILETYPE_UNKNOWN))
 					{
 						fs.Close();
-						return m_fileTypeDb.GetFileType(fileType);
+						return FileTypes.GetFileType(fileType);
 					}
 				}
 				catch(Exception e)
 				{
-					m_debug.NewException(e, "Failed to identify file type using " + ftid.ToString());
+					Logger.NewException(e, "Failed to identify file type using " + ftid.ToString());
 				}
 			}
 			fs.Close();
@@ -93,13 +74,13 @@ namespace UniversalFileExplorer
 		}
 
 		public FILETYPE_CLASS[] GetFileTypeClassesByFileType(string fileTypeId)
-        {
-			return m_fileTypeClassesDb.GetFileTypeClassesByFileType(fileTypeId);
-        }
+		{
+			return fileTypeClassesDb.GetFileTypeClassesByFileType(fileTypeId);
+		}
 
 		public Ufex.API.FileType GetNewClassInstance(string classId)
 		{
-			FILETYPE_CLASS fileTypeClass = m_fileTypeClassesDb.GetFileTypeClass(classId);
+			FILETYPE_CLASS fileTypeClass = fileTypeClassesDb.GetFileTypeClass(classId);
 
 			if(fileTypeClass == null)
 				return null;
@@ -121,7 +102,7 @@ namespace UniversalFileExplorer
 				throw new Exception("Failed to load assembly: File Not Found");
 
 			// Look for the assembly in the cache
-			foreach(CachedAssembly cachedAssembly in m_assemblyCache)
+			foreach(CachedAssembly cachedAssembly in assemblyCache)
 			{
 				if(cachedAssembly.path.ToLower().Equals(assemblyPath.ToLower()))
 					return cachedAssembly.assembly;
@@ -134,7 +115,7 @@ namespace UniversalFileExplorer
 			cachedAss.path = fullPath;
 			cachedAss.assembly = newAssembly;
 
-			m_assemblyCache.Add(cachedAss);
+			assemblyCache.Add(cachedAss);
 			return cachedAss.assembly;
 		}
 
@@ -143,7 +124,7 @@ namespace UniversalFileExplorer
 		/// </summary>
 		private void LoadIDLibs()
 		{
-			ID_LIB[] idLibs = m_idLibsDb.GetIDLibs();
+			ID_LIB[] idLibs = idLibsDb.GetIDLibs();
 
 			foreach(ID_LIB idLib in idLibs)
 			{
@@ -154,17 +135,17 @@ namespace UniversalFileExplorer
 					{
 						Assembly tempAssembly = Assembly.LoadFile(path);
 						FileTypeClassifier newIDLib = (FileTypeClassifier)(tempAssembly.CreateInstance(idLib.fullTypeName, true));
-						newIDLib.FileTypes = m_fileTypeDb;
-						m_idLibsCache.Add(newIDLib);
+						newIDLib.FileTypes = FileTypes;
+						idLibsCache.Add(newIDLib);
 					}
 					catch(Exception e)
 					{
-						m_debug.NewException(e, "FileTypeManager", "LoadIDLibs()", "Failed to load assembly: " + path);
+						Logger.NewException(e, "FileTypeManager", "LoadIDLibs()", "Failed to load assembly: " + path);
 					}
 				}
 				else
 				{
-					m_debug.Error("Failed to find idLib: " + idLib.assemblyPath);
+					Logger.Error("Failed to find idLib: " + idLib.assemblyPath);
 				}
 			}
 		}
@@ -176,27 +157,31 @@ namespace UniversalFileExplorer
 			// If the file does not exist: try to resolve the path
 			if(!File.Exists(actualPath))
 			{
-				if(actualPath.StartsWith("\\"))
-					actualPath = m_appPath + actualPath;
-				else
-					actualPath = m_appPath + "\\" + actualPath;
-
+				actualPath = Path.Combine(ApplicationPath, path);
 				if(!File.Exists(actualPath))
-					return null;
-
+					actualPath = Path.Combine(ApplicationPath, "modules", path);
+					if (!File.Exists(actualPath))
+						return null;
 			}
 			actualPath = Path.GetFullPath(actualPath);
-			m_debug.Info("ResolvePath: " + path + ", " + actualPath);
+			Logger.Info("ResolvePath: " + path + ", " + actualPath);
 			return actualPath;
 		}
 
 		private void InitializeDatabases()
 		{
-			DirectoryInfo di = new DirectoryInfo("D:\\code\\ufex\\ufex\\config"); // TODO
-			m_fileTypeDb = new FileTypeDb(di.GetFiles("*.xml"));
-			m_fileTypeClassesDb = new FileTypeClassesDb(di.GetFiles("*.xml"));
-			m_idLibsDb = new IDLibsDb();
+			List<FileInfo> configFiles = new List<FileInfo>();
+			foreach(string path in ConfigDirectories)
+            {
+				DirectoryInfo di = new DirectoryInfo(path);
+				if (di.Exists)
+				{
+					configFiles.AddRange(di.GetFiles("*.xml"));
+				}
+			}
+			FileTypes = new FileTypeDb(configFiles.ToArray());
+			fileTypeClassesDb = new FileTypeClassesDb(configFiles.ToArray());
+			idLibsDb = new IDLibsDb();
 		}
-
 	}
 }

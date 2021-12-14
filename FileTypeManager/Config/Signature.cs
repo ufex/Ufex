@@ -78,11 +78,11 @@ namespace Ufex.Config
 				{
 					byte[] tmp = new byte[2];
 					fileStream.Read(tmp, (int)Offset, 2); // TODO: read deeper into the file than 32-bit signed integer supports?
-					return DataManip.BytesToUInt16(tmp, 0, endian);
+					return DataManip.BytesToUInt16(tmp, endian, 0);
 				}
 				else
 				{
-					return DataManip.BytesToUInt16(buffer, (int)Offset, endian);
+					return DataManip.BytesToUInt16(buffer, endian, (int)Offset);
 				}
 			}
 			else if (OffsetType == OffsetType.ReadUInt32Le || OffsetType == OffsetType.ReadUInt32Be)
@@ -92,16 +92,31 @@ namespace Ufex.Config
 				{
 					byte[] tmp = new byte[4];
 					fileStream.Read(tmp, (int)Offset, 4); // TODO: read deeper into the file than 32-bit signed integer supports?
-					return DataManip.BytesToUInt32(tmp, 0, endian);
+					return DataManip.BytesToUInt32(tmp, endian, 0);
 				}
 				else
 				{
-					return DataManip.BytesToUInt32(buffer, (int)Offset, endian);
+					return DataManip.BytesToUInt32(buffer, endian, (int)Offset);
 				}
 
 			}
 			throw new Exception("not implemented");
 		}
+
+		private int ReadUntil(FileStream fs, byte b, int startIndex, int count)
+        {
+			int i = 0;
+			fs.Seek(startIndex, SeekOrigin.Begin);
+			while(fs.ReadByte() != b)
+            {
+				i++;
+				if(i > count)
+                {
+					return -1;
+                }
+            }
+			return startIndex + i;
+        }
 
 		protected bool BytesMatch(byte[] valueBytes, byte[] buffer, FileStream fileStream)
 		{
@@ -122,7 +137,32 @@ namespace Ufex.Config
 			if (bytesNeeded > (UInt64)buffer.Length)
 			{
 				// Process from file
-				return false; // TODO
+				int seek = 0, startIndex;
+				while ((startIndex = ReadUntil(fileStream, valueBytes[0], seek + (int)offset, (int)Range + 1)) != -1)
+				{
+					byte[] buffer2 = new byte[valueLength];
+					fileStream.Seek(startIndex, SeekOrigin.Begin);
+					int bytesRead = fileStream.Read(buffer2, 0, valueLength);
+					if(bytesRead < valueLength)
+                    {
+						return false;
+                    }
+					bool match = true;
+					for (int i = startIndex; i < startIndex + valueLength; i++)
+					{
+						if (buffer2[i] != valueBytes[i - startIndex])
+						{
+							match = false;
+							break;
+						}
+					}
+					if (match)
+					{
+						return true;
+					}
+					seek += 1;
+				}
+				return false;
 			}
 			else
 			{
@@ -186,6 +226,14 @@ namespace Ufex.Config
 			{
 				return BytesMatch(new byte[] { Value }, buffer, fileStream);
 			}
+			else if(Operator == PatternOperator.NotEqual)
+            {
+				return !BytesMatch(new byte[] { Value }, buffer, fileStream);
+            }
+			else if(Operator == PatternOperator.LessThan)
+            {
+				
+            }
 			throw new NotImplementedException();
 		}
 	}

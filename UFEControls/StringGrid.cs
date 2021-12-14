@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Windows.Forms;
 
-namespace UFEControls
+namespace Ufex.Controls
 {
 	/// <summary>
 	/// Summary description for StringGrid.

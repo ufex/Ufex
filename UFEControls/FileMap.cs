@@ -6,7 +6,7 @@ using System.Data;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 
-namespace UFEControls
+namespace Ufex.Controls
 {
 	public struct FileSection
 	{

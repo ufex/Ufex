@@ -93,4 +93,19 @@
     <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if not exist $(TargetDir)\config mkdir $(TargetDir)\config
+xcopy "$(SolutionDir)config\*.xml" "$(TargetDir)config" /Y
+if not exist $(TargetDir)\modules mkdir $(TargetDir)\modules
+
+for /f "delims=" %25%25a in ('dir /b/ad "$(SolutionDir)..\external\*" ') do xcopy "$(SolutionDir)..\external\%25%25a\bin\$(ConfigurationName)\*.dll" "$(TargetDir)modules" /Y
+for /f "delims=" %25%25a in ('dir /b/ad "$(SolutionDir)..\external\*" ') do if exist "$(SolutionDir)..\external\%25%25a\bin\$(ConfigurationName)\net48" xcopy "$(SolutionDir)..\external\%25%25a\bin\$(ConfigurationName)\net48\*.dll" "$(TargetDir)modules" /Y
+
+
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>

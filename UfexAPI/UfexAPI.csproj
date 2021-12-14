@@ -3,16 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <RootNamespace>Ufex.API</RootNamespace>
-    <AssemblyVersion>1.2.0</AssemblyVersion>
-    <FileVersion>1.2.0</FileVersion>
+    <AssemblyVersion>1.3.0.0</AssemblyVersion>
+    <FileVersion>1.3.0.0</FileVersion>
 	<PackageVersion>1.2.0</PackageVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\UFEUtil\UFEUtil.vcxproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />

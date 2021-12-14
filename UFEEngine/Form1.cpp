@@ -113,11 +113,6 @@ namespace UniversalFileExplorer
 		DebugOut(L"-End AppInit-");
 	}
 
-	int Form1::CheckRunMode()
-	{
-		return 0;
-	}
-
 	void Form1::HideLoadDialog()
 	{
 		(static_cast<UniversalFileExplorerApp^>(pApp))->CloseLoadDialog();
@@ -640,7 +635,6 @@ namespace UniversalFileExplorer
 	{
 		Options^ frmOptions = gcnew Options();
 		frmOptions->ShowDialog(this);
-		CheckRunMode();
 	}
 
 	void Form1::ShowAbout()
@@ -649,7 +643,6 @@ namespace UniversalFileExplorer
 		frmAbout->m_BuildType = (static_cast<UniversalFileExplorerApp^>(pApp))->gBT();
 		frmAbout->m_DebugMode = debugMode;
 		frmAbout->ShowDialog(this);
-		CheckRunMode();
 	}
 
 	void Form1::SetQuickInfoTextBoxes()
@@ -742,7 +735,6 @@ namespace UniversalFileExplorer
 			firstNode = nullptr;
 		}
 	}
-
 	
 	void Form1::InitControlSizes()
 	{	
@@ -766,7 +758,14 @@ namespace UniversalFileExplorer
 		try
 		{
 			// Initialize File Type Manager
-			m_fileTypeMan = gcnew FileTypeManager(Path::GetDirectoryName(Application::ExecutablePath));
+			String^ appPath = Path::GetDirectoryName(Application::ExecutablePath);
+			array<String^>^ configDirectories = gcnew array<String^>
+			{
+				Path::Combine(appPath, "config"),
+				Path::Combine(Application::CommonAppDataPath, "config")
+			};
+			DebugOut("Config Directories: ", String::Join(", ", configDirectories));
+			m_fileTypeMan = gcnew FileTypeManager(appPath, configDirectories);
 		}
 		catch(Exception^ e)
 		{
@@ -830,8 +829,6 @@ namespace UniversalFileExplorer
 			else
 				ChangeNumFormat(NF_DEF);
 		}
-		
-
 	}
 
 	void Form1::HideShowTabs(bool showQuickInfo, bool showHex, bool showTechnical, 
