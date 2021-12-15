@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FileTypes>
+		<FileType>
+			<ID>DOCS_CHM</ID>
+			<Description>Compiled HTML Help File</Description>
+			<Category>Document</Category>
+			<MIMEType/>
+			<Wikipedia>Microsoft_Compressed_HTML_Help</Wikipedia>
+			<Extensions>
+				<Extension>chm</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x49545346</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>DOCS_MSPPT</ID>
+			<Description>Microsoft PowerPoint Document</Description>
+			<Category/>
+			<MIMEType>application/vnd.ms-powerpoint</MIMEType>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>ppt</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>DOCS_MSWORD</ID>
+			<Description>Microsoft Word Document</Description>
+			<Category>Document</Category>
+			<MIMEType>application/msword</MIMEType>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>doc</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>DOCS_MSWORDTMP</ID>
+			<Description>Microsoft Word Template</Description>
+			<Category>Document</Category>
+			<MIMEType/>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>dot</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>DOCS_MSXLS</ID>
+			<Description>Microsoft Excel Document</Description>
+			<Category>Spreadsheet</Category>
+			<MIMEType>application/vnd.ms-excel</MIMEType>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>xls</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>DOCS_PORTDOCFORM</ID>
+			<Description>Portable Document Format</Description>
+			<Category>Document</Category>
+			<MIMEType>application/pdf</MIMEType>
+			<Wikipedia>Pdf</Wikipedia>
+			<Extensions>
+				<Extension>pdf</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x25504446</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>DOCS_POSTSCRIPT</ID>
+			<Description>PostScript</Description>
+			<Category>Document</Category>
+			<MIMEType>application/postscript</MIMEType>
+			<Wikipedia>PostScript</Wikipedia>
+			<Extensions>
+				<Extension>ps</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>DOCS_VISIO</ID>
+			<Description>Microsoft Visio Drawing</Description>
+			<Category>Document</Category>
+			<MIMEType/>
+			<Wikipedia/>
+			<Extensions>
+				<Extension/>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>DOCS_WINHELP</ID>
+			<Description>Windows Help File</Description>
+			<Category>Document</Category>
+			<MIMEType/>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>hlp</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x3F5F0300</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>TEXT_RTF</ID>
+			<Description>Rich Text File</Description>
+			<Category>Text</Category>
+			<MIMEType>text/rtf</MIMEType>
+			<Wikipedia>RTF</Wikipedia>
+			<Extensions>
+				<Extension>rtf</Extension>
+			</Extensions>
+		</FileType>
+	</FileTypes>
+</Ufex>

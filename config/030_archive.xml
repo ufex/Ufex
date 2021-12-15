@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FileTypes>
+		<FileType>
+			<ID>ARCH_7Z</ID>
+			<Description>7z Archive File</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/x-7z-compressed</MIMEType>
+			<Wikipedia>7z</Wikipedia>
+			<Extensions>
+				<Extension>7Z</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x377ABCAF271C</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>ARCH_BZIP2</ID>
+			<Description>bzip2 Archive File</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/x-bzip2</MIMEType>
+			<Wikipedia>Bzip2</Wikipedia>
+			<Extensions>
+				<Extension>bz2</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x425A683931</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>ARCH_CAB</ID>
+			<Description>Microsoft Cabinent File</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/x-cab-compressed</MIMEType>
+			<Wikipedia>Cabinet_%28file_format%29</Wikipedia>
+			<Extensions>
+				<Extension>CAB</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x4D534346</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>ARCH_GZIP</ID>
+			<Description>GNU Zip File</Description>
+			<Category>Archive</Category>
+			<MIMEType/>
+			<Wikipedia>Gzip</Wikipedia>
+			<Extensions>
+				<Extension>GZ</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x1F8B08</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>ARCH_RAR</ID>
+			<Description>RAR Archive File</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/x-rar-compressed</MIMEType>
+			<Wikipedia>Rar</Wikipedia>
+			<Extensions>
+				<Extension>RAR</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="0">Rar!</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>ARCH_TAR</ID>
+			<Description>TAR Archive File</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/x-tar</MIMEType>
+			<Wikipedia>Tar_%28file_format%29</Wikipedia>
+			<Extensions>
+				<Extension>TAR</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>ARCH_ZIP</ID>
+			<Description>ZIP Archive File</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/zip</MIMEType>
+			<Wikipedia>ZIP_file_format</Wikipedia>
+			<Extensions>
+				<Extension>ZIP</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x504B0304</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+	</FileTypes>
+</Ufex>

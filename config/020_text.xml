@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FileTypes>
+		<FileType>
+			<ID>BASE_ASCII</ID>
+			<Description>ASCII Text File</Description>
+			<Category>Text</Category>
+			<MIMEType>text/plain</MIMEType>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>txt</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>BASE_UNICODE</ID>
+			<Description>Unicode Text File</Description>
+			<Category>Text</Category>
+			<MIMEType/>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>TXT</Extension>
+			</Extensions>
+		</FileType>
+	</FileTypes>
+</Ufex>

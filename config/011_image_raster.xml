@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FileTypes>
+		<FileType>
+			<ID>GRPH_JPEG</ID>
+			<Description>JPEG Interchange File Format</Description>
+			<Category>Graphic</Category>
+			<MIMETypes>
+				<MIMEType>image/jpeg</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Jfif</Wikipedia>
+			<Extensions>
+				<Extension>jpg</Extension>
+				<Extension>jpeg</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature minSize="10">
+					<Pattern xsi:type="bytes" offset="0">0xFF</Pattern>
+					<Pattern xsi:type="string" offset="6">JFIF</Pattern>
+				</Signature>
+				<Signature minSize="10">
+					<Pattern xsi:type="bytes" offset="0">0xFF</Pattern>
+					<Pattern xsi:type="string" offset="6">JFXX</Pattern>
+				</Signature>
+				<Signature minSize="10">
+					<Pattern xsi:type="bytes" offset="0">0xFF</Pattern>
+					<Pattern xsi:type="string" offset="6">Exif</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>GRPH_PNG</ID>
+			<Description>Portable Network Graphic</Description>
+			<Category>Graphic</Category>
+			<MIMETypes>
+				<MIMEType>image/png</MIMEType>
+			</MIMETypes>
+			<Wikipedia>PNG</Wikipedia>
+			<Extensions>
+				<Extension>png</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x89504E470D0A1A0A</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>GRPH_GIF</ID>
+			<Description>Graphic Interchange Format</Description>
+			<Category>Graphic</Category>
+			<MIMEType>image/gif</MIMEType>
+			<Wikipedia>Gif</Wikipedia>
+			<Extensions>
+				<Extension>gif</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature minSize="14">
+					<Pattern xsi:type="string" offset="0">GIF87a</Pattern>
+				</Signature>
+				<Signature minSize="14">
+					<Pattern xsi:type="string" offset="0">GIF89a</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>GRPH_JPEG2000</ID>
+			<Description>JPEG 2000</Description>
+			<Category>Graphic</Category>
+			<MIMEType>image/jpeg2000</MIMEType>
+			<Wikipedia>JPEG_2000</Wikipedia>
+			<Extensions>
+				<Extension>jpg2</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x0000000C6A5020200D0A870A</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>GRPH_WINBMP</ID>
+			<Description>Windows Bitmap</Description>
+			<Category>Graphic</Category>
+			<MIMETypes>
+				<MIMEType>image/bmp</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Windows_bitmap</Wikipedia>
+			<Extensions>
+				<Extension>bmp</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature minSize="54">
+					<Pattern xsi:type="bytes" offset="0">0x424D</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>GRPH_WINCUR</ID>
+			<Description>Windows Cursor File</Description>
+			<Category>Graphic</Category>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>cur</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature minSize="16">
+					<Pattern xsi:type="bytes" offset="0">0x00000200</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>GRPH_WINICON</ID>
+			<Description>Windows Icon File</Description>
+			<Category>Graphic</Category>
+			<MIMETypes>
+				<MIMEType>image/x-icon</MIMEType>
+			</MIMETypes>
+			<Wikipedia>https://en.wikipedia.org/wiki/ICO_(file_format)</Wikipedia>
+			<Extensions>
+				<Extension>ico</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature minSize="16">
+					<Pattern xsi:type="bytes" offset="0">0x00000100</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>GRPH_ANICUR</ID>
+			<Description>Animated Cursor</Description>
+			<Category>Graphic</Category>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>ani</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="0">RIFF</Pattern>
+					<Pattern xsi:type="string" offset="8">ACON</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>GRPH_TARGA</ID>
+			<Description>Truevision TARGA</Description>
+			<Category>Graphic</Category>
+			<Wikipedia>Truevision_TGA</Wikipedia>
+			<Extensions>
+				<Extension>tga</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>GRPH_TIFF</ID>
+			<Description>Tagged Image File Format</Description>
+			<Category>Graphic</Category>
+			<MIMETypes>
+				<MIMEType>image/tiff</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Tagged_Image_File_Format</Wikipedia>
+			<Extensions>
+				<Extension>tif</Extension>
+				<Extension>tiff</Extension>
+			</Extensions>
+		</FileType>
+	</FileTypes>
+</Ufex>

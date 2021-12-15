@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FileTypes>
+		<FileType>
+			<ID>AUDI_AIFF</ID>
+			<Description>Audio Interchange File Format</Description>
+			<Category>Audio</Category>
+			<MIMEType/>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>aiff</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>AUDI_MP3</ID>
+			<Description>MPEG Layer-3 Audio File</Description>
+			<Category>Audio</Category>
+			<MIMEType>audio/mpeg</MIMEType>
+			<Wikipedia>Mp3</Wikipedia>
+			<Extensions>
+				<Extension>mp3</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>AUDIO_M4A</ID>
+			<Description>Apple iTunes AAC-LC Audio</Description>
+			<Category>Audio</Category>
+			<MIMETypes>
+				<MIMEType>audio/x-m4a</MIMEType>
+			</MIMETypes>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>m4a</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="4">ftyp</Pattern>
+					<Pattern xsi:type="string" offset="8">M4A </Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>AUDIO_M4B</ID>
+			<Description>Apple iTunes AAC-LC Audio Book</Description>
+			<Category>Audio</Category>
+			<MIMETypes>
+				<MIMEType>audio/mp4</MIMEType>
+			</MIMETypes>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>m4b</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="4">ftyp</Pattern>
+					<Pattern xsi:type="string" offset="8">M4B </Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>AUDI_WAVE</ID>
+			<Description>Waveform Audio File</Description>
+			<Category>Audio</Category>
+			<MIMEType>audio/x-wav</MIMEType>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>wav</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="0">RIFF</Pattern>
+					<Pattern xsi:type="string" offset="8">WAVE</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>AUDI_WMA</ID>
+			<Description>Windows Media Audio</Description>
+			<Category>Audio</Category>
+			<MIMEType/>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>wma</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>AUDI_OGGVORB</ID>
+			<Description>OGG Vorbis Audio File</Description>
+			<Category>Audio</Category>
+			<MIMEType>application/ogg</MIMEType>
+			<Wikipedia>Ogg</Wikipedia>
+			<Extensions>
+				<Extension>ogg</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="0">Ogg</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>AUDI_MIDI</ID>
+			<Description>MIDI Audio File</Description>
+			<Category>Audio</Category>
+			<MIMEType>audio/midi</MIMEType>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>mid</Extension>
+				<Extension>midi</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x4D546864</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+	</FileTypes>
+</Ufex>

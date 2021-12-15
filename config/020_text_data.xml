@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FileTypes>
+		<FileType>
+			<ID>TEXT_XML</ID>
+			<Description>XML File</Description>
+			<Category>Text</Category>
+			<MIMEType>application/xml</MIMEType>
+			<Wikipedia>Xml</Wikipedia>
+			<Extensions>
+				<Extension>xml</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="0" range="8">&lt;?xml </Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>TEXT_JSON</ID>
+			<Description>JSON File</Description>
+			<Category>Text</Category>
+			<MIMEType>application/json</MIMEType>
+			<Wikipedia>JSON</Wikipedia>
+			<Extensions>
+				<Extension>json</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>TEXT_INI</ID>
+			<Description>INI Configuration File</Description>
+			<Category>Text</Category>
+			<MIMEType>text/plain</MIMEType>
+			<Wikipedia>INI_file</Wikipedia>
+			<Extensions>
+				<Extension>ini</Extension>
+			</Extensions>
+		</FileType>
+	</FileTypes>
+</Ufex>

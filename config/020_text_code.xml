@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FileTypes>
+		<FileType>
+			<ID>TEXT_C</ID>
+			<Description>C Source Code</Description>
+			<Category>Source Code</Category>
+			<MIMEType>text/plain</MIMEType>
+			<Wikipedia>C_(programming_language)</Wikipedia>
+			<Extensions>
+				<Extension>c</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>TEXT_CPP</ID>
+			<Description>C++ Source Code</Description>
+			<Category>Source Code</Category>
+			<MIMEType>text/plain</MIMEType>
+			<Wikipedia>C_Plus_Plus</Wikipedia>
+			<Extensions>
+				<Extension>cpp</Extension>
+				<Extension>h</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>TEXT_JS</ID>
+			<Description>JavaScript Source Code</Description>
+			<Category>Source Code</Category>
+			<MIMEType>application/x-javascript</MIMEType>
+			<Wikipedia>Javascript</Wikipedia>
+			<Extensions>
+				<Extension>js</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>TEXT_VBS</ID>
+			<Description>Visual Basic Script Source Code</Description>
+			<Category>Source Code</Category>
+			<MIMEType>text/plain</MIMEType>
+			<Wikipedia>VBScript</Wikipedia>
+			<Extensions>
+				<Extension>vbs</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>TEXT_CSHARP</ID>
+			<Description>C# Source Code</Description>
+			<Category>Source Code</Category>
+			<MIMEType>text/plain</MIMEType>
+			<Wikipedia>C_Sharp_(programming_language)</Wikipedia>
+			<Extensions>
+				<Extension>cs</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>TEXT_RUBY</ID>
+			<Description>Ruby Source Code</Description>
+			<Category>Source Code</Category>
+			<MIMEType>text/plain</MIMEType>
+			<Wikipedia>https://en.wikipedia.org/wiki/Ruby_(programming_language)</Wikipedia>
+			<Extensions>
+				<Extension>rb</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>TEXT_PYTHON</ID>
+			<Description>Python Source Code</Description>
+			<Category>Source Code</Category>
+			<MIMEType>text/plain</MIMEType>
+			<Wikipedia>https://en.wikipedia.org/wiki/Python_(programming_language)</Wikipedia>
+			<Extensions>
+				<Extension>py</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>TEXT_HTML</ID>
+			<Description>HyperText File</Description>
+			<Category>Text</Category>
+			<MIMETypes>
+				<MIMEType>text/html</MIMEType>
+			</MIMETypes>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>htm</Extension>
+				<Extension>html</Extension>
+			</Extensions>
+		</FileType>
+	</FileTypes>
+</Ufex>
