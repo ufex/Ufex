@@ -157,18 +157,14 @@
     <ClInclude Include="..\UFEEngine\targetver.h" />
     <ClInclude Include="ArrayUtil.h" />
     <ClInclude Include="BinManip.h" />
-    <ClInclude Include="DynTableData.h" />
     <ClInclude Include="FileReader.h" />
     <ClInclude Include="GUIUtil.h" />
     <ClInclude Include="IconCollection.h" />
-    <ClInclude Include="QuickInfoTable.h" />
     <ClInclude Include="Stdafx.h" />
     <ClInclude Include="StringPack.h" />
-    <ClInclude Include="StrTableData.h" />
     <ClInclude Include="TreeNodeTag.h" />
     <ClInclude Include="TreeViewIcon.h" />
     <ClInclude Include="UFEArrayToNum.h" />
-    <ClInclude Include="UFEDataFile.h" />
     <ClInclude Include="UFEDataManip.h" />
     <ClInclude Include="UFEDebug.h" />
     <ClInclude Include="UFENumToString.h" />
@@ -180,23 +176,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="DynTableData.cpp" />
     <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="GUIUtil.cpp" />
     <ClCompile Include="IconCollection.cpp" />
     <ClCompile Include="Includes.cpp" />
-    <ClCompile Include="QuickInfoTable.cpp" />
     <ClCompile Include="Stdafx.cpp" />
     <ClCompile Include="StringPack.cpp" />
-    <ClCompile Include="StrTableData.cpp" />
     <ClCompile Include="TreeViewIcon.cpp" />
     <ClCompile Include="UFEArrayToNum.cpp" />
-    <ClCompile Include="UFEDataFile.cpp" />
     <ClCompile Include="UFEDataManip.cpp" />
     <ClCompile Include="UFEDebug.cpp" />
     <ClCompile Include="UFENumToString.cpp" />
     <ClCompile Include="UFESettings.cpp" />
-    <ClCompile Include="UFETableData.cpp" />
     <ClCompile Include="UFETimer.cpp" />
     <ClCompile Include="UFETreeData.cpp" />
     <ClCompile Include="UFEUtil.cpp" />

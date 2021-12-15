@@ -134,7 +134,8 @@ namespace UniversalFileExplorer
 					try
 					{
 						Assembly tempAssembly = Assembly.LoadFile(path);
-						FileTypeClassifier newIDLib = (FileTypeClassifier)(tempAssembly.CreateInstance(idLib.fullTypeName, true));
+						object[] args = new object[] { Logger };
+						FileTypeClassifier newIDLib = (FileTypeClassifier)(tempAssembly.CreateInstance(idLib.fullTypeName, true, BindingFlags.Default, null, args, null, null));
 						newIDLib.FileTypes = FileTypes;
 						idLibsCache.Add(newIDLib);
 					}

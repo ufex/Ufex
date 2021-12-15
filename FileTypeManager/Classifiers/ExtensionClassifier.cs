@@ -2,13 +2,21 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Ufex.Config;
+using Ufex.API;
 using UniversalFileExplorer;
 
 namespace Ufex.Classifiers
 {
 	class ExtensionClassifier : FileTypeClassifier
 	{
+		public ExtensionClassifier()
+		{
+		}
+
+		public ExtensionClassifier(Logger log) : base(log)
+		{
+		}
+
 		public override string GetFileType(string filePath, FileStream fileStream)
 		{
 			if(!filePath.Contains("."))
@@ -28,7 +36,11 @@ namespace Ufex.Classifiers
 					}
 				}
 			}
-			return matches.ToArray()[0]; // TODO
+			if(matches.Count > 0)
+            {
+				return matches.ToArray()[0]; // TODO
+			}
+			return base.FileTypeUnknown;
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Ufex.API;
 
 namespace UniversalFileExplorer
 {
@@ -9,7 +10,8 @@ namespace UniversalFileExplorer
 	public abstract class FileTypeClassifier
 	{
 		private FileTypeDb fileTypeDb;
-		private static string FT_UNKNOWN = "FT_UNKNOWN";
+		public Logger Log { get; private set; }
+		protected static string FT_UNKNOWN = "FT_UNKNOWN";
 
 		public FileTypeDb FileTypes
 		{
@@ -24,8 +26,13 @@ namespace UniversalFileExplorer
 
 		public FileTypeClassifier()
 		{
-
+			Log = new Logger();
 		}
+
+		public FileTypeClassifier(Logger log)
+        {
+			Log = log;
+        }
 
 		public abstract string GetFileType(string filePath, FileStream fileStream);
 	}

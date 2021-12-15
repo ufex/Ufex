@@ -51,7 +51,7 @@ namespace Ufex.Config
 		[XmlAttribute("offsetType")]
 		public OffsetType OffsetType = OffsetType.Absolute;
 		[XmlIgnore]
-		public UInt32 Range = 0;
+		public UInt32 Range = 1;
 
 		[XmlAttribute("offset")]
 		public string _Offset
@@ -129,6 +129,7 @@ namespace Ufex.Config
 			bytesNeeded = offset + this.Range + (ulong)valueBytes.Length;
 			if (bytesNeeded > (UInt64)fileStream.Length)
 			{
+				// TODO: should search what's available if limited by the range
 				// Not enough bytes in the file to perform matching
 				return false;
 			}
@@ -138,7 +139,7 @@ namespace Ufex.Config
 			{
 				// Process from file
 				int seek = 0, startIndex;
-				while ((startIndex = ReadUntil(fileStream, valueBytes[0], seek + (int)offset, (int)Range + 1)) != -1)
+				while ((startIndex = ReadUntil(fileStream, valueBytes[0], seek + (int)offset, (int)Range)) != -1)
 				{
 					byte[] buffer2 = new byte[valueLength];
 					fileStream.Seek(startIndex, SeekOrigin.Begin);
@@ -168,7 +169,7 @@ namespace Ufex.Config
 			{
 				// Process with buffer
 				int seek = 0, startIndex;
-				while ((startIndex = Array.IndexOf(buffer, valueBytes[0], seek + (int)offset, (int)Range + 1)) != -1)
+				while ((startIndex = Array.IndexOf(buffer, valueBytes[0], seek + (int)offset, (int)Range)) != -1)
 				{
 					bool match = true;
 					for (int i = startIndex; i < startIndex + valueLength; i++)
@@ -222,18 +223,57 @@ namespace Ufex.Config
 
 		public override bool Matches(byte[] buffer, FileStream fileStream)
 		{
-			if (Operator == PatternOperator.Equal)
+			UInt64 offset = this.Offset;
+			if (OffsetType != OffsetType.Absolute)
 			{
-				return BytesMatch(new byte[] { Value }, buffer, fileStream);
+				offset = ReadOffset(buffer, fileStream);
 			}
-			else if(Operator == PatternOperator.NotEqual)
+			UInt64 minBytesNeeded = offset + 1;
+			if (minBytesNeeded > (UInt64)fileStream.Length)
+			{
+				// Not enough bytes in the file to perform matching
+				return false;
+			}
+
+			if (minBytesNeeded + Range > (UInt64)buffer.Length)
             {
-				return !BytesMatch(new byte[] { Value }, buffer, fileStream);
+				// Process from file
             }
-			else if(Operator == PatternOperator.LessThan)
+            else
             {
-				
+				// Process from buffer
+				for(var i = offset; i < offset + Range; i++)
+                {
+					bool match = false;
+					switch(Operator)
+                    {
+						case PatternOperator.Equal:
+							match = buffer[i] == Value;
+							break;
+						case PatternOperator.NotEqual:
+							match = buffer[i] != Value;
+							break;
+						case PatternOperator.LessThan:
+							match = buffer[i] < Value;
+							break;
+						case PatternOperator.LessThanOrEqual:
+							match = buffer[i] <= Value;
+							break;
+						case PatternOperator.GreaterThan:
+							match = buffer[i] > Value;
+							break;
+						case PatternOperator.GreaterThanOrEqual:
+							match = buffer[i] >= Value;
+							break;
+                    }
+                    if (match)
+                    {
+						return true;
+                    }
+                }
+				return false;
             }
+
 			throw new NotImplementedException();
 		}
 	}

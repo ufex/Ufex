@@ -93,48 +93,50 @@ namespace UniversalFileExplorer
 			}
 		}
 
-	private: System::Windows::Forms::TreeView ^  tvFile;
+	private: System::Windows::Forms::TreeView^  tvFile;
 
-	private: System::Windows::Forms::Label ^  label2;
-	private: System::Windows::Forms::TextBox ^  txtFileType;
-	private: System::Windows::Forms::TextBox ^  txtDebug;
-	private: System::Windows::Forms::TextBox ^  textFormDebug;
-	private: System::Windows::Forms::PictureBox ^  picFile;
-	private: System::Windows::Forms::DataGrid ^  dataGrid1;
+	private: System::Windows::Forms::Label^  label2;
+	private: System::Windows::Forms::TextBox^  txtFileType;
+	private: System::Windows::Forms::TextBox^  txtDebug;
+	private: System::Windows::Forms::TextBox^  textFormDebug;
+	private: System::Windows::Forms::TextBox^ textFileTypeManagerDebug;
+	private: System::Windows::Forms::PictureBox^  picFile;
+	private: System::Windows::Forms::DataGrid^  dataGrid1;
 	
-	private: System::Windows::Forms::TabControl ^  tabControlViews;
+	private: System::Windows::Forms::TabControl^  tabControlViews;
 	
 			 // Tab Pages
-	private: System::Windows::Forms::TabPage ^  tabPageTechView;
+	private: System::Windows::Forms::TabPage^  tabPageTechView;
 	private: System::Windows::Forms::TabPage^  tabPageGraphicView;
-	private: System::Windows::Forms::TabPage ^  tabPageDebug;
-	private: System::Windows::Forms::TabPage ^  tabPageQuickInfo;
-	private: System::Windows::Forms::TabPage ^  tabPageHex;	
-	private: System::Windows::Forms::TabPage ^  tabFileCheck;
-	private: System::Windows::Forms::TabControl ^  tabDebug;
-	private: System::Windows::Forms::TabPage ^  tabForm;
-	private: System::Windows::Forms::TabPage ^  tabFile;
-	private: System::Windows::Forms::Splitter ^  splitterTreeData;
-	private: System::Windows::Forms::Panel ^  panel1;
-	private: System::Windows::Forms::StatusBar ^  statusBar;
-	private: System::Windows::Forms::TextBox ^  textFileCheck;
-	private: System::Windows::Forms::Button ^  btnClearDebug;
-	private: System::Windows::Forms::Button ^  btnRefresh;
-	private: System::Windows::Forms::ListView ^  listViewQuickInfo;
-	private: Ufex::Controls::HexViewControl ^  hexView;
-	private: System::Windows::Forms::TextBox ^  textFileSize;
-	private: System::Windows::Forms::TextBox ^  textFileName;
-	private: System::Windows::Forms::TextBox ^  textFileExt;
-	private: System::Windows::Forms::TextBox ^  textFilePath;
-	private: System::ComponentModel::IContainer ^  components;
+	private: System::Windows::Forms::TabPage^  tabPageDebug;
+	private: System::Windows::Forms::TabPage^  tabPageQuickInfo;
+	private: System::Windows::Forms::TabPage^  tabPageHex;	
+	private: System::Windows::Forms::TabPage^  tabFileCheck;
+	private: System::Windows::Forms::TabControl^  tabDebug;
+	private: System::Windows::Forms::TabPage^  tabForm;
+	private: System::Windows::Forms::TabPage^  tabFile;
+	private: System::Windows::Forms::TabPage^ tabFileTypeManagerDebug;
+	private: System::Windows::Forms::Splitter^  splitterTreeData;
+	private: System::Windows::Forms::Panel^  panel1;
+	private: System::Windows::Forms::StatusBar^  statusBar;
+	private: System::Windows::Forms::TextBox^  textFileCheck;
+	private: System::Windows::Forms::Button^  btnClearDebug;
+	private: System::Windows::Forms::Button^  btnRefresh;
+	private: System::Windows::Forms::ListView^  listViewQuickInfo;
+	private: Ufex::Controls::HexViewControl^  hexView;
+	private: System::Windows::Forms::TextBox^  textFileSize;
+	private: System::Windows::Forms::TextBox^  textFileName;
+	private: System::Windows::Forms::TextBox^  textFileExt;
+	private: System::Windows::Forms::TextBox^  textFilePath;
+	private: System::ComponentModel::IContainer^  components;
 	private: System::Windows::Forms::GroupBox^  grpFileAttributes;
-	private: System::Windows::Forms::CheckBox ^  chkAttReadOnly;
-	private: System::Windows::Forms::CheckBox ^  chkAttHidden;
-	private: System::Windows::Forms::CheckBox ^  chkAttSystem;
-	private: System::Windows::Forms::CheckBox ^  chkAttArchive;
-	private: System::Windows::Forms::CheckBox ^  chkAttNormal;
-	private: System::Windows::Forms::CheckBox ^  chkAttTemporary;
-	private: System::Windows::Forms::CheckBox ^  chkAttSparseFile;
+	private: System::Windows::Forms::CheckBox^  chkAttReadOnly;
+	private: System::Windows::Forms::CheckBox^  chkAttHidden;
+	private: System::Windows::Forms::CheckBox^  chkAttSystem;
+	private: System::Windows::Forms::CheckBox^  chkAttArchive;
+	private: System::Windows::Forms::CheckBox^  chkAttNormal;
+	private: System::Windows::Forms::CheckBox^  chkAttTemporary;
+	private: System::Windows::Forms::CheckBox^  chkAttSparseFile;
 	private: System::Windows::Forms::CheckBox ^  chkAttEncrypted;
 	private: System::Windows::Forms::GroupBox ^  groupBoxFileDates;
 	private: System::Windows::Forms::Label ^  label1;
@@ -271,7 +273,9 @@ private: System::Windows::Forms::CheckBox ^  chkAttCompressed;
 			this->tabForm = (gcnew System::Windows::Forms::TabPage());
 			this->btnClearDebug = (gcnew System::Windows::Forms::Button());
 			this->textFormDebug = (gcnew System::Windows::Forms::TextBox());
+			this->textFileTypeManagerDebug = (gcnew System::Windows::Forms::TextBox());
 			this->tabFile = (gcnew System::Windows::Forms::TabPage());
+			this->tabFileTypeManagerDebug = (gcnew System::Windows::Forms::TabPage());
 			this->btnRefresh = (gcnew System::Windows::Forms::Button());
 			this->imageListTabs = (gcnew System::Windows::Forms::ImageList(this->components));
 			this->statusBar = (gcnew System::Windows::Forms::StatusBar());
@@ -339,6 +343,7 @@ private: System::Windows::Forms::CheckBox ^  chkAttCompressed;
 			this->tabDebug->SuspendLayout();
 			this->tabForm->SuspendLayout();
 			this->tabFile->SuspendLayout();
+			this->tabFileTypeManagerDebug->SuspendLayout();
 			this->toolStripContainer1->ContentPanel->SuspendLayout();
 			this->toolStripContainer1->TopToolStripPanel->SuspendLayout();
 			this->toolStripContainer1->SuspendLayout();
@@ -936,6 +941,7 @@ private: System::Windows::Forms::CheckBox ^  chkAttCompressed;
 			// 
 			this->tabDebug->Controls->Add(this->tabForm);
 			this->tabDebug->Controls->Add(this->tabFile);
+			this->tabDebug->Controls->Add(this->tabFileTypeManagerDebug);
 			this->tabDebug->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->tabDebug->Location = System::Drawing::Point(3, 3);
 			this->tabDebug->Name = L"tabDebug";
@@ -975,6 +981,18 @@ private: System::Windows::Forms::CheckBox ^  chkAttCompressed;
 			this->textFormDebug->Size = System::Drawing::Size(616, 288);
 			this->textFormDebug->TabIndex = 16;
 			this->textFormDebug->Text = L"Debug Info Goes Here";
+			//
+			// textFileTypeManagerDebug
+			// 
+			this->textFileTypeManagerDebug->Location = System::Drawing::Point(8, 8);
+			this->textFileTypeManagerDebug->MaxLength = 65535;
+			this->textFileTypeManagerDebug->Multiline = true;
+			this->textFileTypeManagerDebug->Name = L"textFormDebug";
+			this->textFileTypeManagerDebug->ReadOnly = true;
+			this->textFileTypeManagerDebug->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
+			this->textFileTypeManagerDebug->Size = System::Drawing::Size(616, 288);
+			this->textFileTypeManagerDebug->TabIndex = 17;
+			this->textFileTypeManagerDebug->Text = L"Debug Info Goes Here";
 			// 
 			// tabFile
 			// 
@@ -986,6 +1004,17 @@ private: System::Windows::Forms::CheckBox ^  chkAttCompressed;
 			this->tabFile->TabIndex = 1;
 			this->tabFile->Text = L"File Data";
 			this->tabFile->UseVisualStyleBackColor = true;
+			// 
+			// tabFileTypeManagerDebug
+			// 
+			this->tabFileTypeManagerDebug->Controls->Add(this->btnRefresh);
+			this->tabFileTypeManagerDebug->Controls->Add(this->textFileTypeManagerDebug);
+			this->tabFileTypeManagerDebug->Location = System::Drawing::Point(4, 22);
+			this->tabFileTypeManagerDebug->Name = L"tabFileTypeManagerDebug";
+			this->tabFileTypeManagerDebug->Size = System::Drawing::Size(658, 443);
+			this->tabFileTypeManagerDebug->TabIndex = 2;
+			this->tabFileTypeManagerDebug->Text = L"File Type Manager";
+			this->tabFileTypeManagerDebug->UseVisualStyleBackColor = true;
 			// 
 			// btnRefresh
 			// 
@@ -1460,6 +1489,8 @@ private: System::Windows::Forms::CheckBox ^  chkAttCompressed;
 			this->tabForm->PerformLayout();
 			this->tabFile->ResumeLayout(false);
 			this->tabFile->PerformLayout();
+			this->tabFileTypeManagerDebug->ResumeLayout(false);
+			this->tabFileTypeManagerDebug->PerformLayout();
 			this->toolStripContainer1->ContentPanel->ResumeLayout(false);
 			this->toolStripContainer1->TopToolStripPanel->ResumeLayout(false);
 			this->toolStripContainer1->TopToolStripPanel->PerformLayout();

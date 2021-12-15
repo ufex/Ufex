@@ -326,6 +326,9 @@ namespace UniversalFileExplorer
 			HideShowTabs(true, true, false, false, false);
 		}
 
+		textFileTypeManagerDebug->Text = m_fileTypeMan->Logger->Text;
+
+
 		// End the TreeView Update
 		tvFile->EndUpdate();
 

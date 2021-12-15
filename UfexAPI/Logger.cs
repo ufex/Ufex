@@ -12,6 +12,11 @@ namespace Ufex.API
 		public string className;
 		public string funcName;
 		public string message;
+
+		public override string ToString()
+        {
+			return title + ": " + message + " (" + className + "." + funcName + ")";
+        }
 	}
 
 	public struct ErrorLogEntry
@@ -20,6 +25,10 @@ namespace Ufex.API
 		public string className;
 		public string funcName;
 		public string message;
+		public override string ToString()
+		{
+			return title + ": " + message + " (" + className + "." + funcName + ")";
+		}
 	}
 
 	public struct ExceptionLogEntry
@@ -28,6 +37,10 @@ namespace Ufex.API
 		public string className;
 		public string funcName;
 		public string description;
+		public override string ToString()
+		{
+			return "ERROR: " + e.ToString() + ", " + description + " (" + className + "." + funcName + ")";
+		}
 	}
 
 	public class Logger
@@ -38,10 +51,23 @@ namespace Ufex.API
 		private ArrayList m_DebugInfo;
 
 		private bool m_WriteToLog;
-		private String m_LogFileName;
-		private String m_LogFileDir;
-		private String m_LogFilePath;
+		private string m_LogFileName;
+		private string m_LogFileDir;
+		private string m_LogFilePath;
 		private StreamWriter m_SW;
+
+		public string Text
+        {
+			get
+            {
+				StringBuilder sb = new StringBuilder();
+				foreach(object entry in m_DebugInfo)
+                {
+					sb.AppendLine(entry.ToString());
+                }
+				return sb.ToString();
+            }
+        }
 
 		public Logger()
 		{
@@ -145,7 +171,6 @@ namespace Ufex.API
 				WriteToLog("Exception", message);
 			}
 		}
-
 
 		private void WriteToLog(String type, String message)
 		{

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Ufex.API;
 using Ufex.Config;
 using UniversalFileExplorer;
 
@@ -11,6 +12,14 @@ namespace Ufex.Classifiers
 	{
 		const long BUFFER_SIZE = 8096;
 
+		public SignatureClassifier()
+        {
+        }
+
+		public SignatureClassifier(Logger log) : base(log)
+        {
+        }
+
 		public override string GetFileType(string filePath, FileStream fileStream)
 		{
 			HashSet<string> matches = new HashSet<string>();
@@ -19,15 +28,29 @@ namespace Ufex.Classifiers
 			fileStream.Read(buffer, 0, bufferSize);
 			foreach(FILETYPE fileType in FileTypes.FileTypes)
 			{
-				if(fileType.Signatures != null && fileType.Signatures.Count > 0)
+				try
 				{
-					if(MatchesAnySignature(fileType.Signatures, buffer, fileStream))
+					if (fileType.Signatures != null && fileType.Signatures.Count > 0)
 					{
-						matches.Add(fileType.ID);
+						if (MatchesAnySignature(fileType.Signatures, buffer, fileStream))
+						{
+							matches.Add(fileType.ID);
+						}
 					}
 				}
+				catch(Exception ex)
+                {
+					Log.NewException(ex, "Failed to match signatures for " + fileType.ID, "SignatureClassifier", "GetFileType");
+                }
 			}
-			return matches.ToArray()[0]; // TODO
+			if(matches.Count >0)
+            {
+				return matches.ToArray()[0]; // TODO: return all matches
+			}
+			else
+            {
+				return FT_UNKNOWN;
+            }
 		}
 
 		public bool MatchesAnySignature(List<SignaturePattern[]> signatures, byte[] buffer, FileStream fileStream)
