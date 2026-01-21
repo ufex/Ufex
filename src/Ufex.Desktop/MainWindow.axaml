@@ -1,0 +1,74 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Ufex.Desktop.MainWindow"
+        Title="ufex - Universal File Explorer"
+        Width="1024"
+        Height="768">
+    
+    <DockPanel>
+        <!-- Menu Bar -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open" Click="OnOpenClick" InputGesture="Ctrl+O">
+                    <MenuItem.Icon>
+                        <PathIcon Data="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2z" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Close" Click="OnCloseClick" InputGesture="Ctrl+W">
+                    <MenuItem.Icon>
+                        <PathIcon Data="M18 6L6 18M6 6l12 12" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="E_xit" Click="OnExitClick" InputGesture="Alt+F4">
+                    <MenuItem.Icon>
+                        <PathIcon Data="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Edit">
+            </MenuItem>
+            <MenuItem Header="_View">
+            </MenuItem>
+            <MenuItem Header="_Search">
+            </MenuItem>
+            <MenuItem Header="_Tools">
+            </MenuItem>
+            <MenuItem Header="_Help">
+            </MenuItem>
+        </Menu>
+        
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" 
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" 
+                BorderThickness="0,0,0,1"
+                Padding="4">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Button Click="OnOpenClick" ToolTip.Tip="Open File (Ctrl+O)">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <PathIcon Data="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2z" 
+                                  Width="16" Height="16" />
+                        <TextBlock Text="Open" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <Button Click="OnCloseClick" ToolTip.Tip="Close File (Ctrl+W)">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <PathIcon Data="M18 6L6 18M6 6l12 12" 
+                                  Width="16" Height="16" />
+                        <TextBlock Text="Close" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+        
+        <!-- Main Content Area -->
+        <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+            <TextBlock Text="Open a file to begin exploring..."
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       FontSize="16" />
+        </Border>
+    </DockPanel>
+    
+</Window>
