@@ -63,7 +63,7 @@ namespace Ufex.FileType
 			}
 		}
 
-		public FileTypeDb(FileInfo[] configFiles) : base(configFiles)
+		public FileTypeDb(System.IO.FileInfo[] configFiles) : base(configFiles)
 		{
 			fileTypes = new Dictionary<string, FILETYPE>();
 			Debug = new Logger("FileTypeDb");
@@ -72,7 +72,7 @@ namespace Ufex.FileType
 		private void Load()
 		{
 			XmlSerializer xmlSerializer = new XmlSerializer(typeof(Document));
-			foreach (FileInfo filePath in configFiles)
+			foreach (System.IO.FileInfo filePath in configFiles)
 			{
 				StreamReader reader = new StreamReader(filePath.FullName);
 				Document doc = (Document)xmlSerializer.Deserialize(reader);

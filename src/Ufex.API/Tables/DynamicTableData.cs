@@ -3,8 +3,14 @@ using System.Collections;
 
 namespace Ufex.API.Tables
 {
+	/// <summary>
+	/// A table data structure that supports values changing based on the `Ufex.API.DataFormatter`.
+	/// </summary>
 	public class DynamicTableData : Ufex.API.Tables.TableData
 	{
+		/// <summary>
+		/// Structure to hold a single row of dynamic table data.
+		/// </summary>
 		struct ObjRow
 		{
 			public int numCols;
@@ -64,6 +70,10 @@ namespace Ufex.API.Tables
 			AddRowData(new object[] { c1, c2, c3, c4, c5 });
 		}
 
+		/// <summary>
+		/// Adds a new row to the Dynamic table.
+		/// </summary>
+		/// <param name="rowData">An array of objects representing the data for each column in the new row.</param>
 		public void AddRowData(Object[] rowData)
 		{
 			// Create a new ROW object
@@ -105,12 +115,18 @@ namespace Ufex.API.Tables
 			rowData[rowNum] = r;
 		}
 
+		/// <summary>
+		/// Gets the row data for the specified row, formatted using the provided DataFormatter.
+		/// </summary>
+		/// <param name="r">The row index.</param>
+		/// <param name="nts">The data formatter to use.</param>
+		/// <returns>An array of formatted strings representing the row data.</returns>
 		protected override string[] GetRow(int r, DataFormatter nts)
 		{
 			string[] rowData = new string[numColumns];
 
-            // Create a temporary row
-            ObjRow tmpRow = (ObjRow)base.rowData[r];
+			// Create a temporary row
+			ObjRow tmpRow = (ObjRow)base.rowData[r];
 
 			for (int c = 0; c < numColumns; c++)
 			{

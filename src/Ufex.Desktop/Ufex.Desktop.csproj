@@ -17,9 +17,35 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.3" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.3" />
+    <PackageReference Include="FluentIcons.Avalonia" Version="1.1.265" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Ufex.API\Ufex.API.csproj" />
     <ProjectReference Include="..\Ufex.FileType\Ufex.FileType.csproj" />
   </ItemGroup>
+
+  <!-- Copy config files from project root to output directory -->
+  <ItemGroup>
+    <Content Include="..\..\config\**\*.*">
+      <Link>config\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Copy any pre-built plugins from build/plugins to output plugins directory -->
+  <PropertyGroup>
+    <PluginSourceDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\..\..\build\plugins'))</PluginSourceDir>
+  </PropertyGroup>
+
+  <Target Name="CopyPluginsToOutput" AfterTargets="Build">
+    <ItemGroup>
+      <PluginFiles Include="$(PluginSourceDir)\*.dll" Condition="Exists('$(PluginSourceDir)')" />
+    </ItemGroup>
+    <MakeDir Directories="$(OutputPath)plugins" Condition="@(PluginFiles->Count()) > 0" />
+    <Copy SourceFiles="@(PluginFiles)" DestinationFolder="$(OutputPath)plugins" SkipUnchangedFiles="true" Condition="@(PluginFiles->Count()) > 0" />
+    <Message Text="Copied %(PluginFiles.Filename)%(PluginFiles.Extension) to plugins directory" Importance="normal" Condition="@(PluginFiles->Count()) > 0" />
+  </Target>
+
+</Project>

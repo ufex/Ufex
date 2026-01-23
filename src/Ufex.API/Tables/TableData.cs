@@ -122,15 +122,15 @@ namespace Ufex.API.Tables
 			}
 		}
 
-		public virtual void AddColumn(String colName)
+		public virtual void AddColumn(string colName)
 		{
 			AddColumn(colName, DEF_COL_WIDTH, ColumnAlignment.Default);
 		}
-		public virtual void AddColumn(String colName, int colWidth)
+		public virtual void AddColumn(string colName, int colWidth)
 		{
 			AddColumn(colName, colWidth, ColumnAlignment.Default);
 		}
-		public virtual void AddColumn(String colName, int colWidth, ColumnAlignment colAlign)
+		public virtual void AddColumn(string colName, int colWidth, ColumnAlignment colAlign)
 		{
 			Column newCol = new Column();
 
@@ -254,7 +254,7 @@ namespace Ufex.API.Tables
 			// Add the columns to the table
 			for (int c = 0; c < numColumns; c++)
 			{
-                Column tmpCol = (Column)this.columns[c];
+				Column tmpCol = (Column)this.columns[c];
 				DataColumn newCol = new DataColumn(tmpCol.name);
 				newCol.ColumnMapping = System.Data.MappingType.Attribute;
 				columns.Add(newCol);

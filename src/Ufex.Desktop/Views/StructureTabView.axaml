@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Ufex.Desktop.Views.StructureTabView">
+    
+    <Grid ColumnDefinitions="*,Auto,2*">
+        
+        <!-- Left Panel: Tree View -->
+        <Border Grid.Column="0"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="0,0,0,0"
+                Margin="4">
+            <TreeView x:Name="TreeViewStructure"
+                      SelectionMode="Single" />
+        </Border>
+        
+        <!-- GridSplitter for resizing -->
+        <GridSplitter Grid.Column="1"
+                      Width="4"
+                      Background="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                      ResizeDirection="Columns" />
+        
+        <!-- Right Panel: Data Grid -->
+        <Border Grid.Column="2"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="0"
+                Margin="4">
+            <DataGrid x:Name="DataGridStructure"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      CanUserReorderColumns="False"
+                      CanUserResizeColumns="True"
+                      GridLinesVisibility="All"
+                      BorderThickness="1"
+                      BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+        </Border>
+        
+    </Grid>
+    
+</UserControl>

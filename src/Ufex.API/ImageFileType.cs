@@ -6,6 +6,8 @@ namespace Ufex.API
 	public abstract class ImageFileType : FileType
 	{
 		Image image;
+		public int Width;
+		public int Height;
 
 		public ImageFileType()
 		{

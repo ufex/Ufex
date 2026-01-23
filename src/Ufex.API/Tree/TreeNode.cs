@@ -2,64 +2,185 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Ufex.API
+namespace Ufex.API.Tree;
+
+/// <summary>
+/// Represents a node in a tree structure.
+/// Designed to be structurally similar to System.Windows.Forms.TreeNode
+/// to serve as an abstraction layer for different UI frameworks.
+/// </summary>
+public class TreeNode
 {
-    public class TreeNode
-    {
-        private readonly TreeNodeCollection nodes;
+	private readonly TreeNodeCollection nodes;
 
-        public TreeNode(string text)
-        {
-            Text = text;
-            nodes = new TreeNodeCollection();
-        }
+	/// <summary>
+	/// Gets or sets the path separator string used in the FullPath property.
+	/// </summary>
+	public static string PathSeparator { get; set; } = "\\";
 
-        public string Text { get; set; }
+	public TreeNode()
+	{
+		Text = string.Empty;
+		nodes = new TreeNodeCollection(this);
+	}
 
-        public object? Tag { get; set; }
+	public TreeNode(string text)
+	{
+		Text = text;
+		nodes = new TreeNodeCollection(this);
+	}
 
-        public TreeNodeCollection Nodes => nodes;
-    }
+	public TreeNode(string text, int imageIndex, int selectedImageIndex)
+	{
+		Text = text;
+		ImageIndex = imageIndex;
+		SelectedImageIndex = selectedImageIndex;
+		nodes = new TreeNodeCollection(this);
+	}
 
-    public class TreeNodeCollection : IEnumerable<TreeNode>
-    {
-        private readonly List<TreeNode> inner = new();
+	public TreeNode(string text, TreeNode[] children)
+	{
+		Text = text;
+		nodes = new TreeNodeCollection(this);
+		foreach (var child in children)
+		{
+			nodes.Add(child);
+		}
+	}
 
-        public int Count => inner.Count;
+	/// <summary>
+	/// Gets or sets the text displayed in the tree node.
+	/// </summary>
+	public string Text { get; set; }
 
-        public TreeNode this[int index]
-        {
-            get => inner[index];
-            set => inner[index] = value;
-        }
+	/// <summary>
+	/// Gets or sets the object that contains data about the tree node.
+	/// </summary>
+	public object? Tag { get; set; }
 
-        public TreeNode Add(TreeNode node)
-        {
-            inner.Add(node);
-            return node;
-        }
+	/// <summary>
+	/// Gets or sets the image list index value of the image displayed when the tree node is in the unselected state.
+	/// </summary>
+	public int ImageIndex { get; set; } = -1;
 
-        public TreeNode Add(string text)
-        {
-            var node = new TreeNode(text);
-            inner.Add(node);
-            return node;
-        }
+	/// <summary>
+	/// Gets or sets the image list index value of the image displayed when the tree node is in the selected state.
+	/// </summary>
+	public int SelectedImageIndex { get; set; } = -1;
 
-        public IEnumerator<TreeNode> GetEnumerator() => inner.GetEnumerator();
+	/// <summary>
+	/// Gets the parent tree node of the current tree node.
+	/// </summary>
+	public TreeNode? Parent { get; internal set; }
 
-        IEnumerator IEnumerable.GetEnumerator() => inner.GetEnumerator();
-    }
+	/// <summary>
+	/// Gets the collection of TreeNode objects assigned to the current tree node.
+	/// </summary>
+	public TreeNodeCollection Nodes => nodes;
 
-    public delegate void TreeNodeMouseClickEventHandler(object? sender, TreeNodeMouseClickEventArgs e);
+	/// <summary>
+	/// Gets the zero-based index of the tree node within the tree node collection.
+	/// </summary>
+	public int Index
+	{
+		get
+		{
+			if (Parent == null)
+			{
+				return -1;
+			}
+			return Parent.Nodes.IndexOf(this);
+		}
+	}
 
-    public sealed class TreeNodeMouseClickEventArgs : EventArgs
-    {
-        public TreeNodeMouseClickEventArgs(TreeNode node)
-        {
-            Node = node;
-        }
+	/// <summary>
+	/// Gets the path from the root tree node to the current tree node.
+	/// </summary>
+	public string FullPath
+	{
+		get
+		{
+			if (Parent == null)
+			{
+				return Text;
+			}
+			return Parent.FullPath + PathSeparator + Text;
+		}
+	}
 
-        public TreeNode Node { get; }
-    }
+	/// <summary>
+	/// Gets the first child tree node in the tree node collection.
+	/// </summary>
+	public TreeNode? FirstNode => nodes.Count > 0 ? nodes[0] : null;
+
+	/// <summary>
+	/// Gets the last child tree node in the tree node collection.
+	/// </summary>
+	public TreeNode? LastNode => nodes.Count > 0 ? nodes[nodes.Count - 1] : null;
+
+	/// <summary>
+	/// Gets the next sibling tree node.
+	/// </summary>
+	public TreeNode? NextNode
+	{
+		get
+		{
+			if (Parent == null) return null;
+			int index = Index;
+			if (index < 0 || index >= Parent.Nodes.Count - 1) return null;
+			return Parent.Nodes[index + 1];
+		}
+	}
+
+	/// <summary>
+	/// Gets the previous sibling tree node.
+	/// </summary>
+	public TreeNode? PrevNode
+	{
+		get
+		{
+			if (Parent == null) return null;
+			int index = Index;
+			if (index <= 0) return null;
+			return Parent.Nodes[index - 1];
+		}
+	}
+
+	/// <summary>
+	/// Gets the number of child tree nodes.
+	/// </summary>
+	public int GetNodeCount(bool includeSubTrees)
+	{
+		int count = nodes.Count;
+		if (includeSubTrees)
+		{
+			foreach (var node in nodes)
+			{
+				count += node.GetNodeCount(true);
+			}
+		}
+		return count;
+	}
+
+	/// <summary>
+	/// Removes the current tree node from the tree view.
+	/// </summary>
+	public void Remove()
+	{
+		Parent?.Nodes.Remove(this);
+	}
+
+	public override string ToString() => Text;
+}
+
+public delegate void TreeNodeMouseClickEventHandler(object? sender, TreeNodeMouseClickEventArgs e);
+
+public sealed class TreeNodeMouseClickEventArgs : EventArgs
+{
+	public TreeNodeMouseClickEventArgs(TreeNode node)
+	{
+		Node = node;
+	}
+
+	public TreeNode Node { get; }
 }

@@ -24,11 +24,11 @@ namespace Ufex.FileType
 		{
 			ID_LIB lib0 = new ID_LIB();
 			lib0.libId = 2;
-			lib0.assemblyPath = "FileTypeManager.dll";
+			lib0.assemblyPath = "Ufex.FileType.dll";
 			lib0.fullTypeName = "Ufex.FileType.Classifiers.SignatureClassifier";
 			ID_LIB lib3 = new ID_LIB();
 			lib3.libId = 3;
-			lib3.assemblyPath = "FileTypeManager.dll";
+			lib3.assemblyPath = "Ufex.FileType.dll";
 			lib3.fullTypeName = "Ufex.FileType.Classifiers.ExtensionClassifier";
 			//ID_LIB lib1 = new ID_LIB();
 			//lib1.libId = 0;

@@ -1,8 +1,7 @@
-﻿namespace Ufex.API
+﻿namespace Ufex.API;
+
+public enum Endian
 {
-	public enum Endian
-	{
-		Big, 
-		Little
-	}
+	Big, 
+	Little
 }

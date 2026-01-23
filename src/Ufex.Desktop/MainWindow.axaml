@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:Ufex.Desktop.Views"
         x:Class="Ufex.Desktop.MainWindow"
         Title="ufex - Universal File Explorer"
         Width="1024"
@@ -9,35 +10,41 @@
         <!-- Menu Bar -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open" Click="OnOpenClick" InputGesture="Ctrl+O">
-                    <MenuItem.Icon>
-                        <PathIcon Data="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2z" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="_Close" Click="OnCloseClick" InputGesture="Ctrl+W">
-                    <MenuItem.Icon>
-                        <PathIcon Data="M18 6L6 18M6 6l12 12" />
-                    </MenuItem.Icon>
-                </MenuItem>
+                <MenuItem Header="_Open" InputGesture="Ctrl+O" Click="OnOpenClick" />
+                <MenuItem Header="_Close" InputGesture="Ctrl+W" Click="OnCloseClick" />
                 <Separator />
-                <MenuItem Header="E_xit" Click="OnExitClick" InputGesture="Alt+F4">
-                    <MenuItem.Icon>
-                        <PathIcon Data="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-                    </MenuItem.Icon>
-                </MenuItem>
+                <MenuItem Header="E_xit" InputGesture="Alt+F4" Click="OnExitClick" />
             </MenuItem>
             <MenuItem Header="_Edit">
+                <MenuItem Header="Cu_t" InputGesture="Ctrl+X" Click="OnCutClick" />
+                <MenuItem Header="_Copy" InputGesture="Ctrl+C" Click="OnCopyClick" />
+                <MenuItem Header="_Paste" InputGesture="Ctrl+V" Click="OnPasteClick" />
+                <Separator />
+                <MenuItem Header="_Delete" InputGesture="Delete" Click="OnDeleteClick" />
             </MenuItem>
             <MenuItem Header="_View">
+                <MenuItem Header="Number Format">
+                    <MenuItem Header="Default" Click="OnNumberFormatDefaultClick" />
+                    <MenuItem Header="Hexadecimal" Click="OnNumberFormatHexClick" />
+                    <MenuItem Header="Decimal" Click="OnNumberFormatDecClick" />
+                    <MenuItem Header="Binary" Click="OnNumberFormatBinClick" />
+                    <MenuItem Header="ASCII" Click="OnNumberFormatAsciiClick" />
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="_Search">
+                <MenuItem Header="_Find" InputGesture="Ctrl+F" Click="OnFindClick" />
+                <MenuItem Header="Find _Next" InputGesture="F3" Click="OnFindNextClick" />
             </MenuItem>
             <MenuItem Header="_Tools">
+                <MenuItem Header="File Type Manager" Click="OnFileTypeManagerClick" />
+                <MenuItem Header="Options" Click="OnOptionsClick" />
             </MenuItem>
             <MenuItem Header="_Help">
+                <MenuItem Header="_Help" InputGesture="F1" Click="OnHelpClick" />
+                <Separator />
+                <MenuItem Header="_About" Click="OnAboutClick" />
             </MenuItem>
         </Menu>
-        
         <!-- Toolbar -->
         <Border DockPanel.Dock="Top" 
                 BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" 
@@ -61,14 +68,54 @@
             </StackPanel>
         </Border>
         
-        <!-- Main Content Area -->
-        <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
-            <TextBlock Text="Open a file to begin exploring..."
-                       HorizontalAlignment="Center"
+        <!-- Status Bar -->
+        <Border DockPanel.Dock="Bottom"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="8,4">
+            <TextBlock x:Name="StatusBar" 
+                       Text="Ready"
                        VerticalAlignment="Center"
-                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                       FontSize="16" />
+                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
         </Border>
+        
+        <!-- Main Content Area - Tab Control -->
+        <TabControl x:Name="MainTabControl">
+            <TabItem Header="Info" x:Name="TabInfo">
+                <views:InfoTabView x:Name="InfoTab" />
+            </TabItem>
+            <TabItem Header="Hex" x:Name="TabHex">
+                <Border Padding="8">
+                    <TextBlock Text="Hex view will be displayed here..."
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                               FontSize="16" />
+                </Border>
+            </TabItem>
+            <TabItem Header="Preview" x:Name="TabPreview">
+                <Border Padding="8">
+                    <TextBlock Text="File preview will be displayed here..."
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                               FontSize="16" />
+                </Border>
+            </TabItem>
+            <TabItem Header="Structure" x:Name="TabStructure">
+                <views:StructureTabView x:Name="StructureTab" />
+            </TabItem>
+            <TabItem Header="Validation" x:Name="TabValidation">
+                <Border Padding="8">
+                    <TextBlock Text="File validation results will be displayed here..."
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                               FontSize="16" />
+                </Border>
+            </TabItem>
+        </TabControl>
     </DockPanel>
     
 </Window>

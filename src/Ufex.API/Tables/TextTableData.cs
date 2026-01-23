@@ -3,8 +3,14 @@ using System.Collections;
 
 namespace Ufex.API.Tables
 {
+	/// <summary>
+	/// Table data structure for displaying static text tables.
+	/// </summary>
 	public class TextTableData : Ufex.API.Tables.TableData
 	{
+		/// <summary>
+		/// Defines a row in the text table.
+		/// </summary>
 		struct Row
 		{
 			public int numCols;
@@ -110,6 +116,12 @@ namespace Ufex.API.Tables
 			rowData[rowNum] = r;
 		}
 
+		/// <summary>
+		/// Retrieves the data for a specific row as an array of strings.
+		/// </summary>
+		/// <param name="r">The row index.</param>
+		/// <param name="nts">The DataFormatter - ignored for TextTableData</param>
+		/// <returns>The array of strings representing the row data.</returns>
 		protected override string[] GetRow(int r, DataFormatter nts)
 		{
 			string[] rowData = new string[numColumns];

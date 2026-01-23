@@ -97,7 +97,7 @@
 		<FileTypeClass>
 			<ID>FTMD_ZIP</ID>
 			<AssemblyPath>ZIP.dll</AssemblyPath>
-			<FullTypeName>Ufex.FileTypes.Zip</FullTypeName>
+			<FullTypeName>Ufex.FileTypes.ZIP.ZipFileType</FullTypeName>
 			<FileTypes>
 				<ID>ARCH_ZIP</ID>
 			</FileTypes>

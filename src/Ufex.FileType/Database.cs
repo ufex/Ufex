@@ -9,7 +9,7 @@ namespace Ufex.FileType
 	/// </summary>
 	public abstract class Database
 	{
-		protected FileInfo[] configFiles;
+		protected System.IO.FileInfo[] configFiles;
 		private Logger m_debug;
 
 		public Logger Debug
@@ -23,7 +23,7 @@ namespace Ufex.FileType
 
 		}
 
-		public Database(FileInfo[] configFiles)
+		public Database(System.IO.FileInfo[] configFiles)
 		{
 			this.configFiles = configFiles;
 		}

@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using System.Collections;
 using System.IO;
+using System.Runtime.Loader;
 using Ufex.API;
 using System.Collections.Generic;
 
@@ -11,6 +12,49 @@ namespace Ufex.FileType
 	{
 		public string path;
 		public Assembly assembly;
+	}
+
+	/// <summary>
+	/// Custom AssemblyLoadContext that shares types from the host assembly
+	/// to ensure plugins can inherit from BaseClassifier correctly.
+	/// </summary>
+	public class PluginLoadContext : AssemblyLoadContext
+	{
+		private readonly AssemblyDependencyResolver resolver;
+		private readonly Assembly hostAssembly;
+
+		public PluginLoadContext(string pluginPath) : base(isCollectible: true)
+		{
+			resolver = new AssemblyDependencyResolver(pluginPath);
+			hostAssembly = typeof(BaseClassifier).Assembly;
+		}
+
+		protected override Assembly? Load(AssemblyName assemblyName)
+		{
+			// If the plugin needs Ufex.FileType or Ufex.API, return the host's already-loaded assembly
+			// This ensures type identity is preserved for BaseClassifier and other shared types
+			if (assemblyName.Name != null)
+			{
+				if (assemblyName.Name.Equals("Ufex.FileType", StringComparison.OrdinalIgnoreCase))
+				{
+					return typeof(BaseClassifier).Assembly;
+				}
+				if (assemblyName.Name.Equals("Ufex.API", StringComparison.OrdinalIgnoreCase))
+				{
+					return typeof(Logger).Assembly;
+				}
+			}
+
+			// Try to resolve from the plugin's directory
+			string? assemblyPath = resolver.ResolveAssemblyToPath(assemblyName);
+			if (assemblyPath != null)
+			{
+				return LoadFromAssemblyPath(assemblyPath);
+			}
+
+			// Fall back to default context
+			return null;
+		}
 	}
 
 	/// <summary>
@@ -36,7 +80,7 @@ namespace Ufex.FileType
 
 		public FileTypeManager(string applicationPath, string[] configDirectories)
 		{
-			Logger = new Logger("FileTypeManager.log");
+			Logger = new Logger("FileType.log");
 
 			ApplicationPath = string.Copy(applicationPath);
 			ConfigDirectories = (string[])configDirectories.Clone();
@@ -86,7 +130,8 @@ namespace Ufex.FileType
 				return null;
 
 			// Get the assembly
-			Assembly assembly = GetAssembly(fileTypeClass.AssemblyPath);
+			Logger.Info("Loading assembly for FileTypeClass: " + fileTypeClass.ID + ", " + fileTypeClass.AssemblyPath);
+			Assembly assembly = GetAssembly("plugins/" + fileTypeClass.AssemblyPath);
 
 			if(assembly == null)
 				return null;
@@ -96,20 +141,29 @@ namespace Ufex.FileType
 
 		private Assembly GetAssembly(string assemblyPath)
 		{
-			string fullPath = ResolvePath(assemblyPath);
+			string? fullPath = ResolvePath(assemblyPath);
 
-			if(fullPath == null)
+			if (fullPath == null)
 				throw new Exception("Failed to load assembly: File Not Found");
 
 			// Look for the assembly in the cache
-			foreach(CachedAssembly cachedAssembly in assemblyCache)
+			foreach (CachedAssembly cachedAssembly in assemblyCache)
 			{
-				if(cachedAssembly.path.ToLower().Equals(assemblyPath.ToLower()))
+				if (cachedAssembly.path.Equals(fullPath, StringComparison.OrdinalIgnoreCase))
 					return cachedAssembly.assembly;
 			}
 
-			// Load the assembly into the cache
-			Assembly newAssembly = Assembly.LoadFile(fullPath);
+			// Check if this is the current assembly
+			Assembly currentAssembly = typeof(BaseClassifier).Assembly;
+			string assemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
+			if (currentAssembly.GetName().Name!.Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
+			{
+				return currentAssembly;
+			}
+
+			// Load the plugin assembly using PluginLoadContext to ensure shared types work correctly
+			var loadContext = new PluginLoadContext(fullPath);
+			Assembly newAssembly = loadContext.LoadFromAssemblyPath(fullPath);
 
 			CachedAssembly cachedAss = new CachedAssembly();
 			cachedAss.path = fullPath;
@@ -120,33 +174,56 @@ namespace Ufex.FileType
 		}
 
 		/// <summary>
-		/// Loads the File Type Identification Assemblys into memory.
+		/// Loads the File Type Identification Assemblies into memory.
 		/// </summary>
 		private void LoadIDLibs()
 		{
 			ID_LIB[] idLibs = idLibsDb.GetIDLibs();
+			Assembly currentAssembly = typeof(BaseClassifier).Assembly;
 
-			foreach(ID_LIB idLib in idLibs)
+			foreach (ID_LIB idLib in idLibs)
 			{
-				string path = ResolvePath(idLib.assemblyPath);
-				if(path != null)
+				try
 				{
-					try
+					Assembly targetAssembly;
+
+					// Check if this is the current assembly - if so, use the already-loaded one
+					// to avoid type identity issues from loading a duplicate
+					string assemblyName = Path.GetFileNameWithoutExtension(idLib.assemblyPath);
+					if (currentAssembly.GetName().Name!.Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
 					{
-						Assembly tempAssembly = Assembly.LoadFile(path);
-						object[] args = new object[] { Logger };
-						BaseClassifier newIDLib = (BaseClassifier)(tempAssembly.CreateInstance(idLib.fullTypeName, true, BindingFlags.Default, null, args, null, null));
+						targetAssembly = currentAssembly;
+					}
+					else
+					{
+						string? path = ResolvePath(idLib.assemblyPath);
+						if (path == null)
+						{
+							Logger.Error("Failed to find idLib: " + idLib.assemblyPath);
+							continue;
+						}
+						// Use PluginLoadContext for external assemblies to share types properly
+						var loadContext = new PluginLoadContext(path);
+						targetAssembly = loadContext.LoadFromAssemblyPath(path);
+					}
+
+					object[] args = new object[] { Logger };
+					BaseClassifier? newIDLib = (BaseClassifier?)targetAssembly.CreateInstance(
+						idLib.fullTypeName, true, BindingFlags.Default, null, args, null, null);
+
+					if (newIDLib != null)
+					{
 						newIDLib.FileTypes = FileTypes;
 						idLibsCache.Add(newIDLib);
 					}
-					catch(Exception e)
+					else
 					{
-						Logger.NewException(e, "FileTypeManager", "LoadIDLibs()", "Failed to load assembly: " + path);
+						Logger.Error("Failed to create instance of: " + idLib.fullTypeName);
 					}
 				}
-				else
+				catch (Exception e)
 				{
-					Logger.Error("Failed to find idLib: " + idLib.assemblyPath);
+					Logger.NewException(e, "FileTypeManager", "LoadIDLibs()", "Failed to load classifier: " + idLib.fullTypeName);
 				}
 			}
 		}
@@ -171,12 +248,14 @@ namespace Ufex.FileType
 
 		private void InitializeDatabases()
 		{
-			List<FileInfo> configFiles = new List<FileInfo>();
+			List<System.IO.FileInfo> configFiles = new List<System.IO.FileInfo>();
 			foreach(string path in ConfigDirectories)
-            {
+			{
+				Logger.Info("Loading config files from: " + path);
 				DirectoryInfo di = new DirectoryInfo(path);
 				if (di.Exists)
 				{
+					Logger.Info("Directory exists: " + path);
 					configFiles.AddRange(di.GetFiles("*.xml"));
 				}
 			}

@@ -1,0 +1,106 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Ufex.Desktop.Views.InfoTabView">
+    
+    <UserControl.Styles>
+        <!-- Style to make disabled checkboxes have readable text -->
+        <Style Selector="CheckBox:disabled ContentPresenter">
+            <Setter Property="TextBlock.Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        </Style>
+    </UserControl.Styles>
+    
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="12" Spacing="8">
+            
+            <!-- File Type -->
+            <Grid ColumnDefinitions="100,*">
+                <TextBlock Grid.Column="0" Text="File Type:" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBox Grid.Column="1" x:Name="TextFileType" IsReadOnly="True" />
+            </Grid>
+            
+            <!-- File Path -->
+            <Grid ColumnDefinitions="100,*">
+                <TextBlock Grid.Column="0" Text="File Path:" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBox Grid.Column="1" x:Name="TextFilePath" IsReadOnly="True" />
+            </Grid>
+            
+            <!-- File Name, Extension, Size Row -->
+            <Grid ColumnDefinitions="100,2*,80,*,70,*">
+                <TextBlock Grid.Column="0" Text="File Name:" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBox Grid.Column="1" x:Name="TextFileName" IsReadOnly="True" Margin="0,0,8,0" />
+                
+                <TextBlock Grid.Column="2" Text="Extension:" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBox Grid.Column="3" x:Name="TextFileExtension" IsReadOnly="True" Margin="0,0,8,0" />
+                
+                <TextBlock Grid.Column="4" Text="File Size:" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBox Grid.Column="5" x:Name="TextFileSize" IsReadOnly="True" />
+            </Grid>
+            
+            <!-- Attributes and Timestamps Row -->
+            <Grid ColumnDefinitions="2*,*">
+                
+                <!-- Attributes Group -->
+                <Border Grid.Column="0" 
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="12"
+                        Margin="0,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="Attributes" FontWeight="SemiBold" Margin="0,0,0,8" />
+                        <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto,Auto">
+                            <CheckBox Grid.Row="0" Grid.Column="0" x:Name="ChkReadOnly" Content="Read-only" IsEnabled="False" Margin="0,0,0,6" />
+                            <CheckBox Grid.Row="0" Grid.Column="1" x:Name="ChkHidden" Content="Hidden" IsEnabled="False" Margin="0,0,0,6" />
+                            <CheckBox Grid.Row="0" Grid.Column="2" x:Name="ChkArchive" Content="Archive" IsEnabled="False" Margin="0,0,0,6" />
+                            
+                            <CheckBox Grid.Row="1" Grid.Column="0" x:Name="ChkNormal" Content="Normal" IsEnabled="False" Margin="0,0,0,6" />
+                            <CheckBox Grid.Row="1" Grid.Column="1" x:Name="ChkTemporary" Content="Temporary" IsEnabled="False" Margin="0,0,0,6" />
+                            <CheckBox Grid.Row="1" Grid.Column="2" x:Name="ChkSystem" Content="System" IsEnabled="False" Margin="0,0,0,6" />
+                            
+                            <CheckBox Grid.Row="2" Grid.Column="0" x:Name="ChkEncrypted" Content="Encrypted" IsEnabled="False" />
+                            <CheckBox Grid.Row="2" Grid.Column="1" x:Name="ChkCompressed" Content="Compressed" IsEnabled="False" />
+                            <CheckBox Grid.Row="2" Grid.Column="2" x:Name="ChkSparseFile" Content="Sparse File" IsEnabled="False" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                
+                <!-- Timestamps Group -->
+                <Border Grid.Column="1"
+                        BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="12">
+                    <StackPanel>
+                        <TextBlock Text="Timestamps" FontWeight="SemiBold" Margin="0,0,0,8" />
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Created:" VerticalAlignment="Center" Margin="0,0,12,6" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TextCreated" VerticalAlignment="Center" Margin="0,0,0,6" />
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Modified:" VerticalAlignment="Center" Margin="0,0,12,6" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TextModified" VerticalAlignment="Center" Margin="0,0,0,6" />
+                            
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Accessed:" VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="TextAccessed" VerticalAlignment="Center" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            
+            <!-- Custom Data Table -->
+            <Border BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    MinHeight="200">
+                <DataGrid x:Name="DataGridInfo"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserReorderColumns="False"
+                          CanUserResizeColumns="True"
+                          GridLinesVisibility="All"
+                          BorderThickness="0" />
+            </Border>
+            
+        </StackPanel>
+    </ScrollViewer>
+    
+</UserControl>
