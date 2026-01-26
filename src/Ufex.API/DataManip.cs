@@ -34,7 +34,11 @@ public class DataManip
 		return (Byte)((value & (UInt64)(0xFF << (position * 8))) >> (position * 8)); 
 	}
 
-	// Get a BYTE from a WORD
+	/// <summary>
+	/// Get the high byte from a UInt16
+	/// </summary>
+	/// <param name="x"></param>
+	/// <returns>The high byte of the UInt16 value.</returns>
 	public static Byte GetHighByte(UInt16 x) 
 	{ 
 		return (Byte)(x >> 8); 
@@ -154,6 +158,13 @@ public class DataManip
 		return (Int16)BadEndian();
 	}
 
+	/// <summary>
+	/// Converts a byte array to a signed 32-bit integer considering the specified endianness.
+	/// </summary>
+	/// <param name="data">The byte array containing the data.</param>
+	/// <param name="endian">The endianness of the data.</param>
+	/// <param name="offset">The starting index in the byte array.</param>
+	/// <returns>The converted 32-bit signed integer.</returns>
 	public static Int32 BytesToInt32(Byte[] data, Endian endian, int offset = 0)
 	{
 		if (endian == Endian.Little)

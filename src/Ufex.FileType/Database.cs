@@ -2,30 +2,29 @@ using System;
 using System.IO;
 using Ufex.API;
 
-namespace Ufex.FileType
+namespace Ufex.FileType;
+
+/// <summary>
+/// A collection of configuration files that represent a database
+/// </summary>
+public abstract class Database
 {
-	/// <summary>
-	/// A collection of configuration files that represent a database
-	/// </summary>
-	public abstract class Database
+	protected System.IO.FileInfo[] configFiles;
+	private Logger m_debug;
+
+	public Logger Debug
 	{
-		protected System.IO.FileInfo[] configFiles;
-		private Logger m_debug;
+		get { return m_debug; }
+		set { m_debug = value; }
+	}
 
-		public Logger Debug
-		{
-			get { return m_debug; }
-			set { m_debug = value; }
-		}
+	public Database()
+	{
 
-		public Database()
-		{
+	}
 
-		}
-
-		public Database(System.IO.FileInfo[] configFiles)
-		{
-			this.configFiles = configFiles;
-		}
+	public Database(System.IO.FileInfo[] configFiles)
+	{
+		this.configFiles = configFiles;
 	}
 }

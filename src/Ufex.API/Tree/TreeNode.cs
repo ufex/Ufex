@@ -170,6 +170,8 @@ public class TreeNode
 		Parent?.Nodes.Remove(this);
 	}
 
+	//public object Details { get; set; }
+
 	public override string ToString() => Text;
 }
 

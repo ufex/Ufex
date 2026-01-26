@@ -31,7 +31,14 @@
                       CanUserResizeColumns="True"
                       GridLinesVisibility="All"
                       BorderThickness="1"
-                      BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+                      BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                      FontFamily="Courier New">
+                <DataGrid.Styles>
+                    <Style Selector="DataGridColumnHeader">
+                        <Setter Property="FontSize" Value="12" />
+                    </Style>
+                </DataGrid.Styles>
+            </DataGrid>
         </Border>
         
     </Grid>

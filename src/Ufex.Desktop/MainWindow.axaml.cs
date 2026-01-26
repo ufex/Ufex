@@ -242,8 +242,8 @@ public partial class MainWindow : Window
 				return;
 			}
 
-			// Step 8: FUTURE - Initialize the hex viewer
-			// TODO: HexTab.Initialize(_openFileStream);
+			// Step 8: Initialize the hex viewer with the file stream
+			HexTab.LoadStream(_openFileStream);
 
 			// Step 9: If file type is known, check for associated plugin
 			if (detectedFileType != null && _fileTypeManager != null)
@@ -309,7 +309,9 @@ public partial class MainWindow : Window
 							{
 								try
 								{
-									StructureTab.SetFileType(_currentFileType);
+									var formatter = new DataFormatter();
+									formatter.NumFormat = _currentNumberFormat;
+									StructureTab.SetFileType(_currentFileType, formatter);
 									StructureTab.LoadTreeNodes(_currentFileType.TreeNodes);
 								}
 								catch (Exception ex)
@@ -345,6 +347,9 @@ public partial class MainWindow : Window
 	{
 		// Clean up the file type instance
 		_currentFileType = null;
+
+		// Clear the hex viewer before closing the stream
+		HexTab.Clear();
 
 		// Close the file stream
 		if (_openFileStream != null)
@@ -457,6 +462,8 @@ public partial class MainWindow : Window
 		{
 			_currentFileType.NumFormat = format;
 		}
+
+		StructureTab.SetNumberFormat(format);
 	}
 
 	// Search Menu Handlers

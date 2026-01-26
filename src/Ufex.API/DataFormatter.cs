@@ -4,13 +4,29 @@ using System.Linq;
 using System.Text;
 
 namespace Ufex.API;
+
 public enum NumberFormat : int
 {
 	Default = 0x0000,
+	/// <summary>
+	/// Binary Format - displays numbers in base 2.
+	/// </summary>
 	Binary = 0x0001,
+	/// <summary>
+	/// Octal Format - displays numbers in base 8.
+	/// </summary>
 	Octal = 0x0008,
+	/// <summary>
+	/// Decimal Format - displays numbers in base 10.
+	/// </summary>
 	Decimal = 0x000A,
+	/// <summary>
+	/// Hexadecimal Format - displays numbers in base 16.
+	/// </summary>
 	Hexadecimal = 0x0010,
+	/// <summary>
+	/// ASCII Format - displays numbers as their ASCII character equivalents.
+	/// </summary>
 	Ascii = 0x00F0,
 	Unicode = 0x00F1
 }
@@ -21,29 +37,29 @@ public sealed class DataFormatter
 
 	private HexNumberFormatter hexNumberFormatter;
 	private BinaryNumberFormatter binaryNumberFormatter;
-	private NumberFormat m_numFormat;
-	private Endian m_Endian;
-	private CultureInfo m_CI;
-	private NumberFormatInfo m_NFI;
+	private NumberFormat numFormat;
+	private Endian endian;
+	private CultureInfo cultureInfo;
+	private NumberFormatInfo numberFormatInfo;
 
 	// Format specific options
-	private bool m_HexShowLeadX;
-	private bool m_HexShowLeadZeros;
-	private bool m_HexCaps;
-	bool m_DecCommas;
+	private bool hexShowLeadX;
+	private bool hexShowLeadZeros;
+	private bool hexCaps;
+	bool decimalCommas;
 
 	public NumberFormat NumFormat
 	{
-		get { return m_numFormat; }
-		set { m_numFormat = value; }
+		get { return numFormat; }
+		set { numFormat = value; }
 	}
 
 	public Endian Endian
 	{
-		get { return m_Endian; }
+		get { return endian; }
 		set 
 		{ 
-			m_Endian = value;
+			endian = value;
 			hexNumberFormatter.Endian = value;
 			binaryNumberFormatter.Endian = value;
 		}
@@ -53,63 +69,70 @@ public sealed class DataFormatter
 	{
 		get
 		{
-			return m_HexShowLeadX;
+			return hexShowLeadX;
 		}
 		set 
 		{ 
-			m_HexShowLeadX = value;
+			hexShowLeadX = value;
 			hexNumberFormatter.LeadX = value;
 		}
 	}
 
 	public bool HexCaps
 	{
-		get { return m_HexCaps; }
+		get { return hexCaps; }
 		set 
 		{ 
-			m_HexCaps = value;
+			hexCaps = value;
 			hexNumberFormatter.Caps = value;
 		}
 	}
 
 	public bool HexLeadZeros
 	{
-		get { return m_HexShowLeadZeros;  }
+		get { return hexShowLeadZeros;  }
 		set
 		{
-			m_HexShowLeadZeros = value;
+			hexShowLeadZeros = value;
 			hexNumberFormatter.LeadZeros = value;
 		}
 	}
 
-	public DataFormatter(string locale = "en-US")
+	public bool DecimalCommas
 	{
-		m_CI = new CultureInfo(locale, false);
-		m_NFI = m_CI.NumberFormat;
-
-		// Set the seperator
-		m_NFI.NumberGroupSeparator = ",";
-		m_NFI.NumberDecimalDigits = 0;
-
-		// Default Options
-		m_HexShowLeadX = true;
-		m_HexShowLeadZeros = true;
-		m_HexCaps = true;
-		m_DecCommas = false;
-		binaryNumberFormatter = new BinaryNumberFormatter(true, this.Endian);
-		hexNumberFormatter = new HexNumberFormatter(m_HexCaps, m_HexShowLeadX, m_HexShowLeadZeros, this.Endian);
-		hexNumberFormatter.NFI = m_NFI;
+		get { return decimalCommas; }
+		set { decimalCommas = value; }
 	}
 
+	public DataFormatter(string locale = "en-US")
+	{
+		cultureInfo = new CultureInfo(locale, false);
+		numberFormatInfo = cultureInfo.NumberFormat;
+
+		// Set the seperator
+		numberFormatInfo.NumberGroupSeparator = ",";
+		numberFormatInfo.NumberDecimalDigits = 0;
+
+		// Default Options
+		hexShowLeadX = true;
+		hexShowLeadZeros = true;
+		hexCaps = true;
+		decimalCommas = false;
+		binaryNumberFormatter = new BinaryNumberFormatter(true, this.Endian);
+		hexNumberFormatter = new HexNumberFormatter(hexCaps, hexShowLeadX, hexShowLeadZeros, this.Endian);
+		hexNumberFormatter.NFI = numberFormatInfo;
+	}
+
+	[Obsolete]
 	public void SetNumFormat(NumberFormat format) 
 	{ 
-		m_numFormat = format; 
+		numFormat = format; 
 	}
 	
 	[Obsolete]
-	public void SetEndian(Endian endian) 
+	public void SetEndian(Endian endian)
 	{ 
-		m_Endian = endian;
+		this.endian = endian;
 	}
 
 	[Obsolete]
@@ -120,14 +143,15 @@ public sealed class DataFormatter
 		hexNumberFormatter.Caps = caps;
 	}
 
+	[Obsolete]
 	public void SetDecFormat(bool commas) 
 	{ 
-		m_DecCommas = commas; 
+		decimalCommas = commas; 
 	}
 
 	private string Base10(IFormattable n)
 	{
-		return n.ToString(m_DecCommas ? "N" : "", m_NFI);
+		return n.ToString(decimalCommas ? "N" : "", numberFormatInfo);
 	}
 
 	public string Object(Object x)
@@ -171,28 +195,28 @@ public sealed class DataFormatter
 
 	public string Bool(bool x)
 	{
-		if (m_numFormat == NumberFormat.Default)
+		if (numFormat == NumberFormat.Default)
 			return x ? "True" : "False";
-		else if (m_numFormat == NumberFormat.Hexadecimal)
+		else if (numFormat == NumberFormat.Hexadecimal)
 			return x ? "0x1" : "0x0";
-		else if (m_numFormat == NumberFormat.Decimal)
+		else if (numFormat == NumberFormat.Decimal)
 			return x ? "1" : "0";
-		else if (m_numFormat == NumberFormat.Binary)
+		else if (numFormat == NumberFormat.Binary)
 			return x ? "1" : "0";
 		else
 			return x ? "True" : "False";
 	}
 
 	public string Byte(Byte x) {
-		if (m_numFormat == NumberFormat.Default)
+		if (numFormat == NumberFormat.Default)
 			return hexNumberFormatter.UInt8(x);
-		else if (m_numFormat == NumberFormat.Hexadecimal)
+		else if (numFormat == NumberFormat.Hexadecimal)
 			return hexNumberFormatter.UInt8(x);
-		else if (m_numFormat == NumberFormat.Decimal)
+		else if (numFormat == NumberFormat.Decimal)
 			return Base10(x);
-		else if (m_numFormat == NumberFormat.Binary)
+		else if (numFormat == NumberFormat.Binary)
 			return binaryNumberFormatter.UInt8(x);
-		else if (m_numFormat == NumberFormat.Ascii)
+		else if (numFormat == NumberFormat.Ascii)
 			return "\'" + Convert.ToChar(x).ToString() + "\'";
 		else
 			return x.ToString();
@@ -205,15 +229,15 @@ public sealed class DataFormatter
 	
 	public string UInt16(UInt16 x)
 	{
-		if (m_numFormat == NumberFormat.Default)
+		if (numFormat == NumberFormat.Default)
 			return hexNumberFormatter.UInt16(x);
-		else if (m_numFormat == NumberFormat.Hexadecimal)
+		else if (numFormat == NumberFormat.Hexadecimal)
 			return hexNumberFormatter.UInt16(x);
-		else if (m_numFormat == NumberFormat.Decimal)
+		else if (numFormat == NumberFormat.Decimal)
 			return Base10(x);
-		else if (m_numFormat == NumberFormat.Binary)
+		else if (numFormat == NumberFormat.Binary)
 			return binaryNumberFormatter.UInt16(x);
-		else if (m_numFormat == NumberFormat.Ascii)
+		else if (numFormat == NumberFormat.Ascii)
 			return "\"" + Convert.ToChar(DataManip.GetHighWord(x)).ToString() + Convert.ToChar(DataManip.GetLowWord(x)).ToString() + "\"";
 		else
 			return x.ToString();
@@ -221,15 +245,15 @@ public sealed class DataFormatter
 
 	public string UInt32(UInt32 x)
 	{
-		if (m_numFormat == NumberFormat.Default)
+		if (numFormat == NumberFormat.Default)
 			return hexNumberFormatter.UInt32(x);
-		else if (m_numFormat == NumberFormat.Hexadecimal)
+		else if (numFormat == NumberFormat.Hexadecimal)
 			return hexNumberFormatter.UInt32(x);
-		else if (m_numFormat == NumberFormat.Decimal)
+		else if (numFormat == NumberFormat.Decimal)
 			return Base10(x);
-		else if (m_numFormat == NumberFormat.Binary)
+		else if (numFormat == NumberFormat.Binary)
 			return binaryNumberFormatter.UInt32(x);
-		else if (m_numFormat == NumberFormat.Ascii)
+		else if (numFormat == NumberFormat.Ascii)
 			return "\"" + 
 				Convert.ToChar(DataManip.GetHighByte(DataManip.GetHighWord(x))).ToString() +
 				Convert.ToChar(DataManip.GetLowByte(DataManip.GetHighWord(x))).ToString() +
@@ -241,15 +265,15 @@ public sealed class DataFormatter
 
 	public string UInt64(UInt64 x)
 	{
-		if (m_numFormat == NumberFormat.Default)
+		if (numFormat == NumberFormat.Default)
 			return hexNumberFormatter.UInt64(x);
-		else if (m_numFormat == NumberFormat.Hexadecimal)
+		else if (numFormat == NumberFormat.Hexadecimal)
 			return hexNumberFormatter.UInt64(x);
-		else if (m_numFormat == NumberFormat.Decimal)
+		else if (numFormat == NumberFormat.Decimal)
 			return Base10(x);
-		else if (m_numFormat == NumberFormat.Binary)
+		else if (numFormat == NumberFormat.Binary)
 			return binaryNumberFormatter.UInt64(x);
-		else if (m_numFormat == NumberFormat.Ascii)
+		else if (numFormat == NumberFormat.Ascii)
 			return "\"" +
 				Convert.ToChar(DataManip.GetByte(x, 0)) +
 				Convert.ToChar(DataManip.GetByte(x, 1)) +
@@ -265,15 +289,15 @@ public sealed class DataFormatter
 
 	public string SByte(SByte x)
 	{
-		if (m_numFormat == NumberFormat.Default)
+		if (numFormat == NumberFormat.Default)
 			return hexNumberFormatter.SInt8(x);
-		else if (m_numFormat == NumberFormat.Hexadecimal)
+		else if (numFormat == NumberFormat.Hexadecimal)
 			return hexNumberFormatter.SInt8(x);
-		else if (m_numFormat == NumberFormat.Decimal)
+		else if (numFormat == NumberFormat.Decimal)
 			return Base10(x);
-		else if (m_numFormat == NumberFormat.Binary)
+		else if (numFormat == NumberFormat.Binary)
 			return binaryNumberFormatter.SInt8(x);
-		else if (m_numFormat == NumberFormat.Ascii)
+		else if (numFormat == NumberFormat.Ascii)
 			return "\'" + Convert.ToChar(x).ToString() + "\'";
 		else
 			return x.ToString();
@@ -286,15 +310,15 @@ public sealed class DataFormatter
 
 	public string Int16(Int16 x)
 	{
-		if (m_numFormat == NumberFormat.Default)
+		if (numFormat == NumberFormat.Default)
 			return hexNumberFormatter.SInt16(x);
-		else if (m_numFormat == NumberFormat.Hexadecimal)
+		else if (numFormat == NumberFormat.Hexadecimal)
 			return hexNumberFormatter.SInt16(x);
-		else if (m_numFormat == NumberFormat.Decimal)
+		else if (numFormat == NumberFormat.Decimal)
 			return Base10(x);
-		else if (m_numFormat == NumberFormat.Binary)
+		else if (numFormat == NumberFormat.Binary)
 			return binaryNumberFormatter.SInt16(x);
-		else if (m_numFormat == NumberFormat.Ascii)
+		else if (numFormat == NumberFormat.Ascii)
 			return "-";
 		else
 			return x.ToString();
@@ -302,15 +326,15 @@ public sealed class DataFormatter
 
 	public string Int32(Int32 x)
 	{
-		if (m_numFormat == NumberFormat.Default)
+		if (numFormat == NumberFormat.Default)
 			return hexNumberFormatter.SInt32(x);
-		else if (m_numFormat == NumberFormat.Hexadecimal)
+		else if (numFormat == NumberFormat.Hexadecimal)
 			return hexNumberFormatter.SInt32(x);
-		else if (m_numFormat == NumberFormat.Decimal)
+		else if (numFormat == NumberFormat.Decimal)
 			return Base10(x);
-		else if (m_numFormat == NumberFormat.Binary)
+		else if (numFormat == NumberFormat.Binary)
 			return binaryNumberFormatter.SInt32(x);
-		else if (m_numFormat == NumberFormat.Ascii)
+		else if (numFormat == NumberFormat.Ascii)
 			return "-";
 		else
 			return x.ToString();
@@ -318,15 +342,15 @@ public sealed class DataFormatter
 
 	public string Int64(Int64 x)
 	{
-		if (m_numFormat == NumberFormat.Default)
+		if (numFormat == NumberFormat.Default)
 			return hexNumberFormatter.SInt64(x);
-		else if (m_numFormat == NumberFormat.Hexadecimal)
+		else if (numFormat == NumberFormat.Hexadecimal)
 			return hexNumberFormatter.SInt64(x);
-		else if (m_numFormat == NumberFormat.Decimal)
+		else if (numFormat == NumberFormat.Decimal)
 			return Base10(x);
-		else if (m_numFormat == NumberFormat.Binary)
+		else if (numFormat == NumberFormat.Binary)
 			return binaryNumberFormatter.SInt64(x);
-		else if (m_numFormat == NumberFormat.Ascii)
+		else if (numFormat == NumberFormat.Ascii)
 			return "-";
 		else
 			return x.ToString();
@@ -426,15 +450,15 @@ public sealed class DataFormatter
 
 	public string ASCIIString(byte[] x)
 	{
-		if (m_numFormat == NumberFormat.Default)
+		if (numFormat == NumberFormat.Default)
 			return gsASCA(x);
-		else if (m_numFormat == NumberFormat.Hexadecimal)
+		else if (numFormat == NumberFormat.Hexadecimal)
 			return gsASCH(x);
-		else if (m_numFormat == NumberFormat.Decimal)
+		else if (numFormat == NumberFormat.Decimal)
 			return gsASCD(x);
-		else if (m_numFormat == NumberFormat.Binary)
+		else if (numFormat == NumberFormat.Binary)
 			return gsASCA(x);
-		else if (m_numFormat == NumberFormat.Ascii)
+		else if (numFormat == NumberFormat.Ascii)
 			return gsASCA(x);
 		else
 			return x.ToString();
@@ -443,15 +467,15 @@ public sealed class DataFormatter
 	public string ASCIIString(sbyte[] x)
 	{
 		Byte[] y = x.Select(n => (Byte)n).ToArray();
-		if (m_numFormat == NumberFormat.Default)
+		if (numFormat == NumberFormat.Default)
 			return gsASCA(y);
-		else if (m_numFormat == NumberFormat.Hexadecimal)
+		else if (numFormat == NumberFormat.Hexadecimal)
 			return gsASCH(y);
-		else if (m_numFormat == NumberFormat.Decimal)
+		else if (numFormat == NumberFormat.Decimal)
 			return gsASCD(y);
-		else if (m_numFormat == NumberFormat.Binary)
+		else if (numFormat == NumberFormat.Binary)
 			return gsASCA(y);
-		else if (m_numFormat == NumberFormat.Ascii)
+		else if (numFormat == NumberFormat.Ascii)
 			return gsASCA(y);
 		else
 			return x.ToString();
@@ -459,15 +483,15 @@ public sealed class DataFormatter
 
 	public string ASCIIString(string x)
 	{
-		if (m_numFormat == NumberFormat.Default)
+		if (numFormat == NumberFormat.Default)
 			return '"' + x + '"';
-		else if (m_numFormat == NumberFormat.Hexadecimal)
+		else if (numFormat == NumberFormat.Hexadecimal)
 			return gsASCH(Encoding.ASCII.GetBytes(x));
-		else if (m_numFormat == NumberFormat.Decimal)
+		else if (numFormat == NumberFormat.Decimal)
 			return gsASCD(Encoding.ASCII.GetBytes(x));
-		else if (m_numFormat == NumberFormat.Binary)
+		else if (numFormat == NumberFormat.Binary)
 			return gsASCA(Encoding.ASCII.GetBytes(x));
-		else if (m_numFormat == NumberFormat.Ascii)
+		else if (numFormat == NumberFormat.Ascii)
 			return gsASCA(Encoding.ASCII.GetBytes(x));
 		else
 			return x.ToString();
@@ -488,7 +512,7 @@ public sealed class DataFormatter
 	private string gsASCH(byte[] x)
 	{
 		StringBuilder sb = new StringBuilder((x.Length * 3) + 2);
-		HexNumberFormatter f = new HexNumberFormatter(m_HexCaps, false, true);
+		HexNumberFormatter f = new HexNumberFormatter(hexCaps, false, true);
 		for(int i = 0; i < x.Length; i++)
 		{
 			sb.Append(f.UInt8(x[i]));
@@ -544,17 +568,6 @@ public sealed class DataFormatter
 	public string GetStrInt64(Int64 x) { return this.Int64(x); }
 
 	/*
-String^ GetStrObject(Object^ x);
-
-// Convert Numbers To Strings
-String^ GetStrBool(const bool x);
-
-// Array To String
-String^ GetStrU8Array(array<Byte>^ x);
-String^ GetStrU16Array(array<UInt16>^ x);
-String^ GetStrU32Array(array<UInt32>^ x);
-String^ GetStrU64Array(array<UInt64>^ x);
-String^ GetStrSByteArray(array<SByte>^ x);
 
 String^ GetStrGuid(Guid x);
 
@@ -565,9 +578,6 @@ String^ GetStrObjectArray(array<Object^>^ x);
 
 // Converts a null terminated string in bytes to a unicode string
 static String^ AsciiBytesToString(array<Byte>^ asciiBytes);
-
-	private void Initialize() { };
-
 //
 // Hex Conversion Functions
 //
@@ -588,17 +598,13 @@ String^ gsGuidH(Guid x);
 //
 // Decimal Conversion Functions
 //
-inline String^ gsU08D(Byte x) { return x.ToString("", m_NFI); };
-inline String^ gsU16D(UInt16 x) { if (!m_DecCommas) return x.ToString("", m_NFI); else return x.ToString("N", m_NFI); };
-inline String^ gsU32D(UInt32 x) { if (!m_DecCommas) return x.ToString("", m_NFI); else return x.ToString("N", m_NFI); };
-inline String^ gsU64D(UInt64 x) { if (!m_DecCommas) return x.ToString("", m_NFI); else return x.ToString("N", m_NFI); };
+inline String^ gsU64D(UInt64 x) { if (!decimalCommas) return x.ToString("", numberFormatInfo); else return x.ToString("N", numberFormatInfo); };
 
-inline String^ gsS08D(SByte x) { return x.ToString("", m_NFI); };
-inline String^ gsS16D(Int16 x) { if (!m_DecCommas) return x.ToString("", m_NFI); else return x.ToString("N", m_NFI); };
-inline String^ gsS32D(Int32 x) { if (!m_DecCommas) return x.ToString("", m_NFI); else return x.ToString("N", m_NFI); };
-inline String^ gsS64D(Int64 x) { if (!m_DecCommas) return x.ToString("", m_NFI); else return x.ToString("N", m_NFI); };
+inline String^ gsS08D(SByte x) { return x.ToString("", numberFormatInfo); };
+inline String^ gsS16D(Int16 x) { if (!decimalCommas) return x.ToString("", numberFormatInfo); else return x.ToString("N", numberFormatInfo); };
+inline String^ gsS32D(Int32 x) { if (!decimalCommas) return x.ToString("", numberFormatInfo); else return x.ToString("N", numberFormatInfo); };
+inline String^ gsS64D(Int64 x) { if (!decimalCommas) return x.ToString("", numberFormatInfo); else return x.ToString("N", numberFormatInfo); };
 String^ gsASCD(const array<char>^ x);
-String^ gsGuidD(Guid x);
 
 //
 // Binary Conversion Functions
@@ -619,7 +625,6 @@ inline String^ gsU08A(Byte x) { return String::Concat("\'", Convert::ToChar(x).T
 inline String^ gsU16A(UInt16 x) { return String::Concat(DOUBLE_QUOTE, Convert::ToChar(GetHighWord(x)).ToString(), Convert::ToChar(GetLowWord(x)).ToString(), DOUBLE_QUOTE); };
 
 
-inline String^ gsS08A(SByte x) { return String::Concat("\'", Convert::ToChar(x).ToString(), "\'"); };
 inline String^ gsS16A(Int16 x) { return String::Concat(DOUBLE_QUOTE, Convert::ToChar(GH_S16(x)).ToString(), Convert::ToChar(GL_S16(x)).ToString(), DOUBLE_QUOTE); };
 
 String^ gsASCA(const array<char>^ x);

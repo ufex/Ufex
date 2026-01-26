@@ -127,6 +127,16 @@ public partial class StructureTabView : UserControl
 	}
 
 	/// <summary>
+	/// Sets the number format on the current formatter and refreshes the selected node.
+	/// </summary>
+	public void SetNumberFormat(NumberFormat numberFormat)
+	{
+		_dataFormatter ??= new DataFormatter();
+		_dataFormatter.NumFormat = numberFormat;
+		RefreshSelectedNode();
+	}
+
+	/// <summary>
 	/// Loads the tree structure from the file type's TreeNodes collection.
 	/// </summary>
 	public void LoadTreeNodes(TreeNodeCollection? treeNodes)
@@ -243,7 +253,7 @@ public partial class StructureTabView : UserControl
 			return;
 		}
 
-		var formatter = _dataFormatter ?? new DataFormatter();
+		var formatter = _dataFormatter ??= new DataFormatter();
 
 		// Get the DataTable
 		var dataTable = tableData.GetDataTable(formatter);
@@ -300,19 +310,25 @@ public partial class StructureTabView : UserControl
 	public void SetDataFormatter(DataFormatter dataFormatter)
 	{
 		_dataFormatter = dataFormatter;
+		RefreshSelectedNode();
+	}
 
-		// Re-load the currently selected node's data with the new formatter
-		if (_fileType != null && _treeView?.SelectedItem is StructureTreeNode selectedItem)
+	private void RefreshSelectedNode()
+	{
+		// Re-load the currently selected node's data with the current formatter
+		if (_fileType == null)
+			return;
+		if (_treeView?.SelectedItem is not StructureTreeNode selectedItem)
+			return;
+
+		try
 		{
-			try
-			{
-				var tableData = _fileType.GetData(selectedItem.SourceNode);
-				LoadTableData(tableData);
-			}
-			catch
-			{
-				// Ignore errors during refresh
-			}
+			var tableData = _fileType.GetData(selectedItem.SourceNode);
+			LoadTableData(tableData);
+		}
+		catch
+		{
+			// Ignore errors during refresh
 		}
 	}
 }

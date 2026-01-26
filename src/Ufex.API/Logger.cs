@@ -49,11 +49,11 @@ public class Logger
 	private int numExceptions;
 	private ArrayList m_DebugInfo;
 
-	private bool m_WriteToLog;
-	private string m_LogFileName;
-	private string m_LogFileDir;
-	private string m_LogFilePath;
-	private StreamWriter m_SW;
+	private bool writeToLog;
+	private string logFileName;
+	private string logFileDir;
+	private string logFilePath;
+	private StreamWriter streamWriter;
 
 	public string Text
 	{
@@ -71,16 +71,17 @@ public class Logger
 	public Logger()
 	{
 		m_DebugInfo = new ArrayList(1);
-		m_LogFileName = null;
-		m_WriteToLog = false;
+		logFileName = null;
+		writeToLog = false;
 	}
 	public Logger(string logFileName)
 	{
 		m_DebugInfo = new ArrayList(1);
-		m_WriteToLog = false;
-		m_LogFileName = null;
+		writeToLog = false;
+		this.logFileName = null;
 		SetLogName(logFileName);
 	}
+
 	~Logger()
 	{
 
@@ -98,31 +99,25 @@ public class Logger
 	public void SetLogName(string fileName)
 	{
 		// Set the log file name
-		m_LogFileName = fileName;
+		logFileName = fileName;
 
 		// Enable writing to the log file
-		m_WriteToLog = true;
+		writeToLog = true;
 
 		// Determine the log file directory
-		m_LogFileDir = Path.Combine(
+		logFileDir = Path.Combine(
 			Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
 			"ufex",
 			"Logs"
 		);
 
 		// Create the path if it doesnt exist
-		if (!Directory.Exists(m_LogFileDir))
-			Directory.CreateDirectory(m_LogFileDir);
+		if (!Directory.Exists(logFileDir))
+			Directory.CreateDirectory(logFileDir);
 
 		// Set the log file full path (dir + fileName)
-		m_LogFilePath = String.Concat(m_LogFileDir, "\\", m_LogFileName);
+		logFilePath = String.Concat(logFileDir, "\\", logFileName);
 	}
-
-	[Obsolete("Use Info instead")]
-	public void NewInfo(string message, string className = "", string funcName = "", string title = "Debug Info") {  Info(message, className, funcName, title); }
-
-	[Obsolete("Use Error instead")]
-	public void NewError(string message, string className = "", string funcName = "", string title = "Error") { Error(message, className, funcName, title); }
 
 	public void Info(string message, string className = "", string funcName = "", string title = "Debug Info")
 	{
@@ -151,7 +146,7 @@ public class Logger
 		tmpError.funcName = funcName;
 		tmpError.title = title;
 		m_DebugInfo.Add(tmpError);
-		if (m_WriteToLog)
+		if (writeToLog)
 		{
 			string logmessage;
 			logmessage = String.Format("{0},{1}", message, funcName);
@@ -167,7 +162,7 @@ public class Logger
 		tmpException.funcName = funcName;
 		tmpException.description = description;
 		m_DebugInfo.Add(tmpException);
-		if (m_WriteToLog)
+		if (writeToLog)
 		{
 			string message;
 			message = String.Format("{0},{1},{2}", e.Message, description, funcName);
@@ -177,11 +172,11 @@ public class Logger
 
 	private void WriteToLog(string type, string message)
 	{
-		if (m_WriteToLog && m_LogFilePath != null)
+		if (writeToLog && logFilePath != null)
 		{
-			m_SW = File.AppendText(m_LogFilePath);
-			m_SW.WriteLine(String.Format("<{0},{1}>", type, message));
-			m_SW.Close();
+			streamWriter = File.AppendText(logFilePath);
+			streamWriter.WriteLine(String.Format("{0}: {1}", type, message));
+			streamWriter.Close();
 		}
 	}
 }

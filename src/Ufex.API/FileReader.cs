@@ -5,38 +5,67 @@ using System.Text;
 using System.IO;
 
 namespace Ufex.API;
+
+/// <summary>
+/// Binary file reader with support for endianness and various data types.
+/// </summary>
 public class FileReader
 {
-	public FileReader(System.IO.Stream input) 
-	{ 
-		Init(input, true, new UTF8Encoding()); 
+	private const Int32 MaxCharBytesSize = 128;
+
+	private Stream stream;
+	private Byte[] buffer;
+	private System.Text.Decoder decoder;
+	private Byte[] charBytes;
+	private Char[] singleChar;
+	private Char[] charBuffer;
+	private int maxCharsSize;
+	private bool littleEndian;
+	private bool m_2BytesPerChar;
+
+	public Stream BaseStream 
+	{
+		get { return stream; }
+		set { stream = value; }
 	}
 
-	public FileReader(System.IO.Stream input, bool littleEndian) 
-	{ 
-		Init(input, littleEndian, new UTF8Encoding()); 
-	}
+	public FileReader(Stream input) : this(input, true, new UTF8Encoding()) { }
+
+	public FileReader(Stream input, bool littleEndian) : this(input, littleEndian, new UTF8Encoding()) { }
 	
-	public FileReader(System.IO.Stream input, bool littleEndian, System.Text.Encoding encoding) 
+	public FileReader(Stream input, bool littleEndian, System.Text.Encoding encoding) 
 	{ 
-		Init(input, littleEndian, encoding); 
+		if (input==null) 
+		{
+			throw new ArgumentNullException("input");
+		}
+		if (encoding==null) 
+		{
+			throw new ArgumentNullException("encoding");
+		}
+		stream = input;
+		decoder = encoding.GetDecoder();
+		maxCharsSize = encoding.GetMaxCharCount(MaxCharBytesSize);
+		int minBufferSize = encoding.GetMaxByteCount(1);  // max bytes per one char
+		if (minBufferSize < 16) 
+				minBufferSize = 16;
+		buffer = new Byte[minBufferSize];
+		this.littleEndian = littleEndian;
 	}
 
 	~FileReader()
 	{
 		this.Close();
-		m_buffer = null;
-		m_decoder = null;
-		m_charBytes = null;
-		m_singleChar = null;
-		m_charBuffer = null;
-		m_disposed = true;
+		buffer = null;
+		decoder = null;
+		charBytes = null;
+		singleChar = null;
 	}
 
 	public void Close()
 	{
-		System.IO.Stream tmpStream = m_stream;
-		m_stream = null;
+		System.IO.Stream tmpStream = stream;
+		stream = null;
 		if (tmpStream != null)
 		{
 			tmpStream.Close();
@@ -45,7 +74,7 @@ public class FileReader
 
 	public Int32 Read()
 	{
-		if (m_stream == null)
+		if (stream == null)
 			FileNotOpen();
 
 		return InternalReadOneChar();
@@ -54,22 +83,22 @@ public class FileReader
 	public bool ReadBoolean()
 	{
 		FillBuffer(1);
-		return !(m_buffer[0] == 0);
+		return !(buffer[0] == 0);
 	}
 
 	public Byte[] ReadBytes(Int32 count)
 	{
 		Byte[] arr;
-
 		arr = new Byte[count];
-		m_stream.Read(arr, 0, count);
-
+		stream.ReadExactly(arr, 0, count);
 		return arr;
 	}
+
 	public Byte[] ReadBytes(UInt16 count) 
 	{ 
 		return ReadBytes((int)count); 
 	}
+
 	public Char ReadChar()
 	{
 		Int32 i;
@@ -86,7 +115,7 @@ public class FileReader
 		Int32 i;
 		Char[] arr1;
 
-		if (m_stream == null)
+		if (stream == null)
 		{
 			FileNotOpen();
 		}
@@ -112,93 +141,101 @@ public class FileReader
 	public Int16 ReadInt16()
 	{
 		FillBuffer(2);
-		if (m_littleEndian)
-			return (Int16)((m_buffer[0] & 255) | (m_buffer[1] << 8));
+		if (littleEndian)
+			return (Int16)((buffer[0] & 255) | (buffer[1] << 8));
 		else
-			return (Int16)((m_buffer[1] & 255) | (m_buffer[0] << 8));
+			return (Int16)((buffer[1] & 255) | (buffer[0] << 8));
 	}
+	
 	public Int32 ReadInt32()
 	{
 		FillBuffer(4);
-		if (m_littleEndian)
-			return (((m_buffer[0] & 255) | (m_buffer[1] << 8)) | (m_buffer[2] << 16)) | (m_buffer[3] << 24);
+		if (littleEndian)
+			return (((buffer[0] & 255) | (buffer[1] << 8)) | (buffer[2] << 16)) | (buffer[3] << 24);
 		else
-			return (((m_buffer[3] & 255) | (m_buffer[2] << 8)) | (m_buffer[1] << 16)) | (m_buffer[0] << 24);
+			return (((buffer[3] & 255) | (buffer[2] << 8)) | (buffer[1] << 16)) | (buffer[0] << 24);
 	}
+
 	public Int64 ReadInt64()
 	{
 		UInt32 a, b;
 
 		// Read 8 bytes
 		FillBuffer(8);
-		if (m_littleEndian)
+		if (littleEndian)
 		{
-			a = (UInt32)(((m_buffer[0] | (m_buffer[1] << 8)) | (m_buffer[2] << 16)) | (m_buffer[3] << 24));
-			b = (UInt32)(((m_buffer[4] | (m_buffer[5] << 8)) | (m_buffer[6] << 16)) | (m_buffer[7] << 24));
+			a = (UInt32)(((buffer[0] | (buffer[1] << 8)) | (buffer[2] << 16)) | (buffer[3] << 24));
+			b = (UInt32)(((buffer[4] | (buffer[5] << 8)) | (buffer[6] << 16)) | (buffer[7] << 24));
 		}
 		else
 		{
-			a = (UInt32)(((m_buffer[7] | (m_buffer[6] << 8)) | (m_buffer[5] << 16)) | (m_buffer[4] << 24));
-			b = (UInt32)(((m_buffer[3] | (m_buffer[2] << 8)) | (m_buffer[1] << 16)) | (m_buffer[0] << 24));
+			a = (UInt32)(((buffer[7] | (buffer[6] << 8)) | (buffer[5] << 16)) | (buffer[4] << 24));
+			b = (UInt32)(((buffer[3] | (buffer[2] << 8)) | (buffer[1] << 16)) | (buffer[0] << 24));
 		}
 		return (Int64)((((UInt64)(b)) << 32) | ((UInt64)(a)));
 	}
+
 	public SByte ReadSByte()
 	{
 		FillBuffer(1);
-		return (SByte)m_buffer[0];
+		return (SByte)buffer[0];
 	}
 
 	// Read the unsinged integer types
 	public Byte ReadByte()
 	{
 		FillBuffer(1);
-		return m_buffer[0];
+		return buffer[0];
 	}
 
 	public UInt16 ReadUInt16()
 	{
 		FillBuffer(2);
-		if (m_littleEndian)
-			return (UInt16)((m_buffer[0] & 255) | (m_buffer[1] << 8));
+		if (littleEndian)
+			return (UInt16)((buffer[0] & 255) | (buffer[1] << 8));
 		else
-			return (UInt16)((m_buffer[0] << 8) | (m_buffer[1] & 255));
+			return (UInt16)((buffer[0] << 8) | (buffer[1] & 255));
 	}
+
 	public UInt32 ReadUInt32()
 	{
 		FillBuffer(4);
-		if (m_littleEndian)
-			return (UInt32)(((m_buffer[0] | (m_buffer[1] << 8)) | (m_buffer[2] << 16)) | (m_buffer[3] << 24));
+		if (littleEndian)
+			return (UInt32)(((buffer[0] | (buffer[1] << 8)) | (buffer[2] << 16)) | (buffer[3] << 24));
 		else
-			return (UInt32)(((m_buffer[3] | (m_buffer[2] << 8)) | (m_buffer[1] << 16)) | (m_buffer[0] << 24));
+			return (UInt32)(((buffer[3] | (buffer[2] << 8)) | (buffer[1] << 16)) | (buffer[0] << 24));
 	}
+
 	public UInt64 ReadUInt64()
 	{
 		UInt32 a, b;
 		FillBuffer(8);
-		if (m_littleEndian)
+		if (littleEndian)
 		{
-			a = (UInt32)(((m_buffer[0] | (m_buffer[1] << 8)) | (m_buffer[2] << 16)) | (m_buffer[3] << 24));
-			b = (UInt32)(((m_buffer[4] | (m_buffer[5] << 8)) | (m_buffer[6] << 16)) | (m_buffer[7] << 24));
+			a = (UInt32)(((buffer[0] | (buffer[1] << 8)) | (buffer[2] << 16)) | (buffer[3] << 24));
+			b = (UInt32)(((buffer[4] | (buffer[5] << 8)) | (buffer[6] << 16)) | (buffer[7] << 24));
 		}
 		else
 		{
-			a = (UInt32)(((m_buffer[7] | (m_buffer[6] << 8)) | (m_buffer[5] << 16)) | (m_buffer[4] << 24));
-			b = (UInt32)(((m_buffer[3] | (m_buffer[2] << 8)) | (m_buffer[1] << 16)) | (m_buffer[0] << 24));
+			a = (UInt32)(((buffer[7] | (buffer[6] << 8)) | (buffer[5] << 16)) | (buffer[4] << 24));
+			b = (UInt32)(((buffer[3] | (buffer[2] << 8)) | (buffer[1] << 16)) | (buffer[0] << 24));
 		}
 		return (((UInt64)(b)) << 32) | ((UInt64)(a));
 	}
 
 	// Reads a null terminated string
-	public String ReadNullTermString()
+	/// <summary>
+	/// Reads a null-terminated string from the current stream.
+	/// </summary>
+	/// <returns>String read from the stream</returns>
+	public string ReadNullTermString()
 	{
-		Byte lastByte;
+		byte lastByte;
 		StringBuilder sb = new StringBuilder();
 
 		do
 		{
-			lastByte = (Byte)m_stream.ReadByte();
-
+			lastByte = (byte)stream.ReadByte();
 			if (lastByte != 0x00)
 				sb.Append((Char)lastByte);
 
@@ -210,29 +247,12 @@ public class FileReader
 	public Guid ReadGuid()
 	{
 		FillBuffer(16);
-		return new System.Guid(m_buffer);
-	}
-
-	public Stream BaseStream 
-	{
-		get { return m_stream; }
-		set { m_stream = value; }
+		return new System.Guid(buffer);
 	}
 
 	protected void Init(System.IO.Stream input, bool littleEndian, System.Text.Encoding encoding)
 	{
-		m_stream = input;
 
-		m_decoder = encoding.GetDecoder();
-
-		m_littleEndian = littleEndian;
-
-		m_charBuffer = null;
-		m_charBytes = null;
-
-		m_buffer = new Byte[16];
-
-		m_disposed = false;
 	}
 
 	private void FillBuffer(Int32 numBytes)
@@ -240,7 +260,7 @@ public class FileReader
 		Int32 i1 = 0;
 		Int32 i = 0;
 
-		if (this.m_stream == null)
+		if (this.stream == null)
 		{
 			// Error File Not Open
 			FileNotOpen();
@@ -248,18 +268,18 @@ public class FileReader
 
 		if (numBytes == 1)
 		{
-			i1 = this.m_stream.ReadByte();
+			i1 = this.stream.ReadByte();
 			if (i1 == -1)
 			{
 				EndOfFile();
 			}
-			this.m_buffer[0] = (Byte)i1;
+			this.buffer[0] = (Byte)i1;
 			return;
 		}
 
 		do
 		{
-			i1 = this.m_stream.Read(this.m_buffer, i, (numBytes - i));
+			i1 = this.stream.Read(this.buffer, i, (numBytes - i));
 			if (i1 == 0)
 			{
 				EndOfFile();
@@ -274,21 +294,21 @@ public class FileReader
 		Int32 i1 = 0;
 		Int32 i2;
 
-		if (m_charBytes == null)
+		if (charBytes == null)
 		{
-			m_charBytes = new Byte[MaxCharBytesSize];
+			charBytes = new Byte[MaxCharBytesSize];
 		}
 
-		if (m_singleChar == null)
+		if (singleChar == null)
 		{
-			m_singleChar = new Char[1];
+			singleChar = new Char[1];
 		}
 
 		while (i == 0)
 		{
 			i1 = m_2BytesPerChar ? 2 : 1;
-			i2 = m_stream.ReadByte();
-			m_charBytes[0] = (Byte)i2;
+			i2 = stream.ReadByte();
+			charBytes[0] = (Byte)i2;
 			if (i2 == -1)
 			{
 				i1 = 0;
@@ -296,8 +316,8 @@ public class FileReader
 
 			if (i1 == 2)
 			{
-				i2 = m_stream.ReadByte();
-				m_charBytes[1] = (Byte)i2;
+				i2 = stream.ReadByte();
+				charBytes[1] = (Byte)i2;
 				if (i2 == -1)
 				{
 					i1 = 1;
@@ -306,7 +326,7 @@ public class FileReader
 
 			if (i1 != 0)
 			{
-				i = m_decoder.GetChars(m_charBytes, 0, i1, m_singleChar, 0);
+				i = decoder.GetChars(charBytes, 0, i1, singleChar, 0);
 			}
 			else
 			{
@@ -315,7 +335,7 @@ public class FileReader
 		}
 		if (i != 0)
 		{
-			return m_singleChar[0];
+			return singleChar[0];
 		}
 
 		return -1;
@@ -325,9 +345,9 @@ public class FileReader
 		int i = 0;
 		int i1 = 0;
 		int i2 = count;
-		if (m_charBytes == null)
+		if (charBytes == null)
 		{
-			m_charBytes = new Byte[i2];
+			charBytes = new Byte[i2];
 		}
 		do
 		{
@@ -341,13 +361,13 @@ public class FileReader
 				i1 = 128;
 			}
 
-			i1 = m_stream.Read(m_charBytes, 0, i1);
+			i1 = stream.Read(charBytes, 0, i1);
 			if (i1 == 0)
 			{
 				return count - i2;
 			}
 
-			i = m_decoder.GetChars(m_charBytes, 0, i1, buffer, index);
+			i = decoder.GetChars(charBytes, 0, i1, buffer, index);
 			i2 -= i;
 			index += i;
 		} while (i2 > 0);
@@ -364,15 +384,4 @@ public class FileReader
 		throw new Exception("FileNotOpen"); 
 	}
 
-	private bool m_2BytesPerChar;
-	private Byte[] m_buffer;
-	private System.Char[] m_charBuffer;
-	private Byte[] m_charBytes;
-	private System.Text.Decoder m_decoder;
-	private System.Char[] m_singleChar;
-	const Int32 MaxCharBytesSize = 128;
-
-	private Stream m_stream;
-	private bool m_littleEndian;
-	private bool m_disposed;
 }

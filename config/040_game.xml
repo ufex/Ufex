@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FileTypes>
+		<FileType>
+			<ID>ROM_NES</ID>
+			<Description>iNES ROM Image</Description>
+			<Category>ROM</Category>
+			<MIMEType/>
+			<Wikipedia>Nintendo_Entertainment_System</Wikipedia>
+			<Extensions>
+				<Extension>nes</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x4E45531A</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+	</FileTypes>
+</Ufex>

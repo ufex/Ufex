@@ -14,25 +14,25 @@
             
             <!-- File Type -->
             <Grid ColumnDefinitions="100,*">
-                <TextBlock Grid.Column="0" Text="File Type:" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="0" Text="Type:" FontWeight="SemiBold" VerticalAlignment="Center" />
                 <TextBox Grid.Column="1" x:Name="TextFileType" IsReadOnly="True" />
             </Grid>
             
             <!-- File Path -->
             <Grid ColumnDefinitions="100,*">
-                <TextBlock Grid.Column="0" Text="File Path:" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="0" Text="Path:" FontWeight="SemiBold" VerticalAlignment="Center" />
                 <TextBox Grid.Column="1" x:Name="TextFilePath" IsReadOnly="True" />
             </Grid>
             
             <!-- File Name, Extension, Size Row -->
             <Grid ColumnDefinitions="100,2*,80,*,70,*">
-                <TextBlock Grid.Column="0" Text="File Name:" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="0" Text="Name:" FontWeight="SemiBold" VerticalAlignment="Center" />
                 <TextBox Grid.Column="1" x:Name="TextFileName" IsReadOnly="True" Margin="0,0,8,0" />
                 
                 <TextBlock Grid.Column="2" Text="Extension:" FontWeight="SemiBold" VerticalAlignment="Center" />
                 <TextBox Grid.Column="3" x:Name="TextFileExtension" IsReadOnly="True" Margin="0,0,8,0" />
                 
-                <TextBlock Grid.Column="4" Text="File Size:" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="4" Text="Size:" FontWeight="SemiBold" VerticalAlignment="Center" />
                 <TextBox Grid.Column="5" x:Name="TextFileSize" IsReadOnly="True" />
             </Grid>
             

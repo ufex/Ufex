@@ -74,7 +74,52 @@ File Name: <text box (50% width)> File Extension: <text box> File Size: <text bo
 
 ## Hex Tab
 
-Hexadecimal viewer
+Hexadecimal viewer. The hex viewer should be a Control in `Ufex.Controls.Avalonia` that is added to the Hex tab View in `Ufex.Desktop`.
+
+* The hex view will consist of 4 horizontal components: Position Column, Hex Column, ASCII Column and Vertical Scroll Bar.
+* The Position column will display the position (offset) in the file
+	* The text for the position column should be zero-padded and right aligned within the cell
+* The Hex column will display the hexadecimal bytes in the file (aligned with the current position)
+	* The two-byte characters should be centered horizontally and vertically within the cell
+* The ASCII column will display the ASCII representation of the bytes in the file
+	* The ASCII character should be centered horizontally and vertically within the cell
+* The vertical scroll bar will change the position (offset) being displayed in the file
+	* The vertical scroll bar should be disabled for small files that fit completely within the current `NumRows`/`NumColumns`
+* The Position/Hex/ASCII data will be displayed in grids
+	* Each grid will have a border around it (`GridBorderColor`)
+	* Each cell in the grid will have a border around it with color (`CellBorderColor`)
+	* The grids should have some fixed amount of horizontal padding between them (`GridHorizontalSpacing`)
+	* The grids must all be the same height. The height of the cells in each grid must match.
+	* `NumRows`/`NumColumns` will determine the dimensions of the grid. If these are set to -1, the NumRows and/or NumColumns must be calculated based on the current size of the control. They should fill the control width or height when -1 is specified in these values.
+
+
+### Control Properties
+
+| Type  | Name            | Description                                                                        | Default                                                     |
+|-------|-----------------|------------------------------------------------------------------------------------|-------------------------------------------------------------|
+| int   | BufferSize      | The size of the file data buffer                                                   | 64 KB                                                       |
+| bool  | HexCaps         | Display hexadecimals with capital letters                                          | true                                                        |
+| Color | TextColor       | The color of the position, hex, ascii text                                         | {DynamicResource SystemControlForegroundBaseHighBrush}      |
+| Color | CellBorderColor | The color of the borders around each cell                                          | rgb(127,157,185)                                          |
+| Color | GridBorderColor | The color of the borders around each grid                                          | {DynamicResource SystemControlForegroundBaseMediumLowBrush} |
+| Color | BackgroundColor | The background color of the control                                                | transparent                                                 |
+| int   | GridHorizontalSpacing | The number of pixels in between each grid                                    | 6px                                                         |
+| int   | NumRows         | The number of rows to display (-1 for fill height)                                 | -1                                                          |
+| int   | NumColumns      | The number of columns (bytes) to display in the hex/ascii view (-1 for fill width) | -1                                                          |
+
+### UI
+
+```
+  Position      Hex Bytes  ASCII Chars
+	   ↓             ↓            ↓ 
+|------------------------------------|
+| 00000000 || 50|4B|74|65 || P|K|t|e |
+|----------||-------------||---------|
+| 00000004 || 50|4B|74|65 || P|K|t|e |
+|----------||-------------||---------|
+| 00000008 || 50|4B|74|65 || P|K|t|e |
+|------------------------------------|
+```
 
 ## Preview Tab
 

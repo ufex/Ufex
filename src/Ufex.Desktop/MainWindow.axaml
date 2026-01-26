@@ -86,13 +86,7 @@
                 <views:InfoTabView x:Name="InfoTab" />
             </TabItem>
             <TabItem Header="Hex" x:Name="TabHex">
-                <Border Padding="8">
-                    <TextBlock Text="Hex view will be displayed here..."
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                               FontSize="16" />
-                </Border>
+                <views:HexTabView x:Name="HexTab" />
             </TabItem>
             <TabItem Header="Preview" x:Name="TabPreview">
                 <Border Padding="8">

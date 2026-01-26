@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Ufex.API\Ufex.API.csproj" />
     <ProjectReference Include="..\Ufex.FileType\Ufex.FileType.csproj" />
+    <ProjectReference Include="..\Ufex.Controls.Avalonia\Ufex.Controls.Avalonia.csproj" />
   </ItemGroup>
 
   <!-- Copy config files from project root to output directory -->

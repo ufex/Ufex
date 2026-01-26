@@ -6,8 +6,8 @@ namespace Ufex.API;
 
 public class HexNumberFormatter
 {
-	private static string[] hexCharsL = new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
-	private static string[] hexCharsU = new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
+	private static string[] hexCharsLowercase = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
+	private static string[] hexCharsUppercase = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
 
 	private bool caps = true;
 	private bool lead0X = true;
@@ -67,7 +67,7 @@ public class HexNumberFormatter
 		Byte n1 = (byte)(x / 16);
 		Byte n2 = (byte)(x % 16);
 
-		string[] chars = caps ? hexCharsU : hexCharsL;
+		string[] chars = caps ? hexCharsUppercase : hexCharsLowercase;
 
 		if(x < 16 && !leadZeros)
 			return String.Concat(prefix, chars[n2]);
@@ -94,17 +94,17 @@ public class HexNumberFormatter
 			if(!leadZeros)
 			{
 				if(x < 16)
-					return String.Concat(prefix, hexCharsU[n1]); 
+					return String.Concat(prefix, hexCharsUppercase[n1]); 
 				else if(x < 256)
-					return String.Concat(prefix, hexCharsU[n2], hexCharsU[n1]); 
+					return String.Concat(prefix, hexCharsUppercase[n2], hexCharsUppercase[n1]); 
 				else if(x < 4096)
-					return String.Concat(String.Concat(prefix, hexCharsU[n3]), String.Concat(hexCharsU[n2], hexCharsU[n1]));
+					return String.Concat(String.Concat(prefix, hexCharsUppercase[n3]), String.Concat(hexCharsUppercase[n2], hexCharsUppercase[n1]));
 				else
-					return String.Concat(String.Concat(prefix, hexCharsU[n4]), String.Concat(hexCharsU[n3], hexCharsU[n2], hexCharsU[n1])); 
+					return String.Concat(String.Concat(prefix, hexCharsUppercase[n4]), String.Concat(hexCharsUppercase[n3], hexCharsUppercase[n2], hexCharsUppercase[n1])); 
 			}
 			else
 			{
-				return String.Concat(String.Concat(prefix, hexCharsU[n4]), String.Concat(hexCharsU[n3], hexCharsU[n2], hexCharsU[n1]));
+				return String.Concat(String.Concat(prefix, hexCharsUppercase[n4]), String.Concat(hexCharsUppercase[n3], hexCharsUppercase[n2], hexCharsUppercase[n1]));
 			}
 		}
 		else
@@ -112,17 +112,17 @@ public class HexNumberFormatter
 			if (!leadZeros)
 			{
 				if (x < 16)
-					return String.Concat(prefix, hexCharsL[n1]);
+					return String.Concat(prefix, hexCharsLowercase[n1]);
 				else if (x < 256)
-					return String.Concat(prefix, hexCharsL[n2], hexCharsL[n1]);
+					return String.Concat(prefix, hexCharsLowercase[n2], hexCharsLowercase[n1]);
 				else if (x < 4096)
-					return String.Concat(String.Concat(prefix, hexCharsL[n3]), String.Concat(hexCharsL[n2], hexCharsL[n1]));
+					return String.Concat(String.Concat(prefix, hexCharsLowercase[n3]), String.Concat(hexCharsLowercase[n2], hexCharsLowercase[n1]));
 				else
-					return String.Concat(String.Concat(prefix, hexCharsL[n4]), String.Concat(hexCharsL[n3], hexCharsL[n2], hexCharsL[n1]));
+					return String.Concat(String.Concat(prefix, hexCharsLowercase[n4]), String.Concat(hexCharsLowercase[n3], hexCharsLowercase[n2], hexCharsLowercase[n1]));
 			}
 			else
 			{
-				return String.Concat(prefix, hexCharsL[n4]) + String.Concat(hexCharsL[n3], hexCharsL[n2], hexCharsL[n1]);
+				return String.Concat(prefix, hexCharsLowercase[n4]) + String.Concat(hexCharsLowercase[n3], hexCharsLowercase[n2], hexCharsLowercase[n1]);
 			}
 		}
 	}

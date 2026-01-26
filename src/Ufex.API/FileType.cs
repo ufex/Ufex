@@ -1,14 +1,18 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Resources;
 using System.Drawing;
 using System.Reflection;
 using System.IO;
-
 using Ufex.API.Tree;
+using Ufex.API.Validation;
+using System.Diagnostics;
 
 namespace Ufex.API;
 
+/// <summary>
+/// Base class for all File Types
+/// </summary>
 public abstract class FileType
 {
 	public string m_DebugText;
@@ -18,16 +22,13 @@ public abstract class FileType
 
 	private TreeNode rootTreeNode;
 
-	private FileCheckInfo m_fileCheckInfo;
+	private ValidationReport validationReport;
 	
 	private ArrayToNum arrayToNum;
+
 	private DataFormatter dataFormatter;
 
-	private ArrayList icons;
-	
-	private bool m_useIcons;
-
-	private string m_appPath;
+	private List<Ufex.API.Visual.Visual> visuals;
 
 	private Logger log;
 
@@ -44,7 +45,7 @@ public abstract class FileType
 
 	public NumberFormat NumFormat
 	{
-		set { dataFormatter.SetNumFormat(value); }
+		set { dataFormatter.NumFormat = value; }
 	}
 
 	public TreeNodeCollection TreeNodes
@@ -52,9 +53,14 @@ public abstract class FileType
 		get { return rootTreeNode.Nodes; }
 	}
 
-	public FileCheckInfo FileCheck
+	public ValidationReport ValidationReport
 	{
-		get { return m_fileCheckInfo; }
+		get { return validationReport; }
+	}
+
+	public Ufex.API.Visual.Visual[] Visuals
+	{
+		get { return visuals.ToArray(); }
 	}
 
 	protected DataFormatter NTS
@@ -67,32 +73,26 @@ public abstract class FileType
 		get { return arrayToNum; }
 	}
 
-	public String ApplicationPath
-	{
-		get { return m_appPath; }
-	}
-
 	public string Description { get; protected set; }
 
-	public Boolean UseTreeViewIcons
-	{
-		get { return m_useIcons; }
-		protected set { m_useIcons = value; }
-	}
-
-	// Determines whether the Technical View Tab is displayed
+	/// <summary>
+	/// Determines whether the Structure View Tab is displayed
+	/// </summary>
 	public Boolean ShowTechnical { get; protected set; }
 
+	/// <summary>
+	/// Determines whether the Preview View Tab is displayed
+	/// </summary>
 	public Boolean ShowGraphic { get; protected set; }
 
+	/// <summary>
+	/// Determines whether the Validation View Tab is displayed
+	/// </summary>
 	public Boolean ShowFileCheck { get; protected set; }
 
-	[Obsolete("Use Log instead")]
-	protected Logger Debug
-	{
-		get { return log; }
-	}
-
+	/// <summary>
+	/// Logger instance for the FileType
+	/// </summary>
 	protected Logger Log
 	{
 		get { return log; }
@@ -100,25 +100,20 @@ public abstract class FileType
 
 	public FileType()
 	{
-		log = new Logger();
+		log = new Logger("FileTypeInstance.log");
 		m_DebugText = "";
 
-		// Initialize FileCheckInfo
-		m_fileCheckInfo = new FileCheckInfo();
+		// Initialize ValidationReport
+		validationReport = new ValidationReport();
 
 		// Create the ArrayToNum instance
 		arrayToNum = new ArrayToNum();
 
-		// Create an instance of the NumToString Class
+		// Create an instance of the DataFormatter Class
 		dataFormatter = new DataFormatter();
 
-		// Set the number format for the NumToString
+		// Set the number format for the DataFormatter
 		dataFormatter.NumFormat = NumberFormat.Default;
-
-		icons = new ArrayList();
-
-		m_useIcons = false;
-		//LoadIcons();
 
 		// By default these tabs are hidden
 		ShowTechnical = false;
@@ -150,7 +145,7 @@ public abstract class FileType
 	abstract public bool ProcessFile();
 
 	// Returns the data table that corresponds to the treenode
-	virtual public Ufex.API.Tables.TableData GetData(TreeNode tn)
+	virtual public Ufex.API.Tables.TableData? GetData(TreeNode tn)
 	{
 		return null;
 	}
@@ -165,27 +160,6 @@ public abstract class FileType
 	virtual public String GetFileCreator()
 	{
 		return "";
-	}
-
-	// Returns an image representation of the file
-	virtual public Image GetImage()
-	{
-		return null;
-	}
-
-	// Add an icon - returns the icon id number
-	public int AddIcon(Icon ico) 
-	{ 
-		return icons.Add(ico); 
-	}
-
-	public int GetNumIcons() 
-	{
-		return icons.Count; 
-	}
-
-	public Icon GetIcon(int i) { 
-		return (Icon)icons[i]; 
 	}
 
 	// Functions for interfacing with the ArrayToNum Class
@@ -219,35 +193,6 @@ public abstract class FileType
 			m_DebugText = NewText;
 
 		log.Info(NewText);
-	}
-
-	private void LoadIcons()
-	{
-		string[] iconNames = {
-			"Null.ico",
-			"Circle.ico",
-			"Square.ico",
-			"Table.ico",
-			"Properties.ico",
-			"Text.ico",
-			"Script.ico",
-			"Book.ico",
-			"Objects.ico",
-			"FolderOpen.ico",
-			"FolderClosed.ico"
-		};
-
-		ResourceManager resourceManager = new ResourceManager("FileType.ResourceFiles", Assembly.GetExecutingAssembly());
-		try
-		{
-			for (int i = 0; i < iconNames.Length; i++)
-				AddIcon((Icon)resourceManager.GetObject(iconNames[i]));
-		}
-		catch (Exception e)
-		{
-			this.DebugOut(e.Message);
-			m_useIcons = false;
-		}
 	}
 
 }
