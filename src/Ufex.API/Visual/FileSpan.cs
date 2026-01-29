@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 
 namespace Ufex.API.Visual;
 
@@ -7,12 +8,39 @@ namespace Ufex.API.Visual;
 /// </summary>
 public struct FileSpan
 {
-	public Int64 StartPosition;
-	public Int64 EndPosition;
+	/// <summary>
+	/// The starting position of the span in the file.
+	/// </summary>
+	public long StartPosition { get; set; }
 	
-	public FileSpan(Int64 startPosition, Int64 endPosition) 
+	/// <summary>
+	/// The ending position of the span in the file.
+	/// </summary>
+	public long EndPosition { get; set; }
+
+	/// <summary>
+	/// An optional name or label for the span.
+	/// </summary>
+	public string? Name { get; set; }
+	
+	/// <summary>
+	/// The color associated with the span.
+	/// </summary>
+	public uint? Color { get; set; } // ARGB color value (0xAARRGGBB format)
+	
+	public FileSpan(long startPosition, long endPosition) 
 	{ 
 		StartPosition = startPosition;
-		EndPosition = endPosition; 
+		EndPosition = endPosition;
+		Name = null;
+		Color = null;
+	}
+
+	public FileSpan(long startPosition, long endPosition, string? name, uint? color = null)
+	{
+		StartPosition = startPosition;
+		EndPosition = endPosition;
+		Name = name;
+		Color = color;
 	}
 }

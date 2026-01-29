@@ -2,10 +2,14 @@
 namespace Ufex.API.Visual;
 
 /// <summary>
-/// Represents an image, with a description.
+/// Represents an visual element, with a description.
 /// </summary>
-public class Visual
+public abstract class Visual
 {
-	public Ufex.API.Visual.Image Image { get; set; }
-	public string Description { get; set; } 
+	public string Description { get; protected set; } 
+
+	public Visual(string description)
+	{
+		Description = description;
+	}
 }

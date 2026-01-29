@@ -1,23 +1,17 @@
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 
 namespace Ufex.API.Visual;
 
-public class FileMap : VectorImage
+public class FileMap : Visual
 {
 	public API.Visual.FileSpan[] Spans { get; set; }
+	public ulong Size { get; set; }
 
-	public FileMap(API.Visual.FileSpan[] spans) : base(new MemoryStream())
+	public FileMap(API.Visual.FileSpan[] spans, ulong size) : base("File Map")
 	{
 		Spans = spans;
-	}
-
-	private void Draw()
-	{
-		using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true))
-		{
-			writer.Write("Some data");
-			writer.Flush();
-		}
+		Size = size;
 	}
 }

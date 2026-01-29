@@ -43,8 +43,8 @@ public abstract class TableData
 
 	protected string m_TableName;
 
-	protected int numRows;              // Number of rows in use
-	protected int numColumns;           // Number of columns in use
+	private int _numRows;              // Number of rows in use
+	private int _numColumns;           // Number of columns in use
 
 	/****************************
 		Table Data
@@ -55,7 +55,7 @@ public abstract class TableData
 	// Set to true when a size error occurs
 	protected bool sizeError;
 
-	private bool isDynamic;
+	private bool _isDynamic;
 
 	/*****************************
 		DataTable Style Options
@@ -71,6 +71,61 @@ public abstract class TableData
 	private Color m_SelectionBackColor;
 	private Color m_SelectionForeColor;
 
+	public int NumColumns
+	{
+		get { return _numColumns; }
+		set { _numColumns = value; }
+	}
+
+	public int NumRows
+	{
+		get { return _numRows; }
+		protected set { _numRows = value; }
+	}
+
+	public int Capacity
+	{
+		get { return rowData.Capacity; }
+		set { rowData.Capacity = value; }
+	}
+
+	public bool IsDynamic
+	{
+		get { return _isDynamic; }
+		protected set { _isDynamic = value; }
+	}
+
+	public string TemplateName { get; protected set; } = string.Empty;
+
+	[Obsolete]
+	public void SetCapacity(int numRows) 
+	{
+		rowData.Capacity = numRows;
+	}
+
+	[Obsolete]
+	public int GetNumRows() 
+	{
+		return _numRows;
+	}
+
+	[Obsolete]
+	public int GetNumColumns() 
+	{
+		return _numColumns;
+	}
+
+	[Obsolete]
+	public bool GetIsDynamic() 
+	{
+		return _isDynamic;
+	}
+
+	[Obsolete]
+	public void SetNumColumns(int numColumns) 
+	{
+		_numColumns = numColumns;
+	}
 
 	public TableData() : this(0)
 	{
@@ -78,11 +133,11 @@ public abstract class TableData
 
 	public TableData(int numCols)
 	{
-		numRows = 0;
-		numColumns = numCols;
+		_numRows = 0;
+		_numColumns = numCols;
 		columns = new ArrayList(numCols);
 
-		for (int c = 0; c < numColumns; c++)
+		for (int c = 0; c < _numColumns; c++)
 		{
 			Column newCol = new Column();
 			newCol.name = "";
@@ -150,7 +205,7 @@ public abstract class TableData
 		newCol.mappingName = GetColumnMappingName(newCol.name, newCol.width, (int)newCol.alignment);
 
 		columns.Add(newCol);
-		numColumns++;
+		_numColumns++;
 	}
 
 	public virtual void SetColumn(int colNum, string colName)
@@ -164,7 +219,7 @@ public abstract class TableData
 
 	public virtual void SetColumn(int colNum, string colName, int colWidth, ColumnAlignment colAlign)
 	{
-		if (colNum >= numColumns)
+		if (colNum >= _numColumns)
 		{
 			sizeError = true;
 			return;
@@ -187,57 +242,6 @@ public abstract class TableData
 		columns[colNum] = newCol;
 	}
 
-	public int NumColumns
-	{
-		get { return numColumns; }
-		set { numColumns = value; }
-	}
-
-	public int NumRows
-	{
-		get { return numRows; }
-	}
-
-	public int Capacity
-	{
-		get { return rowData.Capacity; }
-		set { rowData.Capacity = value; }
-	}
-
-	public bool IsDynamic
-	{
-		get { return isDynamic; }
-		protected set { isDynamic = value; }
-	}
-
-	[Obsolete]
-	public void SetCapacity(int numRows) 
-	{
-		rowData.Capacity = numRows;
-	}
-
-	[Obsolete]
-	public int GetNumRows() 
-	{
-		return numRows;
-	}
-
-	[Obsolete]
-	public int GetNumColumns() 
-	{
-		return numColumns;
-	}
-
-	[Obsolete]
-	public bool GetIsDynamic() 
-	{
-		return isDynamic;
-	}
-
-	[Obsolete]
-	public void SetNumColumns(int numColumns) {
-		this.numColumns = numColumns;
-	}
 
 	/*****************************************
 		Functions for using with DataTable
@@ -252,7 +256,7 @@ public abstract class TableData
 		DataRowCollection rows = myData.Rows;
 
 		// Add the columns to the table
-		for (int c = 0; c < numColumns; c++)
+		for (int c = 0; c < _numColumns; c++)
 		{
 			Column tmpCol = (Column)this.columns[c];
 			DataColumn newCol = new DataColumn(tmpCol.name);
@@ -263,11 +267,11 @@ public abstract class TableData
 		// Add the Data to the DataTable
 		DataRow myRow;
 		string[] tmpRow;
-		for (int r = 0; r < numRows; r++)
+		for (int r = 0; r < _numRows; r++)
 		{
 			myRow = myData.NewRow();
 			tmpRow = GetRow(r, df);
-			for (int c = 0; c < numColumns; c++)
+			for (int c = 0; c < _numColumns; c++)
 			{
 				myRow[columns[c]] = tmpRow[c];
 			}
@@ -296,16 +300,16 @@ public abstract class TableData
 
 		// Calculate the actual column widths
 		int totalWidth = 0;
-		for (int c = 0; c < numColumns; c++)
+		for (int c = 0; c < _numColumns; c++)
 			totalWidth += ((Column)columns[c]).width;
 
-		for (int c = 0; c < numColumns; c++)
+		for (int c = 0; c < _numColumns; c++)
 		{
 			Column myCol = (Column)columns[c];
 			myCol.widthPercent = (double)myCol.width / (double)totalWidth;
 		}
 
-		for (int c = 0; c < numColumns; c++)
+		for (int c = 0; c < _numColumns; c++)
 		{
 			DataGridColumnStyle dgcs = new DataGridTextBoxColumn();
 			Column myCol = (Column)columns[c];
@@ -334,7 +338,7 @@ public abstract class TableData
 
 	public virtual void AddDataGridColumns(GridColumnStylesCollection dataGridCSC)
 	{
-		for (int c = 0; c < numColumns; c++)
+		for (int c = 0; c < _numColumns; c++)
 		{
 			Column myCol = (Column)columns[c];
 			if (!dataGridCSC.Contains(myCol.name))
@@ -368,7 +372,7 @@ public abstract class TableData
 	{
 		lv.Columns.Clear();
 
-		for (int c = 0; c < numColumns; c++)
+		for (int c = 0; c < _numColumns; c++)
 		{
 			ColumnHeader ch = new ColumnHeader();
 			Column tmpCol = (Column)columns[c];
@@ -394,7 +398,7 @@ public abstract class TableData
 	public virtual void GetListViewItemCollection(ListView lv, DataFormatter nts)
 	{
 		lv.Items.Clear();
-		for (int r = 0; r < numRows; r++)
+		for (int r = 0; r < _numRows; r++)
 		{
 			ListViewItem lvItem = new ListViewItem(GetRow(r, nts));
 			lv.Items.Add(lvItem);
@@ -407,12 +411,12 @@ public abstract class TableData
 	***************************************/
 	public string[] GetTextTable(DataFormatter df)
 	{
-		string[] rows = new string[numRows + 4];
-		UInt16[] columnWidths = new UInt16[numColumns];
+		string[] rows = new string[_numRows + 4];
+		UInt16[] columnWidths = new UInt16[_numColumns];
 		UInt16 totalWidth = 0;
 
 		// Calculate the column widths in number of chars
-		for (int i = 0; i < numColumns; i++)
+		for (int i = 0; i < _numColumns; i++)
 		{
 			Column tmpCol = (Column)columns[i];
 			columnWidths[i] = (ushort)(tmpCol.width / 5);
@@ -422,7 +426,7 @@ public abstract class TableData
 
 		StringBuilder columnHeader = new StringBuilder("", totalWidth);
 
-		for (int i = 0; i < numColumns; i++)
+		for (int i = 0; i < _numColumns; i++)
 		{
 			Column tmpCol = (Column)columns[i];
 			columnHeader.Append(tmpCol.name.PadRight(columnWidths[i], ' '));
@@ -432,7 +436,7 @@ public abstract class TableData
 		rows[1] = columnHeader.ToString();
 
 		StringBuilder columnHeader2 = new StringBuilder("", totalWidth);
-		for (int i = 0; i < numColumns; i++)
+		for (int i = 0; i < _numColumns; i++)
 		{
 			for (int c = 0; c < columnWidths[i]; c++)
 				columnHeader2.Append("-");
@@ -442,16 +446,16 @@ public abstract class TableData
 
 		rows[0] = columnHeader2.ToString();
 		rows[2] = columnHeader2.ToString();
-		rows[numRows + 4 - 1] = columnHeader2.ToString();
+		rows[_numRows + 4 - 1] = columnHeader2.ToString();
 
 		// Add the Data to the Text
 		string[] tmpRow;
-		for (int r = 0; r < numRows; r++)
+		for (int r = 0; r < _numRows; r++)
 		{
 			tmpRow = GetRow(r, df);
 			StringBuilder rowText = new StringBuilder("", totalWidth);
 
-			for (int c = 0; c < numColumns; c++)
+			for (int c = 0; c < _numColumns; c++)
 			{
 				rowText.Append(tmpRow[c].PadRight(columnWidths[c], ' '));
 				rowText.Append("|");

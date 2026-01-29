@@ -101,13 +101,7 @@
                 <views:StructureTabView x:Name="StructureTab" />
             </TabItem>
             <TabItem Header="Validation" x:Name="TabValidation">
-                <Border Padding="8">
-                    <TextBlock Text="File validation results will be displayed here..."
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                               FontSize="16" />
-                </Border>
+                <views:ValidationTabView x:Name="ValidationTab" />
             </TabItem>
         </TabControl>
     </DockPanel>

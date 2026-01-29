@@ -14,6 +14,7 @@ public class QuickInfoTableData : Ufex.API.Tables.TableData
 
 	public QuickInfoTableData()
 	{
+		TemplateName = "QuickInfo";
 		AddColumn("Property", 200, ColumnAlignment.Left);
 		AddColumn("Value", 200, ColumnAlignment.Left);
 	}
@@ -25,7 +26,7 @@ public class QuickInfoTableData : Ufex.API.Tables.TableData
 	/// <param name="value">The value corresponding to the property.</param>
 	public void AddRow(string property, string value)
 	{
-		// Create a new ROW object
+		// Create a new Row object
 		QuickInfoRow newRow = new QuickInfoRow();
 
 		// Set the row text data
@@ -35,7 +36,7 @@ public class QuickInfoTableData : Ufex.API.Tables.TableData
 		rowData.Add(newRow);
 
 		// Increment the number of rows
-		numRows++;
+		NumRows++;
 		return;
 	}
 

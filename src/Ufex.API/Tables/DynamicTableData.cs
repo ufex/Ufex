@@ -24,12 +24,12 @@ public class DynamicTableData : Ufex.API.Tables.TableData
 
 	public DynamicTableData(int numCols)
 	{
-		numColumns = numCols;
+		NumColumns = numCols;
 		columns = new ArrayList(numCols);
 
 		IsDynamic = true;
 
-		for (int c = 0; c < numColumns; c++)
+		for (int c = 0; c < NumColumns; c++)
 		{
 			TableData.Column newCol = new TableData.Column();
 			newCol.name = "";
@@ -89,7 +89,7 @@ public class DynamicTableData : Ufex.API.Tables.TableData
 		base.rowData.Add(newRow);
 
 		// Increment the number of rows
-		numRows++;
+		NumRows++;
 		return;
 	}
 
@@ -103,12 +103,12 @@ public class DynamicTableData : Ufex.API.Tables.TableData
 
 	public void SetItem(int rowNum, int colNum, String text)
 	{
-		if (rowNum >= numRows)
+		if (rowNum >= NumRows)
 		{
 			sizeError = true;
 			return;
 		}
-		if (colNum >= numColumns)
+		if (colNum >= NumColumns)
 		{
 			sizeError = true;
 			return;
@@ -131,12 +131,12 @@ public class DynamicTableData : Ufex.API.Tables.TableData
 	/// <returns>An array of formatted strings representing the row data.</returns>
 	protected override string[] GetRow(int r, DataFormatter nts)
 	{
-		string[] rowData = new string[numColumns];
+		string[] rowData = new string[NumColumns];
 
 		// Create a temporary row
 		ObjRow tmpRow = (ObjRow)base.rowData[r];
 
-		for (int c = 0; c < numColumns; c++)
+		for (int c = 0; c < NumColumns; c++)
 		{
 			if (c < tmpRow.numCols)
 			{

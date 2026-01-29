@@ -17,60 +17,74 @@ public abstract class FileType
 {
 	public string m_DebugText;
 	public string m_AppPath;
-	public FileStream m_FileStream;
-	private string filePath;
+	private FileStream _fileStream;
+	private string _filePath;
 
-	private TreeNode rootTreeNode;
+	private TreeNode _rootTreeNode;
 
-	private ValidationReport validationReport;
+	private ValidationReport _validationReport;
 	
-	private ArrayToNum arrayToNum;
+	private ArrayToNum _arrayToNum;
 
-	private DataFormatter dataFormatter;
+	private DataFormatter _dataFormatter;
 
-	private List<Ufex.API.Visual.Visual> visuals;
+	private List<Ufex.API.Visual.Visual> _visuals;
 
 	private Logger log;
 
 	public string FilePath
 	{
-		get { return this.filePath; }
-		set { this.filePath = value; }
+		get { return _filePath; }
+		set { _filePath = value; }
 	}
 
+	/// <summary>
+	/// The input file stream
+	/// </summary>
 	public FileStream FileInStream
 	{
-		get { return m_FileStream; }
+		get { return _fileStream; }
+		set { _fileStream = value; }
 	}
 
 	public NumberFormat NumFormat
 	{
-		set { dataFormatter.NumFormat = value; }
+		get { return _dataFormatter.NumFormat; }
+		set { _dataFormatter.NumFormat = value; }
 	}
 
+	/// <summary>
+	/// Tree nodes to display in the Structure Tab Tree View
+	/// </summary>
 	public TreeNodeCollection TreeNodes
 	{
-		get { return rootTreeNode.Nodes; }
+		get { return _rootTreeNode.Nodes; }
 	}
 
 	public ValidationReport ValidationReport
 	{
-		get { return validationReport; }
+		get { return _validationReport; }
 	}
 
 	public Ufex.API.Visual.Visual[] Visuals
 	{
-		get { return visuals.ToArray(); }
+		get { return _visuals.ToArray(); }
+	}
+
+	protected List<Ufex.API.Visual.Visual> VisualsList
+	{
+		get { return _visuals; }
+		protected set { _visuals = value; }
 	}
 
 	protected DataFormatter NTS
 	{
-		get { return dataFormatter; }
+		get { return _dataFormatter; }
 	}
 
 	protected ArrayToNum ATN
 	{
-		get { return arrayToNum; }
+		get { return _arrayToNum; }
 	}
 
 	public string Description { get; protected set; }
@@ -104,23 +118,23 @@ public abstract class FileType
 		m_DebugText = "";
 
 		// Initialize ValidationReport
-		validationReport = new ValidationReport();
+		_validationReport = new ValidationReport();
 
 		// Create the ArrayToNum instance
-		arrayToNum = new ArrayToNum();
+		_arrayToNum = new ArrayToNum();
 
 		// Create an instance of the DataFormatter Class
-		dataFormatter = new DataFormatter();
+		_dataFormatter = new DataFormatter();
 
 		// Set the number format for the DataFormatter
-		dataFormatter.NumFormat = NumberFormat.Default;
+		_dataFormatter.NumFormat = NumberFormat.Default;
 
 		// By default these tabs are hidden
 		ShowTechnical = false;
 		ShowGraphic = false;
 		ShowFileCheck = false;
 
-		rootTreeNode = new TreeNode("ROOT");
+		_rootTreeNode = new TreeNode("ROOT");
 	}
 
 	~FileType()
@@ -128,17 +142,17 @@ public abstract class FileType
 		m_DebugText = null;
 
 		// Free the file stream
-		if (m_FileStream != null)
+		if (_fileStream != null)
 		{
-			m_FileStream.Close();
-			m_FileStream = null;
+			_fileStream.Close();
+			_fileStream = null;
 		}
 
 		// Delete the trees
-		if (rootTreeNode != null)
+		if (_rootTreeNode != null)
 		{
-			//m_rootTreeNode.Nodes.Clear();
-			rootTreeNode = null;
+			//m__rootTreeNode.Nodes.Clear();
+			_rootTreeNode = null;
 		}
 	}
 
@@ -165,7 +179,7 @@ public abstract class FileType
 	// Functions for interfacing with the ArrayToNum Class
 	public void SetATNEndian(Endian endian) 
 	{ 
-		arrayToNum.DataEndian = endian == Endian.Little ? Endian.Little : Endian.Big; 
+		_arrayToNum.DataEndian = endian == Endian.Little ? Endian.Little : Endian.Big; 
 	}
 
 	// ExceptionOut(Exception* e)

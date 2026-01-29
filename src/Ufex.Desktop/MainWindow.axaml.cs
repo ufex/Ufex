@@ -170,6 +170,7 @@ public partial class MainWindow : Window
 			CloseCurrentFile();
 			InfoTab.Clear();
 			StructureTab.Clear();
+			ValidationTab.Clear();
 			ResetTabs();
 
 			// Step 3: Update the title bar
@@ -267,7 +268,8 @@ public partial class MainWindow : Window
 							Logger.Info($"Created instance of file type class: {_currentFileType.GetType().FullName}");
 
 							// Set the file stream on the file type instance
-							_currentFileType.m_FileStream = _openFileStream;
+							_openFileStream.Seek(0, SeekOrigin.Begin);
+							_currentFileType.FileInStream = _openFileStream;
 							_currentFileType.FilePath = filePath;
 
 							// Step 10: Run the ProcessFile function
@@ -319,6 +321,20 @@ public partial class MainWindow : Window
 									Logger.Error($"Failed to load structure: {ex.Message}");
 								}
 							}
+
+							// Step 15: Retrieve the ValidationReport and display on Validation tab
+							if (_currentFileType.ShowFileCheck)
+							{
+								try
+								{
+									var validationReport = _currentFileType.ValidationReport;
+									ValidationTab.LoadValidationReport(validationReport);
+								}
+								catch (Exception ex)
+								{
+									Logger.Error($"Failed to load validation report: {ex.Message}");
+								}
+							}
 						}
 					}
 				}
@@ -350,6 +366,9 @@ public partial class MainWindow : Window
 
 		// Clear the hex viewer before closing the stream
 		HexTab.Clear();
+
+		// Clear the validation tab
+		ValidationTab.Clear();
 
 		// Close the file stream
 		if (_openFileStream != null)
@@ -395,6 +414,7 @@ public partial class MainWindow : Window
 		Title = "ufex - Universal File Explorer";
 		InfoTab.Clear();
 		StructureTab.Clear();
+		ValidationTab.Clear();
 		ResetTabs();
 		SetStatus("Ready");
 	}

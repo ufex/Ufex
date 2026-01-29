@@ -9,7 +9,7 @@ public class ValidationReport
 {		
 	public enum EntryType
 	{
-		Message,
+		Info,
 		Warning,
 		Error
 	}
@@ -41,17 +41,29 @@ public class ValidationReport
 	{
 		entries = null;
 	}
-	
-	public void Message(string message)
+
+	/// <summary>
+	/// Adds an informational message to the report.
+	/// </summary>
+	/// <param name="message">The informational message to add.</param>
+	public void Info(string message)
 	{
-		entries.Add(new Entry { Type = EntryType.Message, Message = message });
+		entries.Add(new Entry { Type = EntryType.Info, Message = message });
 	}
 
+	/// <summary>
+	/// Adds a warning message to the report.
+	/// </summary>
+	/// <param name="message">The warning message to add.</param>
 	public void Warning(string message)
 	{
 		entries.Add(new Entry { Type = EntryType.Warning, Message = message });
 	}
 
+	/// <summary>
+	/// Adds an error message to the report.
+	/// </summary>
+	/// <param name="message">The error message to add.</param>
 	public void Error(string message)
 	{
 		entries.Add(new Entry { Type = EntryType.Error, Message = message });
