@@ -101,5 +101,129 @@
 				</Signature>
 			</Signatures>
 		</FileType>
+		<FileType>
+			<ID>ARCH_XZ</ID>
+			<Description>XZ Compressed Archive</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/x-xz</MIMEType>
+			<Wikipedia>XZ_Utils</Wikipedia>
+			<Extensions>
+				<Extension>xz</Extension>
+				<Extension>txz</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0xFD377A585A00</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>ARCH_ZSTD</ID>
+			<Description>Zstandard Compressed Archive</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/zstd</MIMEType>
+			<Wikipedia>Zstd</Wikipedia>
+			<Extensions>
+				<Extension>zst</Extension>
+				<Extension>zstd</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x28B52FFD</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>ARCH_LZH</ID>
+			<Description>LZH/LHA Compressed Archive</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/x-lzh-compressed</MIMEType>
+			<Wikipedia>LHA_(file_format)</Wikipedia>
+			<Extensions>
+				<Extension>lzh</Extension>
+				<Extension>lha</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="2">-lh</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>ARCH_ISO</ID>
+			<Description>ISO 9660 Disc Image</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/x-iso9660-image</MIMEType>
+			<Wikipedia>ISO_9660</Wikipedia>
+			<Extensions>
+				<Extension>iso</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="32769">CD001</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>ARCH_LZMA</ID>
+			<Description>LZMA Compressed Archive</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/x-lzma</MIMEType>
+			<Wikipedia>Lempel%E2%80%93Ziv%E2%80%93Markov_chain_algorithm</Wikipedia>
+			<Extensions>
+				<Extension>lzma</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x5D0000</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>ARCH_DMG</ID>
+			<Description>Apple Disk Image</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/x-apple-diskimage</MIMEType>
+			<Wikipedia>Apple_Disk_Image</Wikipedia>
+			<Extensions>
+				<Extension>dmg</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x7801730D626260</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>ARCH_DEB</ID>
+			<Description>Debian Package</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/vnd.debian.binary-package</MIMEType>
+			<Wikipedia>Deb_(file_format)</Wikipedia>
+			<Extensions>
+				<Extension>deb</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="0">!&lt;arch&gt;</Pattern>
+					<Pattern xsi:type="string" offset="8">debian</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>ARCH_RPM</ID>
+			<Description>Red Hat Package Manager</Description>
+			<Category>Archive</Category>
+			<MIMEType>application/x-rpm</MIMEType>
+			<Wikipedia>RPM_Package_Manager</Wikipedia>
+			<Extensions>
+				<Extension>rpm</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0xEDABEEDB</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
 	</FileTypes>
 </Ufex>

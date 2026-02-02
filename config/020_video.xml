@@ -2,7 +2,7 @@
 <Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<FileTypes>
 		<FileType>
-			<ID>VIDO_AVI</ID>
+			<ID>VIDEO_AVI</ID>
 			<ParentID>BASE_RIFF</ParentID>
 			<Description>Audio Video Interleave</Description>
 			<Category>Video</Category>
@@ -19,7 +19,7 @@
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>VIDO_QUICKTIME</ID>
+			<ID>VIDEO_QUICKTIME</ID>
 			<Description>Quicktime Video</Description>
 			<Category>Video</Category>
 			<MIMEType>video/quicktime</MIMEType>

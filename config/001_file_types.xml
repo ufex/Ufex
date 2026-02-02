@@ -14,7 +14,7 @@
 			<AssemblyPath>RIFF.dll</AssemblyPath>
 			<FullTypeName>Ufex.FileTypes.RIFF.AVI</FullTypeName>
 			<FileTypes>
-				<ID>VIDO_AVI</ID>
+				<ID>VIDEO_AVI</ID>
 			</FileTypes>
 		</FileTypeClass>
 		<FileTypeClass>
