@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Ufex.Controls.Avalonia"
+             xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
+             x:Class="Ufex.Controls.Avalonia.ImageViewerControl">
+    
+    <Grid RowDefinitions="Auto,*">
+        <!-- Zoom Toolbar -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="4" Margin="4">
+            <Button Name="ZoomOutButton" Click="OnZoomOutClick" ToolTip.Tip="Zoom Out" Padding="4">
+                <PathIcon Data="M19,13H5V11H19V13Z" Width="16" Height="16" />
+            </Button>
+            <TextBlock Name="ZoomLevelText" Text="100%" VerticalAlignment="Center" Margin="8,0" MinWidth="50" TextAlignment="Center" />
+            <Button Name="ZoomInButton" Click="OnZoomInClick" ToolTip.Tip="Zoom In" Padding="4">
+                <PathIcon Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" Width="16" Height="16" />
+            </Button>
+            <Button Name="ZoomFitButton" Click="OnZoomFitClick" ToolTip.Tip="Fit to Window" Padding="4" Margin="8,0,0,0">
+                <PathIcon Data="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" Width="16" Height="16" />
+            </Button>
+            <Button Name="ZoomResetButton" Click="OnZoomResetClick" ToolTip.Tip="Reset to 100%" Padding="4">
+                <PathIcon Data="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z" Width="16" Height="16" />
+            </Button>
+        </StackPanel>
+        
+        <!-- Image Display Area with Scroll -->
+        <ScrollViewer Grid.Row="1" 
+                      Name="ImageScrollViewer"
+                      HorizontalScrollBarVisibility="Auto" 
+                      VerticalScrollBarVisibility="Auto"
+                      Background="#1E1E1E">
+            <Panel Name="ImageContainer" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Image Name="RasterImageDisplay" 
+                       Stretch="None"
+                       IsVisible="False" />
+                <svg:Svg Name="SvgImageDisplay"
+                         IsVisible="False" />
+            </Panel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

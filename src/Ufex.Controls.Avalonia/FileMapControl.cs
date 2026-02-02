@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Ufex.API.Visual;
+using Ufex.API;
 
 namespace Ufex.Controls.Avalonia;
 
@@ -71,7 +72,8 @@ public class FileMapControl : Control
 		// Draw outer rectangle
 		context.DrawRectangle(null, blackPen, new Rect(0, 0, width - 1, height - 1));
 
-		bool tooSmall = false;
+		// Track occupied vertical ranges for external labels (top, bottom)
+		var occupiedRanges = new System.Collections.Generic.List<(double Top, double Bottom)>();
 
 		for (int i = 0; i < fileMap.Spans.Length; i++)
 		{
@@ -113,21 +115,21 @@ public class FileMapControl : Control
 					fontSize,
 					Brushes.Black);
 
-				if (!tooSmall && sectHeight > formattedText.Height)
+				if (sectHeight >= formattedText.Height + 4)
 				{
-					// Center the text in the section
+					// Enough vertical space - draw text inside the section
 					double textX = (width - formattedText.Width) / 2;
-					if (textX < 0) textX = width / 3;
-					double textY = ((start + finish) / 2) - (formattedText.Height / 2);
+					if (textX < 2) textX = 2;
+					double textY = start + (sectHeight / 2) - (formattedText.Height / 2);
 
 					context.DrawText(formattedText, new Point(textX, textY));
 				}
 				else
 				{
-					// Draw diagonal line to label outside the bar
-					context.DrawLine(blackPen, new Point(width - 1, start), new Point(width + (extraWidth / 2), start - 25));
-
-					// Draw the label text at the end of the line
+					// Not enough space - draw line from vertical middle to label outside
+					double sectionMiddleY = start + (sectHeight / 2);
+					
+					// Create the label text to measure its height
 					var labelText = new FormattedText(
 						name,
 						System.Globalization.CultureInfo.CurrentCulture,
@@ -136,24 +138,42 @@ public class FileMapControl : Control
 						fontSize * 0.9,
 						Brushes.Black);
 
-					context.DrawText(labelText, new Point(width + (extraWidth / 2) + 2, start - 25 - (labelText.Height / 2)));
+					double labelHeight = labelText.Height;
+					double labelY = sectionMiddleY - 15; // Initial desired position
+					double labelTop = labelY - (labelHeight / 2);
+					double labelBottom = labelY + (labelHeight / 2);
 
-					// Check if next section fits
-					double nextSectionHeight;
-					if ((i + 1) < fileMap.Spans.Length)
-						nextSectionHeight = GetSpanHeight(fileMap.Spans[i + 1], fileSize, height);
-					else
-						nextSectionHeight = fontSize + 4;
+					// Check for overlaps with existing labels and adjust
+					bool hasOverlap;
+					int maxIterations = 20; // Prevent infinite loop
+					int iteration = 0;
+					do
+					{
+						hasOverlap = false;
+						foreach (var (occTop, occBottom) in occupiedRanges)
+						{
+							// Check if ranges overlap
+							if (labelTop < occBottom && labelBottom > occTop)
+							{
+								// Move label below the occupied range
+								labelTop = occBottom + 2;
+								labelBottom = labelTop + labelHeight;
+								labelY = labelTop + (labelHeight / 2);
+								hasOverlap = true;
+								break;
+							}
+						}
+						iteration++;
+					} while (hasOverlap && iteration < maxIterations);
 
-					if (nextSectionHeight > fontSize + 4)
-					{
-						tooSmall = true;
-					}
-					else
-					{
-						tooSmall = false;
-						context.DrawLine(blackPen, new Point(width - 1, finish), new Point(width + (extraWidth / 2), finish + 25));
-					}
+					// Record this label's position
+					occupiedRanges.Add((labelTop, labelBottom));
+
+					// Draw diagonal line from middle of section to label area
+					context.DrawLine(blackPen, new Point(width - 1, sectionMiddleY), new Point(width + (extraWidth / 2), labelY));
+
+					// Draw the label text at the end of the line
+					context.DrawText(labelText, new Point(width + (extraWidth / 2) + 2, labelTop));
 				}
 			}
 		}
