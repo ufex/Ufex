@@ -1,0 +1,83 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Ufex.Desktop.OptionsWindow"
+        Title="Options"
+        Width="500"
+        Height="400"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+    
+    <DockPanel Margin="8">
+        <!-- Bottom buttons -->
+        <StackPanel DockPanel.Dock="Bottom" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Spacing="8"
+                    Margin="0,16,0,0">
+            <Button Content="OK" Width="80" Click="OnOkClick" />
+            <Button Content="Cancel" Width="80" Click="OnCancelClick" />
+        </StackPanel>
+        
+        <!-- Tab Control -->
+        <TabControl>
+            <!-- General Tab -->
+            <TabItem Header="General">
+                <StackPanel Margin="16">
+                    <TextBlock Text="No settings available yet." 
+                               Foreground="Gray" 
+                               FontStyle="Italic" />
+                </StackPanel>
+            </TabItem>
+            
+            <!-- Hex Tab -->
+            <TabItem Header="Hex">
+                <StackPanel Margin="16" Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Font:" 
+                                   VerticalAlignment="Center" 
+                                   Width="100" />
+                        <ComboBox x:Name="FontComboBox" 
+                                  Width="250" />
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+            
+            <!-- Structure Tab -->
+            <TabItem Header="Structure">
+                <StackPanel Margin="16" Spacing="8">
+                    <Border BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="12">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Number Format" 
+                                       FontWeight="SemiBold" 
+                                       Margin="0,0,0,4" />
+                            
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="Default Number Format:" 
+                                           VerticalAlignment="Center" 
+                                           Width="160" />
+                                <ComboBox x:Name="NumberFormatComboBox" 
+                                          Width="150">
+                                    <ComboBoxItem Content="Auto" Tag="Default" />
+                                    <ComboBoxItem Content="Hexadecimal" Tag="Hexadecimal" />
+                                    <ComboBoxItem Content="Decimal" Tag="Decimal" />
+                                    <ComboBoxItem Content="Binary" Tag="Binary" />
+                                    <ComboBoxItem Content="ASCII" Tag="Ascii" />
+                                </ComboBox>
+                            </StackPanel>
+                            
+                            <CheckBox x:Name="PrefixHexCheckBox"
+                                      Content="Prefix hexadecimal numbers with &quot;0x&quot;" />
+                            
+                            <CheckBox x:Name="LeadingZerosCheckBox"
+                                      Content="Show leading 0's for hexadecimal numbers" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+    
+</Window>
