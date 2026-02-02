@@ -17,7 +17,7 @@ namespace Ufex.Desktop;
 public partial class MainWindow : Window
 {
 	// Track which tabs are currently visible
-	private bool _previewTabVisible = true;
+	private bool _visualTabVisible = true;
 	private bool _structureTabVisible = true;
 	private bool _validationTabVisible = true;
 
@@ -35,10 +35,61 @@ public partial class MainWindow : Window
 
 	private Logger Logger = new Logger("Desktop_MainWindow.log");
 
+	// Application settings
+	private DesktopSettings _settings = null!;
+
 	public MainWindow()
 	{
 		InitializeComponent();
+		InitializeSettings();
 		InitializeFileTypeManager();
+
+		// Pass settings to child views that need them
+		StructureTab.SetSettings(_settings);
+
+		// Subscribe to window close event to save settings
+		Closing += OnWindowClosing;
+	}
+
+	private void InitializeSettings()
+	{
+		_settings = DesktopSettings.Load();
+
+		// Apply loaded settings
+		_currentNumberFormat = _settings.NumberFormat.DefaultNumberFormat;
+
+		// Apply window size if not maximized
+		if (!_settings.WindowMaximized)
+		{
+			Width = _settings.WindowWidth;
+			Height = _settings.WindowHeight;
+		}
+		else
+		{
+			WindowState = WindowState.Maximized;
+		}
+	}
+
+	private void OnWindowClosing(object? sender, WindowClosingEventArgs e)
+	{
+		SaveSettings();
+	}
+
+	private void SaveSettings()
+	{
+		// Save window state
+		_settings.WindowMaximized = WindowState == WindowState.Maximized;
+
+		if (WindowState != WindowState.Maximized)
+		{
+			_settings.WindowWidth = Width;
+			_settings.WindowHeight = Height;
+		}
+
+		// Save current number format
+		_settings.NumberFormat.DefaultNumberFormat = _currentNumberFormat;
+
+		_settings.Save();
 	}
 
 	private void InitializeFileTypeManager()
@@ -73,9 +124,9 @@ public partial class MainWindow : Window
 	/// Shows or hides tabs based on the loaded file type.
 	/// Info and Hex tabs are always visible.
 	/// </summary>
-	public void SetTabVisibility(bool showPreview, bool showStructure, bool showValidation)
+	public void SetTabVisibility(bool showVisual, bool showStructure, bool showValidation)
 	{
-		SetTabVisible(TabPreview, showPreview, ref _previewTabVisible);
+		SetTabVisible(TabVisual, showVisual, ref _visualTabVisible);
 		SetTabVisible(TabStructure, showStructure, ref _structureTabVisible);
 		SetTabVisible(TabValidation, showValidation, ref _validationTabVisible);
 	}
@@ -171,11 +222,15 @@ public partial class MainWindow : Window
 			InfoTab.Clear();
 			StructureTab.Clear();
 			ValidationTab.Clear();
+			VisualTab.Clear();
 			ResetTabs();
 
 			// Step 3: Update the title bar
 			var fileName = Path.GetFileName(filePath);
 			Title = $"ufex - {fileName}";
+
+			// Add to recent files
+			_settings.AddRecentFile(filePath);
 
 			// Step 4: Get the FileInfo using Ufex.API.FileInfo.FromFile
 			SetStatus("Reading file information...");
@@ -202,7 +257,7 @@ public partial class MainWindow : Window
 
 			// Step 5: Determine the file type using FileTypeManager
 			SetStatus("Identifying file type...");
-			FILETYPE? detectedFileType = null;
+			FileTypeRecord? detectedFileType = null;
 			string fileTypeDescription = "Unknown File Type";
 			
 			if (_fileTypeManager != null)
@@ -284,7 +339,7 @@ public partial class MainWindow : Window
 
 							// Step 11: Toggle visible tabs based on file type settings
 							SetTabVisibility(
-								_currentFileType.ShowGraphic,      // Preview tab
+								_currentFileType.ShowGraphic,      // Visual tab
 								_currentFileType.ShowTechnical,    // Structure tab
 								_currentFileType.ShowFileCheck     // Validation tab
 							);
@@ -292,10 +347,10 @@ public partial class MainWindow : Window
 							// Step 12: Set number format on the file type instance
 							_currentFileType.NumFormat = _currentNumberFormat;
 
-							// Step 13: Call GetQuickInfo() to populate the data grid on the Info tab
+							// Step 13: Call QuickInfoTable property to populate the data grid on the Info tab
 							try
 							{
-								var quickInfo = _currentFileType.GetQuickInfo();
+								var quickInfo = _currentFileType.QuickInfoTable;
 								if (quickInfo != null)
 								{
 									InfoTab.LoadQuickInfo(quickInfo);
@@ -303,7 +358,7 @@ public partial class MainWindow : Window
 							}
 							catch (Exception ex)
 							{
-								Logger.Error($"Failed to get QuickInfo: {ex.Message}");
+								Logger.Error($"Failed to get QuickInfoTable: {ex.Message}");
 							}
 
 							// Step 14: Populate the structure tab with TreeNodes if ShowTechnical is true
@@ -335,13 +390,28 @@ public partial class MainWindow : Window
 									Logger.Error($"Failed to load validation report: {ex.Message}");
 								}
 							}
+
+							// Step 16: If ShowGraphic is true, build the Visual tab based on the Visuals property
+							if (_currentFileType.ShowGraphic)
+							{
+								try
+								{
+									var visuals = _currentFileType.Visuals;
+									long fileSize = _openFileStream?.Length ?? 0;
+									VisualTab.LoadVisuals(visuals, fileSize);
+								}
+								catch (Exception ex)
+								{
+									Logger.Error($"Failed to load visuals: {ex.Message}");
+								}
+							}
 						}
 					}
 				}
 				catch (Exception ex)
 				{
-					Logger.Error($"Failed to load file type handler: {ex.Message}");
-					Console.WriteLine($"Failed to load file type handler: {ex.Message}");
+					Logger.NewException(ex, description: "Failed to load file type handler", funcName: nameof(OpenFile), className: nameof(MainWindow));
+					Logger.Error($"Failed to load file type handler:\n{ex}");
 					// Continue without the plugin - basic file info is still shown
 				}
 			}
@@ -415,6 +485,7 @@ public partial class MainWindow : Window
 		InfoTab.Clear();
 		StructureTab.Clear();
 		ValidationTab.Clear();
+		VisualTab.Clear();
 		ResetTabs();
 		SetStatus("Ready");
 	}
@@ -498,14 +569,36 @@ public partial class MainWindow : Window
 	}
 
 	// Tools Menu Handlers
-	private void OnFileTypeManagerClick(object? sender, RoutedEventArgs e)
+	private async void OnFileTypeManagerClick(object? sender, RoutedEventArgs e)
 	{
-		// TODO: Open File Type Manager
+		if (_fileTypeManager == null)
+		{
+			SetStatus("File Type Manager is not available.");
+			return;
+		}
+
+		var fileTypeManagerWindow = new FileTypeManagerWindow(_fileTypeManager);
+		await fileTypeManagerWindow.ShowDialog(this);
 	}
 
-	private void OnOptionsClick(object? sender, RoutedEventArgs e)
+	private async void OnOptionsClick(object? sender, RoutedEventArgs e)
 	{
-		// TODO: Open Options dialog
+		var optionsWindow = new OptionsWindow(_settings);
+		var result = await optionsWindow.ShowDialog<bool?>(this);
+
+		if (result == true)
+		{
+			// Reload settings that may have changed
+			_currentNumberFormat = _settings.NumberFormat.DefaultNumberFormat;
+
+			// Apply number format if a file type is loaded
+			if (_currentFileType != null)
+			{
+				_currentFileType.NumFormat = _currentNumberFormat;
+			}
+
+			StructureTab.SetNumberFormat(_currentNumberFormat);
+		}
 	}
 
 	// Help Menu Handlers
@@ -535,5 +628,24 @@ public partial class MainWindow : Window
 		};
 
 		await aboutWindow.ShowDialog(this);
+	}
+
+	// Theme Toggle Handler
+	private void OnThemeToggleClick(object? sender, RoutedEventArgs e)
+	{
+		App.Instance?.ToggleTheme();
+		UpdateThemeButtonText();
+	}
+
+	private void UpdateThemeButtonText()
+	{
+		if (App.Instance != null)
+		{
+			ThemeButtonText.Text = App.Instance.IsDarkTheme ? "Light" : "Dark";
+			// Update icon - sun for light mode available, moon for dark mode available
+			ThemeIcon.Data = App.Instance.IsDarkTheme
+				? Avalonia.Media.Geometry.Parse("M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z")
+				: Avalonia.Media.Geometry.Parse("M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z");
+		}
 	}
 }

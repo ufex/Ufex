@@ -8,9 +8,12 @@ using FluentIcons.Common;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Ufex.API;
 using Ufex.API.Tables;
 using Ufex.API.Tree;
+using Ufex.API.Visual;
+using Ufex.Controls.Avalonia;
 using UfexFileType = Ufex.API.FileType;
 
 namespace Ufex.Desktop.Views;
@@ -52,15 +55,20 @@ public class StructureDataRow
 public partial class StructureTabView : UserControl
 {
 	private TreeView? _treeView;
-	private DataGrid? _dataGrid;
+	private ContentControl? _singleVisualContent;
+	private TabControl? _visualsTabControl;
 	private UfexFileType? _fileType;
 	private DataFormatter? _dataFormatter;
+	private DesktopSettings? _settings;
+	private string? _currentTemplateName;
+	private DataGrid? _currentDataGrid;
 
 	public StructureTabView()
 	{
 		InitializeComponent();
 		_treeView = this.FindControl<TreeView>("TreeViewStructure");
-		_dataGrid = this.FindControl<DataGrid>("DataGridStructure");
+		_singleVisualContent = this.FindControl<ContentControl>("SingleVisualContent");
+		_visualsTabControl = this.FindControl<TabControl>("VisualsTabControl");
 
 		if (_treeView != null)
 		{
@@ -104,17 +112,53 @@ public partial class StructureTabView : UserControl
 	{
 		_fileType = null;
 		_dataFormatter = null;
+		_currentTemplateName = null;
+		_currentDataGrid = null;
 
 		if (_treeView != null)
 		{
 			_treeView.ItemsSource = null;
 		}
 
-		if (_dataGrid != null)
+		ClearVisuals();
+	}
+
+	/// <summary>
+	/// Clears the visuals area.
+	/// </summary>
+	public void ClearVisuals()
+	{
+		if (_singleVisualContent != null)
 		{
-			_dataGrid.Columns.Clear();
-			_dataGrid.ItemsSource = null;
+			_singleVisualContent.Content = null;
+			_singleVisualContent.IsVisible = false;
 		}
+
+		if (_visualsTabControl != null)
+		{
+			_visualsTabControl.ItemsSource = null;
+			_visualsTabControl.IsVisible = false;
+		}
+
+		_currentDataGrid = null;
+		_currentTemplateName = null;
+	}
+
+	/// <summary>
+	/// Clears the data table from the data grid.
+	/// </summary>
+	[Obsolete("Use ClearVisuals instead")]
+	public void ClearTable()
+	{
+		ClearVisuals();
+	}
+
+	/// <summary>
+	/// Sets the settings instance for saving/loading column widths.
+	/// </summary>
+	public void SetSettings(DesktopSettings settings)
+	{
+		_settings = settings;
 	}
 
 	/// <summary>
@@ -168,7 +212,7 @@ public partial class StructureTabView : UserControl
 		{
 			Text = node.Text,
 			SourceNode = node,
-			Icon = MapTreeViewIcon(node.ImageIndex)
+			Icon = MapTreeViewIcon(node.Icon)
 		};
 
 		// Recursively add children
@@ -183,9 +227,8 @@ public partial class StructureTabView : UserControl
 	/// <summary>
 	/// Maps TreeViewIcon enum values to FluentIcons Symbol values.
 	/// </summary>
-	private static Symbol MapTreeViewIcon(int iconIndex)
+	private static Symbol MapTreeViewIcon(TreeViewIcon icon)
 	{
-		var icon = (TreeViewIcon)iconIndex;
 		return icon switch
 		{
 			TreeViewIcon.NullIcon => Symbol.Document,
@@ -213,43 +256,150 @@ public partial class StructureTabView : UserControl
 	/// </summary>
 	private void OnTreeSelectionChanged(object? sender, SelectionChangedEventArgs e)
 	{
-		if (_fileType == null || _dataGrid == null)
+		if (_fileType == null)
 			return;
 
 		var selectedItem = _treeView?.SelectedItem as StructureTreeNode;
 		if (selectedItem?.SourceNode == null)
 		{
-			_dataGrid.Columns.Clear();
-			_dataGrid.ItemsSource = null;
+			ClearVisuals();
 			return;
 		}
 
 		try
 		{
-			// Call GetData on the file type with the selected node
-			var tableData = _fileType.GetData(selectedItem.SourceNode);
-			LoadTableData(tableData);
+			var visuals = selectedItem.SourceNode.Visuals;
+			LoadVisuals(visuals);
 		}
 		catch (Exception ex)
 		{
 			Console.WriteLine($"Error loading data for node: {ex.Message}");
-			_dataGrid.Columns.Clear();
-			_dataGrid.ItemsSource = null;
+			ClearVisuals();
 		}
 	}
 
 	/// <summary>
-	/// Loads TableData into the data grid.
+	/// Loads visuals into the right panel.
 	/// </summary>
-	public void LoadTableData(TableData? tableData)
+	private void LoadVisuals(Ufex.API.Visual.Visual[] visuals)
 	{
-		if (_dataGrid == null)
+		ClearVisuals();
+
+		if (visuals == null || visuals.Length == 0)
+		{
 			return;
+		}
+
+		if (visuals.Length == 1)
+		{
+			// Single visual: display without tabs
+			var control = CreateVisualControl(visuals[0]);
+			if (control != null && _singleVisualContent != null)
+			{
+				_singleVisualContent.Content = control;
+				_singleVisualContent.IsVisible = true;
+			}
+		}
+		else
+		{
+			// Multiple visuals: display in tabs
+			var tabItems = new List<TabItem>();
+			foreach (var visual in visuals)
+			{
+				var control = CreateVisualControl(visual);
+				if (control != null)
+				{
+					var tabItem = new TabItem
+					{
+						Header = visual.Description,
+						Content = control
+					};
+					tabItems.Add(tabItem);
+				}
+			}
+
+			if (tabItems.Count > 0 && _visualsTabControl != null)
+			{
+				_visualsTabControl.ItemsSource = tabItems;
+				_visualsTabControl.SelectedIndex = 0;
+				_visualsTabControl.IsVisible = true;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Creates an Avalonia control for the given visual.
+	/// </summary>
+	private Control? CreateVisualControl(Ufex.API.Visual.Visual visual)
+	{
+		return visual switch
+		{
+			DataGridVisual dgv => CreateDataGridControl(dgv),
+			HexViewerVisual hvv => CreateHexViewControl(hvv),
+			ImageVisual iv => CreateImageViewerControl(iv),
+			_ => null
+		};
+	}
+
+	/// <summary>
+	/// Creates a DataGrid control for DataGridVisual.
+	/// </summary>
+	private DataGrid CreateDataGridControl(DataGridVisual visual)
+	{
+		var dataGrid = new DataGrid
+		{
+			AutoGenerateColumns = false,
+			IsReadOnly = true,
+			CanUserReorderColumns = false,
+			CanUserResizeColumns = true,
+			GridLinesVisibility = DataGridGridLinesVisibility.All,
+			BorderThickness = new Avalonia.Thickness(1),
+			FontFamily = new FontFamily("Courier New")
+		};
+
+		// Store reference to the current data grid for column width persistence
+		_currentDataGrid = dataGrid;
+
+		LoadTableDataIntoGrid(dataGrid, visual.Table);
+
+		return dataGrid;
+	}
+
+	/// <summary>
+	/// Creates a HexView control for HexViewerVisual.
+	/// </summary>
+	private HexView CreateHexViewControl(HexViewerVisual visual)
+	{
+		var hexView = new HexView();
+		hexView.LoadStream(visual.Stream);
+		return hexView;
+	}
+
+	/// <summary>
+	/// Creates an ImageViewerControl for ImageVisual (RasterImage or VectorImage).
+	/// </summary>
+	private ImageViewerControl CreateImageViewerControl(ImageVisual visual)
+	{
+		var imageViewer = new ImageViewerControl
+		{
+			SourceImage = visual
+		};
+		return imageViewer;
+	}
+
+	/// <summary>
+	/// Loads TableData into a data grid.
+	/// </summary>
+	private void LoadTableDataIntoGrid(DataGrid dataGrid, TableData? tableData)
+	{
+		// Unsubscribe from previous column width change events
+		UnsubscribeFromColumnWidthChanges(dataGrid);
 
 		if (tableData == null || tableData.NumRows == 0)
 		{
-			_dataGrid.Columns.Clear();
-			_dataGrid.ItemsSource = null;
+			dataGrid.Columns.Clear();
+			dataGrid.ItemsSource = null;
+			_currentTemplateName = null;
 			return;
 		}
 
@@ -258,22 +408,55 @@ public partial class StructureTabView : UserControl
 		// Get the DataTable
 		var dataTable = tableData.GetDataTable(formatter);
 
+		// Store the template name for column width persistence
+		_currentTemplateName = !string.IsNullOrEmpty(tableData.TemplateName) ? tableData.TemplateName : null;
+
+		// Try to get saved column widths for this template
+		List<double>? savedWidths = null;
+		if (_currentTemplateName != null && _settings?.StructureColumnWidths != null)
+		{
+			_settings.StructureColumnWidths.TryGetValue(_currentTemplateName, out savedWidths);
+		}
+
 		// Clear and rebuild columns
-		_dataGrid.Columns.Clear();
+		dataGrid.Columns.Clear();
 
 		// Create columns based on the DataTable columns
 		string[] colBindings = { "Col0", "Col1", "Col2", "Col3", "Col4", "Col5", "Col6", "Col7" };
 		for (int i = 0; i < dataTable.Columns.Count && i < colBindings.Length; i++)
 		{
 			var column = dataTable.Columns[i];
-			_dataGrid.Columns.Add(new DataGridTextColumn
+
+			// Determine the column width
+			DataGridLength width;
+			if (savedWidths != null && i < savedWidths.Count && savedWidths[i] > 0)
+			{
+				// Use saved width
+				width = new DataGridLength(savedWidths[i]);
+			}
+			else if (i == dataTable.Columns.Count - 1)
+			{
+				// Last column fills remaining space
+				width = new DataGridLength(1, DataGridLengthUnitType.Star);
+			}
+			else
+			{
+				// Default width
+				width = new DataGridLength(150);
+			}
+
+			dataGrid.Columns.Add(new DataGridTextColumn
 			{
 				Header = column.ColumnName,
 				Binding = new Binding(colBindings[i]),
-				Width = i == dataTable.Columns.Count - 1
-					? new DataGridLength(1, DataGridLengthUnitType.Star)
-					: new DataGridLength(150)
+				Width = width
 			});
+		}
+
+		// Subscribe to column width changes if we have a template name
+		if (_currentTemplateName != null)
+		{
+			SubscribeToColumnWidthChanges(dataGrid);
 		}
 
 		// Convert rows to StructureDataRow objects
@@ -301,7 +484,89 @@ public partial class StructureTabView : UserControl
 			rows.Add(dataRow);
 		}
 
-		_dataGrid.ItemsSource = rows;
+		dataGrid.ItemsSource = rows;
+	}
+
+	/// <summary>
+	/// Loads TableData into the data grid (legacy method for compatibility).
+	/// </summary>
+	public void LoadTableData(TableData? tableData)
+	{
+		if (_currentDataGrid == null)
+		{
+			// Create a new data grid visual and load it
+			var visual = tableData != null ? new DataGridVisual(tableData, "Data") : null;
+			if (visual != null)
+			{
+				LoadVisuals(new Ufex.API.Visual.Visual[] { visual });
+			}
+			else
+			{
+				ClearVisuals();
+			}
+			return;
+		}
+
+		LoadTableDataIntoGrid(_currentDataGrid, tableData);
+	}
+
+	/// <summary>
+	/// Subscribes to column width change events for persisting widths.
+	/// </summary>
+	private void SubscribeToColumnWidthChanges(DataGrid dataGrid)
+	{
+		foreach (var column in dataGrid.Columns)
+		{
+			if (column is DataGridColumn dgColumn)
+			{
+				dgColumn.PropertyChanged += OnColumnPropertyChanged;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Unsubscribes from column width change events.
+	/// </summary>
+	private void UnsubscribeFromColumnWidthChanges(DataGrid dataGrid)
+	{
+		foreach (var column in dataGrid.Columns)
+		{
+			if (column is DataGridColumn dgColumn)
+			{
+				dgColumn.PropertyChanged -= OnColumnPropertyChanged;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Handles column property changes to detect width changes.
+	/// </summary>
+	private void OnColumnPropertyChanged(object? sender, Avalonia.AvaloniaPropertyChangedEventArgs e)
+	{
+		if (e.Property.Name == "ActualWidth" || e.Property.Name == "Width")
+		{
+			SaveColumnWidths();
+		}
+	}
+
+	/// <summary>
+	/// Saves the current column widths to settings.
+	/// </summary>
+	private void SaveColumnWidths()
+	{
+		if (_currentDataGrid == null || _settings == null || string.IsNullOrEmpty(_currentTemplateName))
+			return;
+
+		var widths = _currentDataGrid.Columns
+			.Select(c => c.ActualWidth)
+			.ToList();
+
+		// Only save if we have valid widths (all > 0)
+		if (widths.All(w => w > 0))
+		{
+			_settings.StructureColumnWidths[_currentTemplateName] = widths;
+			_settings.Save();
+		}
 	}
 
 	/// <summary>
@@ -323,8 +588,8 @@ public partial class StructureTabView : UserControl
 
 		try
 		{
-			var tableData = _fileType.GetData(selectedItem.SourceNode);
-			LoadTableData(tableData);
+			var visuals = selectedItem.SourceNode.Visuals;
+			LoadVisuals(visuals);
 		}
 		catch
 		{

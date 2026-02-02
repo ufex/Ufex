@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:Ufex.Controls.Avalonia"
              x:Class="Ufex.Desktop.Views.StructureTabView">
     
     <Grid ColumnDefinitions="*,Auto,2*">
@@ -19,26 +20,19 @@
                       Background="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                       ResizeDirection="Columns" />
         
-        <!-- Right Panel: Data Grid -->
+        <!-- Right Panel: Visual Content Area -->
         <Border Grid.Column="2"
                 BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                 BorderThickness="0"
                 Margin="4">
-            <DataGrid x:Name="DataGridStructure"
-                      AutoGenerateColumns="False"
-                      IsReadOnly="True"
-                      CanUserReorderColumns="False"
-                      CanUserResizeColumns="True"
-                      GridLinesVisibility="All"
-                      BorderThickness="1"
-                      BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
-                      FontFamily="Courier New">
-                <DataGrid.Styles>
-                    <Style Selector="DataGridColumnHeader">
-                        <Setter Property="FontSize" Value="12" />
-                    </Style>
-                </DataGrid.Styles>
-            </DataGrid>
+            <!-- ContentControl for single visual, or TabControl for multiple -->
+            <Panel x:Name="VisualsContainer">
+                <!-- Single visual display (no tabs) -->
+                <ContentControl x:Name="SingleVisualContent" IsVisible="False" />
+                
+                <!-- Multiple visuals display (tabs) -->
+                <TabControl x:Name="VisualsTabControl" IsVisible="False" />
+            </Panel>
         </Border>
         
     </Grid>

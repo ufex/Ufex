@@ -184,7 +184,7 @@ public partial class InfoTabView : UserControl
 	/// <summary>
 	/// Loads QuickInfo data from the file type handler into the data grid.
 	/// </summary>
-	/// <param name="quickInfo">The QuickInfoTableData from FileType.GetQuickInfo().</param>
+	/// <param name="quickInfo">The QuickInfoTableData from FileType.QuickInfo.</param>
 	/// <param name="dataFormatter">Optional data formatter for number formatting.</param>
 	public void LoadQuickInfo(QuickInfoTableData? quickInfo, DataFormatter? dataFormatter = null)
 	{

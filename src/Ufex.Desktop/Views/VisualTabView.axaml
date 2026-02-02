@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Ufex.Controls.Avalonia;assembly=Ufex.Controls.Avalonia"
+             x:Class="Ufex.Desktop.Views.VisualTabView">
+    
+    <Grid>
+        <!-- TabControl for multiple visuals -->
+        <TabControl x:Name="VisualsTabControl" IsVisible="False" />
+        
+        <!-- Empty state message -->
+        <TextBlock x:Name="EmptyMessage"
+                   Text="No visual available"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                   FontSize="16"
+                   IsVisible="True" />
+    </Grid>
+</UserControl>

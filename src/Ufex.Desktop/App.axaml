@@ -5,6 +5,6 @@
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
-				<!--<SimpleTheme />-->
+        <StyleInclude Source="avares://Ufex.Desktop/Themes/MenuStyles.axaml" />
     </Application.Styles>
 </Application>
