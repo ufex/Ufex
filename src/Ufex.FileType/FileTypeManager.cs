@@ -62,7 +62,7 @@ public class PluginLoadContext : AssemblyLoadContext
 /// </summary>
 public class FileTypeManager
 {
-	public const string FILETYPE_UNKNOWN = "FT_UNKNOWN";
+	public const string FileTypeRecord_UNKNOWN = "FT_UNKNOWN";
 
 	private FileTypeClassesDb fileTypeClassesDb;
 	private IDLibsDb idLibsDb;
@@ -92,7 +92,7 @@ public class FileTypeManager
 		LoadIDLibs();
 	}
 
-	public FILETYPE GetFileType(string filePath)
+	public FileTypeRecord GetFileType(string filePath)
 	{
 		FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 		Logger.Info("m_idLibsCache.Count = " + idLibsCache.Count.ToString());
@@ -102,7 +102,7 @@ public class FileTypeManager
 			{
 				fs.Position = 0;
 				string fileType = ftid.GetFileType(filePath, fs);
-				if(!fileType.Equals(FILETYPE_UNKNOWN))
+				if(!fileType.Equals(FileTypeRecord_UNKNOWN))
 				{
 					fs.Close();
 					return FileTypes.GetFileType(fileType);
@@ -117,14 +117,14 @@ public class FileTypeManager
 		return null;
 	}
 
-	public FILETYPE_CLASS[] GetFileTypeClassesByFileType(string fileTypeId)
+	public FileTypeClassRecord[] GetFileTypeClassesByFileType(string fileTypeId)
 	{
 		return fileTypeClassesDb.GetFileTypeClassesByFileType(fileTypeId);
 	}
 
 	public Ufex.API.FileType GetNewClassInstance(string classId)
 	{
-		FILETYPE_CLASS fileTypeClass = fileTypeClassesDb.GetFileTypeClass(classId);
+		FileTypeClassRecord fileTypeClass = fileTypeClassesDb.GetFileTypeClass(classId);
 
 		if(fileTypeClass == null)
 			return null;

@@ -7,7 +7,7 @@ using Ufex.FileType.Config;
 
 namespace Ufex.FileType;
 
-public class FILETYPE_CLASS
+public class FileTypeClassRecord
 {
 	public string ConfigFilePath;
 	public string ID;
@@ -23,19 +23,19 @@ public class FILETYPE_CLASS
 /// </summary>
 public class FileTypeClassesDb : Ufex.FileType.Database
 {
-	Dictionary<string, FILETYPE_CLASS> fileTypeClasses;
+	Dictionary<string, FileTypeClassRecord> fileTypeClasses;
 
 	public int Count
 	{
 		get { return FileTypeClasses.Length; }
 	}
 
-	public FILETYPE_CLASS[] FileTypeClasses
+	public FileTypeClassRecord[] FileTypeClasses
 	{
 		get { return FileTypeClassesByID.Values.ToArray(); }
 	}
 
-	public Dictionary<string, FILETYPE_CLASS> FileTypeClassesByID
+	public Dictionary<string, FileTypeClassRecord> FileTypeClassesByID
 	{
 		get
 		{
@@ -47,12 +47,12 @@ public class FileTypeClassesDb : Ufex.FileType.Database
 
 	public FileTypeClassesDb(FileInfo[] configFiles) : base(configFiles)
 	{
-		this.fileTypeClasses = new Dictionary<string, FILETYPE_CLASS>();
+		this.fileTypeClasses = new Dictionary<string, FileTypeClassRecord>();
 	}
 
 	private void Load()
 	{
-		fileTypeClasses = new Dictionary<string, FILETYPE_CLASS>();
+		fileTypeClasses = new Dictionary<string, FileTypeClassRecord>();
 		XmlSerializer xmlSerializer = new XmlSerializer(typeof(Document));
 		foreach (FileInfo filePath in configFiles)
 		{
@@ -60,7 +60,7 @@ public class FileTypeClassesDb : Ufex.FileType.Database
 			Document doc = (Document)xmlSerializer.Deserialize(reader);
 			if (doc.FileTypeClasses != null)
 			{
-				foreach (FILETYPE_CLASS fileTypeClass in doc.FileTypeClasses)
+				foreach (FileTypeClassRecord fileTypeClass in doc.FileTypeClasses)
 				{
 					fileTypeClass.ConfigFilePath = filePath.FullName;
 					fileTypeClasses[fileTypeClass.ID] = fileTypeClass;
@@ -70,7 +70,7 @@ public class FileTypeClassesDb : Ufex.FileType.Database
 		}
 	}
 
-	public FILETYPE_CLASS[] GetFileTypeClasses(bool refresh = false)
+	public FileTypeClassRecord[] GetFileTypeClasses(bool refresh = false)
 	{
 		if (refresh)
 			Load();
@@ -78,10 +78,10 @@ public class FileTypeClassesDb : Ufex.FileType.Database
 		return FileTypeClasses;
 	}
 
-	public FILETYPE_CLASS[] GetFileTypeClassesByFileType(string fileTypeId)
+	public FileTypeClassRecord[] GetFileTypeClassesByFileType(string fileTypeId)
 	{
-		List<FILETYPE_CLASS> results = new List<FILETYPE_CLASS>();
-		foreach(FILETYPE_CLASS fileTypeClass in FileTypeClasses)
+		List<FileTypeClassRecord> results = new List<FileTypeClassRecord>();
+		foreach(FileTypeClassRecord fileTypeClass in FileTypeClasses)
 		{
 			if (Array.Exists(fileTypeClass.FileTypes, x => x == fileTypeId))
 			{
@@ -91,7 +91,7 @@ public class FileTypeClassesDb : Ufex.FileType.Database
 		return results.ToArray();
 	}
 
-	public FILETYPE_CLASS GetFileTypeClass(string classId)
+	public FileTypeClassRecord GetFileTypeClass(string classId)
 	{
 		return FileTypeClassesByID[classId];
 	}

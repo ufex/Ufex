@@ -25,7 +25,7 @@ class SignatureClassifier : FileType.BaseClassifier
 		int bufferSize = (int)Math.Min(BUFFER_SIZE, fileStream.Length);
 		byte[] buffer = new byte[bufferSize];
 		fileStream.ReadExactly(buffer, 0, bufferSize);
-		foreach(FILETYPE fileType in FileTypes.FileTypes)
+		foreach(FileTypeRecord fileType in FileTypes.FileTypes)
 		{
 			try
 			{

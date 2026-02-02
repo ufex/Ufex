@@ -22,7 +22,7 @@ namespace Ufex.FileType.Config
 		ReadUInt16Be,
 		[XmlEnum("readUInt32Be")]
 		ReadUInt32Be,
-		[XmlEnum("readUInt16Be")]
+		[XmlEnum("readUInt64Be")]
 		ReadUInt64Be
 	}
 
@@ -77,11 +77,11 @@ namespace Ufex.FileType.Config
 				{
 					byte[] tmp = new byte[2];
 					fileStream.ReadExactly(tmp, (int)Offset, 2); // TODO: read deeper into the file than 32-bit signed integer supports?
-					return DataManip.BytesToUInt16(tmp, endian, 0);
+					return ByteUtil.BytesToUInt16(tmp, endian, 0);
 				}
 				else
 				{
-					return DataManip.BytesToUInt16(buffer, endian, (int)Offset);
+					return ByteUtil.BytesToUInt16(buffer, endian, (int)Offset);
 				}
 			}
 			else if (OffsetType == OffsetType.ReadUInt32Le || OffsetType == OffsetType.ReadUInt32Be)
@@ -91,11 +91,11 @@ namespace Ufex.FileType.Config
 				{
 					byte[] tmp = new byte[4];
 					fileStream.ReadExactly(tmp, (int)Offset, 4); // TODO: read deeper into the file than 32-bit signed integer supports?
-					return DataManip.BytesToUInt32(tmp, endian, 0);
+					return ByteUtil.BytesToUInt32(tmp, endian, 0);
 				}
 				else
 				{
-					return DataManip.BytesToUInt32(buffer, endian, (int)Offset);
+					return ByteUtil.BytesToUInt32(buffer, endian, (int)Offset);
 				}
 
 			}

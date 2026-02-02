@@ -9,7 +9,7 @@ using Ufex.FileType.Config;
 
 namespace Ufex.FileType;
 
-public class FILETYPE
+public class FileTypeRecord
 {
 	public string ConfigFilePath;
 	public string ID;
@@ -38,7 +38,7 @@ public class FILETYPE
 /// </summary>
 public class FileTypeDb : FileType.Database
 {
-	private Dictionary<string, FILETYPE> fileTypes;
+	private Dictionary<string, FileTypeRecord> fileTypes;
 
 	public int Count
 	{
@@ -48,12 +48,12 @@ public class FileTypeDb : FileType.Database
 		}
 	}
 
-	public FILETYPE[] FileTypes
+	public FileTypeRecord[] FileTypes
 	{
 		get { return FileTypesByID.Values.ToArray(); }
 	}
 
-	public Dictionary<string, FILETYPE> FileTypesByID
+	public Dictionary<string, FileTypeRecord> FileTypesByID
 	{
 		get 
 		{
@@ -65,7 +65,7 @@ public class FileTypeDb : FileType.Database
 
 	public FileTypeDb(System.IO.FileInfo[] configFiles) : base(configFiles)
 	{
-		fileTypes = new Dictionary<string, FILETYPE>();
+		fileTypes = new Dictionary<string, FileTypeRecord>();
 		Debug = new Logger("FileTypeDb");
 	}
 
@@ -78,7 +78,7 @@ public class FileTypeDb : FileType.Database
 			Document doc = (Document)xmlSerializer.Deserialize(reader);
 			if (doc.FileTypes != null)
 			{
-				foreach (FILETYPE fileType in doc.FileTypes)
+				foreach (FileTypeRecord fileType in doc.FileTypes)
 				{
 					fileType.ConfigFilePath = filePath.FullName;
 					fileTypes[fileType.ID] = fileType;
@@ -88,12 +88,12 @@ public class FileTypeDb : FileType.Database
 		}
 	}
 
-	public FILETYPE GetFileType(string fileTypeId)
+	public FileTypeRecord GetFileType(string fileTypeId)
 	{
 		return FileTypesByID[fileTypeId];
 	}
 
-	public FILETYPE[] GetFileTypes(bool refresh = false)
+	public FileTypeRecord[] GetFileTypes(bool refresh = false)
 	{
 		if (refresh)
 			Load();
@@ -106,13 +106,13 @@ public class FileTypeDb : FileType.Database
 	/// </summary>
 	/// <param name="extension">The extension to search for</param>
 	/// <returns>An array of fileTypes with the specified extension.</returns>
-	public FILETYPE[] GetFileTypesByExtension(string extension)
+	public FileTypeRecord[] GetFileTypesByExtension(string extension)
 	{
 		if(extension == null)
 			throw new NullReferenceException("extension cannot be null");
 
-		List<FILETYPE> fileTypes = new List<FILETYPE> { };
-		foreach(FILETYPE fileType in FileTypes)
+		List<FileTypeRecord> fileTypes = new List<FileTypeRecord> { };
+		foreach(FileTypeRecord fileType in FileTypes)
 		{
 			if(Array.Exists(fileType.Extensions, x => x == extension))
 			{
@@ -123,14 +123,14 @@ public class FileTypeDb : FileType.Database
 		return fileTypes.ToArray();
 	}
 
-	public bool AddFileType(FILETYPE fileType)
+	public bool AddFileType(FileTypeRecord fileType)
 	{
 		fileTypes[fileType.ID] = fileType;
 		// TODO
 		return true;
 	}
 
-	public bool SetFileType(string fileTypeId, FILETYPE fileType)
+	public bool SetFileType(string fileTypeId, FileTypeRecord fileType)
 	{
 		return false;
 	}

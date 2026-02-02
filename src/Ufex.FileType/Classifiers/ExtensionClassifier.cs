@@ -25,7 +25,7 @@ class ExtensionClassifier : Ufex.FileType.BaseClassifier
 					}
 		HashSet<string> matches = new HashSet<string>();
 		string extension = filePath.Split('.').Last().ToLower();
-		foreach (FILETYPE fileType in FileTypes.FileTypes)
+		foreach (FileTypeRecord fileType in FileTypes.FileTypes)
 		{
 			if (fileType.Extensions != null && fileType.Extensions.Length > 0)
 			{

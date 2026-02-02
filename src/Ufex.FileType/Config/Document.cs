@@ -9,10 +9,10 @@ namespace Ufex.FileType.Config
 	{
 		[XmlArray]
 		[XmlArrayItem(ElementName = "FileType")]
-		public FILETYPE[] FileTypes { get; set; }
+		public FileTypeRecord[] FileTypes { get; set; }
 
 		[XmlArray]
 		[XmlArrayItem(ElementName = "FileTypeClass")]
-		public FILETYPE_CLASS[] FileTypeClasses { get; set; }
+		public FileTypeClassRecord[] FileTypeClasses { get; set; }
 	}
 }
