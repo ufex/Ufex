@@ -29,7 +29,7 @@ public class DynamicTableData : Ufex.API.Tables.TableData
 
 		IsDynamic = true;
 
-		for (int c = 0; c < NumColumns; c++)
+		for(int c = 0; c < NumColumns; c++)
 		{
 			TableData.Column newCol = new TableData.Column();
 			newCol.name = "";
@@ -38,6 +38,11 @@ public class DynamicTableData : Ufex.API.Tables.TableData
 			columns.Add(newCol);
 		}
 		return;
+	}
+
+	public DynamicTableData(int numCols, string templateName) : this(numCols)
+	{
+		TemplateName = templateName;
 	}
 
 	public void AddRow()
@@ -85,7 +90,7 @@ public class DynamicTableData : Ufex.API.Tables.TableData
 		// Set the row text data
 		newRow.data = rowData;
 
-		// Add the row to the m_RowData ArrayList
+		// Add the row to the rowData ArrayList
 		base.rowData.Add(newRow);
 
 		// Increment the number of rows
@@ -95,7 +100,7 @@ public class DynamicTableData : Ufex.API.Tables.TableData
 
 	public void AddRows(object[][] rows)
 	{
-		foreach (var row in rows)
+		foreach(var row in rows)
 		{
 			AddRowData(row);
 		}
@@ -136,9 +141,9 @@ public class DynamicTableData : Ufex.API.Tables.TableData
 		// Create a temporary row
 		ObjRow tmpRow = (ObjRow)base.rowData[r];
 
-		for (int c = 0; c < NumColumns; c++)
+		for(int c = 0; c < NumColumns; c++)
 		{
-			if (c < tmpRow.numCols)
+			if(c < tmpRow.numCols)
 			{
 				rowData[c] = nts.Object(tmpRow.data[c]);
 			}

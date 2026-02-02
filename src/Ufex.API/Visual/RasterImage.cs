@@ -2,7 +2,7 @@ using System.IO;
 
 namespace Ufex.API.Visual;
 
-public class RasterImage : Ufex.API.Visual.Image
+public class RasterImage : Ufex.API.Visual.ImageVisual
 {
 	private Stream _stream;
 
@@ -15,7 +15,9 @@ public class RasterImage : Ufex.API.Visual.Image
 		protected set { _stream = value; }
 	}
 
-	public RasterImage(Stream stream) : this(stream, "Image");
+	public RasterImage(Stream stream) : this(stream, "Image")
+	{
+	}
 
 	public RasterImage(Stream stream, string description) : base(description)
 	{

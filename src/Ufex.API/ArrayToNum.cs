@@ -18,51 +18,51 @@ public class ArrayToNum
 
 	public UInt16 GetUInt16(Byte[] data)
 	{
-		return DataManip.BytesToUInt16(data, DataEndian, 0);
+		return ByteUtil.BytesToUInt16(data, DataEndian, 0);
 	}
 
 	public UInt16 GetUInt16(Byte[] data, int offset)
 	{
-		return DataManip.BytesToUInt16(data, DataEndian, offset);
+		return ByteUtil.BytesToUInt16(data, DataEndian, offset);
 	}
 
 	public UInt32 GetUInt32(Byte[] data)
 	{
-		return DataManip.BytesToUInt32(data, DataEndian, 0);
+		return ByteUtil.BytesToUInt32(data, DataEndian, 0);
 	}
 
 	public UInt32 GetUInt32(Byte[] data, int offset)
 	{
-		return DataManip.BytesToUInt32(data, DataEndian, offset);
+		return ByteUtil.BytesToUInt32(data, DataEndian, offset);
 	}
 
 	public UInt64 GetUInt64(byte[] data)
 	{
-		return DataManip.BytesToUInt64(data, DataEndian, 0);
+		return ByteUtil.BytesToUInt64(data, DataEndian, 0);
 	}
 
 	public UInt64 GetUInt64(byte[] data, int offset)
 	{
-		return DataManip.BytesToUInt64(data, DataEndian, offset);
+		return ByteUtil.BytesToUInt64(data, DataEndian, offset);
 	}
 
 	public Int16 GetInt16(byte[] data)
 	{
-		return DataManip.BytesToInt16(data, DataEndian);
+		return ByteUtil.BytesToInt16(data, DataEndian);
 	}
 
 	public Int16 GetInt16(byte[] data, int offset)
 	{
-		return DataManip.BytesToInt16(data, DataEndian, offset);
+		return ByteUtil.BytesToInt16(data, DataEndian, offset);
 	}
 
 	public Int32 GetInt32(byte[] data) 
 	{ 
-		return DataManip.BytesToInt32(data, DataEndian, 0);
+		return ByteUtil.BytesToInt32(data, DataEndian, 0);
 	}
 	
 	public Int32 GetInt32(byte[] data, int offset)
 	{
-		return DataManip.BytesToInt32(data, DataEndian, offset);
+		return ByteUtil.BytesToInt32(data, DataEndian, offset);
 	}
 }

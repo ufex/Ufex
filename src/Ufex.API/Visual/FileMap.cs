@@ -6,10 +6,17 @@ namespace Ufex.API.Visual;
 
 public class FileMap : Visual
 {
-	public API.Visual.FileSpan[] Spans { get; set; }
+	/// <summary>
+	/// The spans that make up the file map.
+	/// </summary>
+	public Ufex.API.FileSpan[] Spans { get; set; }
+
+	/// <summary>
+	/// The total size of the file.
+	/// </summary>
 	public ulong Size { get; set; }
 
-	public FileMap(API.Visual.FileSpan[] spans, ulong size) : base("File Map")
+	public FileMap(Ufex.API.FileSpan[] spans, ulong size) : base("File Map")
 	{
 		Spans = spans;
 		Size = size;

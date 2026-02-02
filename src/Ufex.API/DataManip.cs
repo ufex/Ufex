@@ -2,7 +2,7 @@
 
 namespace Ufex.API;
 
-public class DataManip
+public class ByteUtil
 {
 	public static bool GetBit(Byte v, int p) 
 	{ 

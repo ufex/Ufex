@@ -38,7 +38,7 @@ public class BinaryNumberFormatter
 	{
 		if (endian == Endian.Little)
 		{
-			x = DataManip.SwapEndian(x);
+			x = ByteUtil.SwapEndian(x);
 		}
 		return Pad(Convert.ToString(x, 2), 16);
 	}
@@ -47,7 +47,7 @@ public class BinaryNumberFormatter
 	{
 		if (endian == Endian.Little)
 		{
-			x = DataManip.SwapEndian(x);
+			x = ByteUtil.SwapEndian(x);
 		}
 		return Pad(Convert.ToString(x, 2), 32);
 	}
@@ -56,7 +56,7 @@ public class BinaryNumberFormatter
 	{
 		if (endian == Endian.Little)
 		{
-			x = DataManip.SwapEndian(x);
+			x = ByteUtil.SwapEndian(x);
 		}
 		UInt32 low = (UInt32)(x & 0xFFFFFFFF);
 		UInt32 high = (UInt32)(x & 0xFFFFFFFF00000000) >> 32;
@@ -72,7 +72,7 @@ public class BinaryNumberFormatter
 	{
 		if (endian == Endian.Little)
 		{
-			x = DataManip.SwapEndian(x);
+			x = ByteUtil.SwapEndian(x);
 		}
 		return Pad(Convert.ToString(x, 2), 16);
 	}
@@ -81,7 +81,7 @@ public class BinaryNumberFormatter
 	{
 		if (endian == Endian.Little)
 		{
-			x = DataManip.SwapEndian(x);
+			x = ByteUtil.SwapEndian(x);
 		}
 		return Pad(Convert.ToString(x, 2), 32);
 	}
@@ -90,7 +90,7 @@ public class BinaryNumberFormatter
 	{
 		if (endian == Endian.Little)
 		{
-			x = DataManip.SwapEndian(x);
+			x = ByteUtil.SwapEndian(x);
 		}
 		return Pad(Convert.ToString(x, 2), 64);
 	}

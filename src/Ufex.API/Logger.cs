@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -44,10 +45,7 @@ public struct ExceptionLogEntry
 
 public class Logger
 {
-	private int numInfo;
-	private int numErrors;
-	private int numExceptions;
-	private ArrayList m_DebugInfo;
+	private ArrayList logEntries;
 
 	private bool writeToLog;
 	private string logFileName;
@@ -60,7 +58,7 @@ public class Logger
 		get
 		{
 			StringBuilder sb = new StringBuilder();
-			foreach(object entry in m_DebugInfo)
+			foreach(object entry in logEntries)
 			{
 				sb.AppendLine(entry.ToString());
 			}
@@ -70,30 +68,27 @@ public class Logger
 
 	public Logger()
 	{
-		m_DebugInfo = new ArrayList(1);
+		logEntries = new ArrayList(1);
 		logFileName = null;
 		writeToLog = false;
 	}
+
 	public Logger(string logFileName)
 	{
-		m_DebugInfo = new ArrayList(1);
+		logEntries = new ArrayList(1);
 		writeToLog = false;
 		this.logFileName = null;
 		SetLogName(logFileName);
 	}
 
-	~Logger()
-	{
-
-	}
-
 	public ArrayList GetAllDebugItems() 
 	{ 
-		return m_DebugInfo;
+		return logEntries;
 	}
+
 	public int GetNumObjects() 
 	{ 
-		return m_DebugInfo.Count; 
+		return logEntries.Count; 
 	}
 
 	public void SetLogName(string fileName)
@@ -130,23 +125,23 @@ public class Logger
 		tmpInfo.funcName = funcName;
 		tmpInfo.title = title;
 
-		// Add the object to the m_DebugInfo ArrayList
-		m_DebugInfo.Add(tmpInfo);
+		// Add the object to the logEntries ArrayList
+		logEntries.Add(tmpInfo);
 
 		WriteToLog("Info", message);
 	}
 
 	public void Error(string message, string className = "", string funcName = "", string title = "Error")
 	{
-		// Create a new UFE_ERROR object
+		// Create a new ErrorLogEntry object
 		ErrorLogEntry tmpError = new ErrorLogEntry();
 
 		tmpError.message = message;
 		tmpError.className = className;
 		tmpError.funcName = funcName;
 		tmpError.title = title;
-		m_DebugInfo.Add(tmpError);
-		if (writeToLog)
+		logEntries.Add(tmpError);
+		if(writeToLog)
 		{
 			string logmessage;
 			logmessage = String.Format("{0},{1}", message, funcName);
@@ -161,12 +156,49 @@ public class Logger
 		tmpException.className = className;
 		tmpException.funcName = funcName;
 		tmpException.description = description;
-		m_DebugInfo.Add(tmpException);
-		if (writeToLog)
+		logEntries.Add(tmpException);
+		if(writeToLog)
 		{
 			string message;
 			message = String.Format("{0},{1},{2}", e.Message, description, funcName);
+			// Append call stack (with file/line numbers when PDBs are available)
+			message = String.Concat(message, ", StackTrace: ", FormatStackTrace(e));
 			WriteToLog("Exception", message);
+		}
+	}
+
+	private static string FormatStackTrace(Exception e)
+	{
+		try
+		{
+			var st = new StackTrace(e, true);
+			var frames = st.GetFrames();
+			if (frames == null || frames.Length == 0)
+				return e.StackTrace ?? string.Empty;
+
+			var sb = new StringBuilder();
+			for (int i = 0; i < frames.Length; i++)
+			{
+				var frame = frames[i];
+				var method = frame.GetMethod();
+				string methodText = method != null ? method.ToString() ?? string.Empty : string.Empty;
+				string file = frame.GetFileName() ?? string.Empty;
+				int line = frame.GetFileLineNumber();
+
+				if (sb.Length > 0)
+					sb.Append(" \n ");
+
+				if (!string.IsNullOrEmpty(file) && line > 0)
+					sb.Append($"{methodText} in {file}:line {line}");
+				else
+					sb.Append(methodText);
+			}
+
+			return sb.ToString();
+		}
+		catch
+		{
+			return e.StackTrace ?? string.Empty;
 		}
 	}
 

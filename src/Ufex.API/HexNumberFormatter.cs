@@ -79,7 +79,7 @@ public class HexNumberFormatter
 	{
 		if(endian == Endian.Little)
 		{
-			x = DataManip.SwapEndian(x);
+			x = ByteUtil.SwapEndian(x);
 		}
 		UInt16 t = x;
 		Byte n1 = (byte)(t % 16);
@@ -131,7 +131,7 @@ public class HexNumberFormatter
 	{
 		if (endian == Endian.Little)
 		{
-			x = DataManip.SwapEndian(x);
+			x = ByteUtil.SwapEndian(x);
 		}
 		string padding = "";
 		if (leadZeros)
@@ -159,7 +159,7 @@ public class HexNumberFormatter
 	{
 		if (endian == Endian.Little)
 		{
-			x = DataManip.SwapEndian(x);
+			x = ByteUtil.SwapEndian(x);
 		}
 		return prefix + x.ToString(toStringFormat + (leadZeros ? "16" : ""), numberFormatInfo);
 	}
@@ -178,7 +178,7 @@ public class HexNumberFormatter
 	{
 		if (endian == Endian.Little)
 		{
-			x = DataManip.SwapEndian(x);
+			x = ByteUtil.SwapEndian(x);
 		}
 		string padding = "";
 		if (leadZeros && x >= 0)
@@ -198,7 +198,7 @@ public class HexNumberFormatter
 	{
 		if (endian == Endian.Little)
 		{
-			x = DataManip.SwapEndian(x);
+			x = ByteUtil.SwapEndian(x);
 		}
 		string padding = "";
 		if (leadZeros && x >= 0)
@@ -226,7 +226,7 @@ public class HexNumberFormatter
 	{
 		if (endian == Endian.Little)
 		{
-			x = DataManip.SwapEndian(x);
+			x = ByteUtil.SwapEndian(x);
 		}
 		return prefix + x.ToString(toStringFormat + (leadZeros ? "16" : ""), numberFormatInfo);
 	}

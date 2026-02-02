@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Ufex.API.Visual;
 
 namespace Ufex.API.Tree;
 
@@ -18,6 +19,11 @@ public class TreeNode
 	/// </summary>
 	public static string PathSeparator { get; set; } = "\\";
 
+	/// <summary>
+	/// Gets the array of visuals to display when the tree node is selected.
+	/// </summary>
+	public virtual Ufex.API.Visual.Visual[] Visuals => [];
+
 	public TreeNode()
 	{
 		Text = string.Empty;
@@ -30,11 +36,11 @@ public class TreeNode
 		nodes = new TreeNodeCollection(this);
 	}
 
-	public TreeNode(string text, int imageIndex, int selectedImageIndex)
+	public TreeNode(string text, TreeViewIcon icon, TreeViewIcon selectedIcon)
 	{
 		Text = text;
-		ImageIndex = imageIndex;
-		SelectedImageIndex = selectedImageIndex;
+		Icon = icon;
+		SelectedIcon = selectedIcon;
 		nodes = new TreeNodeCollection(this);
 	}
 
@@ -42,7 +48,7 @@ public class TreeNode
 	{
 		Text = text;
 		nodes = new TreeNodeCollection(this);
-		foreach (var child in children)
+		foreach(var child in children)
 		{
 			nodes.Add(child);
 		}
@@ -59,14 +65,14 @@ public class TreeNode
 	public object? Tag { get; set; }
 
 	/// <summary>
-	/// Gets or sets the image list index value of the image displayed when the tree node is in the unselected state.
+	/// Gets or sets the image displayed when the tree node is in the unselected state.
 	/// </summary>
-	public int ImageIndex { get; set; } = -1;
+	public TreeViewIcon Icon { get; set; } = TreeViewIcon.NullIcon;
 
 	/// <summary>
-	/// Gets or sets the image list index value of the image displayed when the tree node is in the selected state.
+	/// Gets or sets the image displayed when the tree node is in the selected state.
 	/// </summary>
-	public int SelectedImageIndex { get; set; } = -1;
+	public TreeViewIcon SelectedIcon { get; set; } = TreeViewIcon.NullIcon;
 
 	/// <summary>
 	/// Gets the parent tree node of the current tree node.
@@ -169,8 +175,6 @@ public class TreeNode
 	{
 		Parent?.Nodes.Remove(this);
 	}
-
-	//public object Details { get; set; }
 
 	public override string ToString() => Text;
 }

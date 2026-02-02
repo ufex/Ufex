@@ -49,7 +49,7 @@ public class TreeNodeCollection : IEnumerable<TreeNode>
 		return node;
 	}
 
-	public TreeNode Add(string text, int imageIndex, int selectedImageIndex)
+	public TreeNode Add(string text, TreeViewIcon imageIndex, TreeViewIcon selectedImageIndex)
 	{
 		var node = new TreeNode(text, imageIndex, selectedImageIndex) { Parent = owner };
 		inner.Add(node);

@@ -20,6 +20,8 @@ public abstract class FileType
 	private FileStream _fileStream;
 	private string _filePath;
 
+	private Ufex.API.Tables.QuickInfoTableData _quickInfoTableData;
+
 	private TreeNode _rootTreeNode;
 
 	private ValidationReport _validationReport;
@@ -53,6 +55,11 @@ public abstract class FileType
 		set { _dataFormatter.NumFormat = value; }
 	}
 
+	public Ufex.API.Tables.QuickInfoTableData QuickInfoTable
+	{
+		get { return _quickInfoTableData; }
+	}
+
 	/// <summary>
 	/// Tree nodes to display in the Structure Tab Tree View
 	/// </summary>
@@ -74,7 +81,7 @@ public abstract class FileType
 	protected List<Ufex.API.Visual.Visual> VisualsList
 	{
 		get { return _visuals; }
-		protected set { _visuals = value; }
+		set { _visuals = value; }
 	}
 
 	protected DataFormatter NTS
@@ -115,10 +122,20 @@ public abstract class FileType
 	public FileType()
 	{
 		log = new Logger("FileTypeInstance.log");
-		m_DebugText = "";
+		
+		// By default these tabs are hidden
+		ShowTechnical = false;
+		ShowGraphic = false;
+		ShowFileCheck = false;
+
+		// Initialize the QuickInfoTableData
+		_quickInfoTableData = new Ufex.API.Tables.QuickInfoTableData();
 
 		// Initialize ValidationReport
 		_validationReport = new ValidationReport();
+
+		// Initialize the Visuals list
+		_visuals = new List<Ufex.API.Visual.Visual>();
 
 		// Create the ArrayToNum instance
 		_arrayToNum = new ArrayToNum();
@@ -129,43 +146,13 @@ public abstract class FileType
 		// Set the number format for the DataFormatter
 		_dataFormatter.NumFormat = NumberFormat.Default;
 
-		// By default these tabs are hidden
-		ShowTechnical = false;
-		ShowGraphic = false;
-		ShowFileCheck = false;
-
 		_rootTreeNode = new TreeNode("ROOT");
-	}
-
-	~FileType()
-	{
-		m_DebugText = null;
-
-		// Free the file stream
-		if (_fileStream != null)
-		{
-			_fileStream.Close();
-			_fileStream = null;
-		}
-
-		// Delete the trees
-		if (_rootTreeNode != null)
-		{
-			//m__rootTreeNode.Nodes.Clear();
-			_rootTreeNode = null;
-		}
 	}
 
 	abstract public bool ProcessFile();
 
 	// Returns the data table that corresponds to the treenode
 	virtual public Ufex.API.Tables.TableData? GetData(TreeNode tn)
-	{
-		return null;
-	}
-
-	// Returns the Quick Info for the file
-	virtual public Ufex.API.Tables.QuickInfoTableData GetQuickInfo()
 	{
 		return null;
 	}
@@ -180,33 +167,6 @@ public abstract class FileType
 	public void SetATNEndian(Endian endian) 
 	{ 
 		_arrayToNum.DataEndian = endian == Endian.Little ? Endian.Little : Endian.Big; 
-	}
-
-	// ExceptionOut(Exception* e)
-	//		Adds an exception to the DebugInfo
-	protected void ExceptionOut(Exception e)
-	{
-		log.NewException(e);
-	}
-
-	protected void ExceptionOut(Exception e, string className)
-	{
-		log.NewException(e, className);
-	}
-
-	protected void ExceptionOut(Exception e, string className, string funcName)
-	{
-		log.NewException(e, className, funcName);
-	}
-
-	protected void DebugOut(string NewText)
-	{
-		if (!m_DebugText.Equals(""))
-			m_DebugText = m_DebugText + "\r\n" + NewText;
-		else
-			m_DebugText = NewText;
-
-		log.Info(NewText);
 	}
 
 }

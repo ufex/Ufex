@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Dynamic;
 
-namespace Ufex.API.Visual;
+namespace Ufex.API;
 
 /// <summary>
 /// Represents a span or region within a file, defined by start and end positions.

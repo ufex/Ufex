@@ -85,7 +85,7 @@ public class TextTableData : Ufex.API.Tables.TableData
 		// Set the row text data
 		newRow.data = rowData;
 
-		// Add the row to the m_RowData ArrayList
+		// Add the row to the rowData ArrayList
 		base.rowData.Add(newRow);
 
 		// Increment the number of rows

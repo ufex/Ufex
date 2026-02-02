@@ -2,7 +2,7 @@
 namespace Ufex.API.Visual;
 
 /// <summary>
-/// Represents an visual element, with a description.
+/// Represents data for a visual element, with a description.
 /// </summary>
 public abstract class Visual
 {
