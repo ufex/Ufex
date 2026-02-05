@@ -20,7 +20,7 @@
 		<FileTypeClass>
 			<ID>FTMD_BMP</ID>
 			<AssemblyPath>BMP.dll</AssemblyPath>
-			<FullTypeName>Ufex.FileTypes.Image.WindowsBitmap</FullTypeName>
+			<FullTypeName>Ufex.FileTypes.BMP.WindowsBitmapFileType</FullTypeName>
 			<FileTypes>
 				<ID>GRPH_WINBMP</ID>
 			</FileTypes>
@@ -35,8 +35,8 @@
 		</FileTypeClass>
 		<FileTypeClass>
 			<ID>FTMD_GZIP</ID>
-			<AssemblyPath>ZIP.dll</AssemblyPath>
-			<FullTypeName>Ufex.FileTypes.Gzip</FullTypeName>
+			<AssemblyPath>GZIP.dll</AssemblyPath>
+			<FullTypeName>Ufex.FileTypes.GZIP.GzipFileType</FullTypeName>
 			<FileTypes>
 				<ID>ARCH_GZIP</ID>
 			</FileTypes>
@@ -44,15 +44,15 @@
 		<FileTypeClass>
 			<ID>FTMD_ICON</ID>
 			<AssemblyPath>BMP.dll</AssemblyPath>
-			<FullTypeName>Ufex.FileTypes.Image.WindowsIcon</FullTypeName>
+			<FullTypeName>Ufex.FileTypes.BMP.WindowsIconFileType</FullTypeName>
 			<FileTypes>
 				<ID>GRPH_WINICON</ID>
 			</FileTypes>
 		</FileTypeClass>
 		<FileTypeClass>
 			<ID>FTMD_INI</ID>
-			<AssemblyPath>INI.dll</AssemblyPath>
-			<FullTypeName>Ufex.FileTypes.Config.INI</FullTypeName>
+			<AssemblyPath>Ufex.FileTypes.INI.dll</AssemblyPath>
+			<FullTypeName>Ufex.FileTypes.INI.IniFileType</FullTypeName>
 			<FileTypes>
 				<ID>TEXT_INI</ID>
 			</FileTypes>
@@ -81,7 +81,7 @@
 		<FileTypeClass>
 			<ID>FTMD_PNG</ID>
 			<AssemblyPath>PNG.dll</AssemblyPath>
-			<FullTypeName>Ufex.FileTypes.Image.PortableNetworkGraphic</FullTypeName>
+			<FullTypeName>Ufex.FileTypes.PNG.PngFileType</FullTypeName>
 			<FileTypes>
 				<ID>GRPH_PNG</ID>
 			</FileTypes>

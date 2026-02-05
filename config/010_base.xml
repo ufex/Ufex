@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FileTypes>
+		<FileType>
+			<ID>BASE_RIFF</ID>
+			<Description>Resource Interchange File Format</Description>
+			<Category>Container</Category>
+			<MIMETypes>
+				<MIMEType>application/x-riff</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Resource_Interchange_File_Format</Wikipedia>
+			<Signatures>
+				<Signature minSize="12">
+					<Pattern xsi:type="string" offset="0">RIFF</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+	</FileTypes>
+</Ufex>

@@ -163,5 +163,24 @@
 				<Extension>tiff</Extension>
 			</Extensions>
 		</FileType>
+		<FileType>
+			<ID>GRPH_WEBP</ID>
+			<ParentID>BASE_RIFF</ParentID>
+			<Description>WebP Image Format</Description>
+			<Category>Graphic</Category>
+			<MIMETypes>
+				<MIMEType>image/webp</MIMEType>
+			</MIMETypes>
+			<Wikipedia>WebP</Wikipedia>
+			<Extensions>
+				<Extension>webp</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature minSize="12">
+					<Pattern xsi:type="string" offset="0">RIFF</Pattern>
+					<Pattern xsi:type="string" offset="8">WEBP</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
 	</FileTypes>
 </Ufex>
