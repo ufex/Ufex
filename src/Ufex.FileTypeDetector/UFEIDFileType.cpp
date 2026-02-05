@@ -246,29 +246,6 @@ namespace UniversalFileExplorer
 		return true;
 	}
 
-	bool IDFileType::IdARCH()
-	{
-		// ZIP Archive
-		if(fileSize > 8 && head32[0] == SIGN_ZIP)
-			m_fileType = "ARCH_ZIP";
-		// RAR Archive
-		else if(fileSize > 8 && head32[0] == SIGN_RAR)
-			m_fileType = "ARCH_RAR";
-		// Microsoft CAB Archive
-		else if(fileSize > 8 && head32[0] == SIGN_CAB)
-			m_fileType = "ARCH_CAB";
-		// GZIP
-		else if(fileSize >= 16 && head16[0] == SIGN_GZIP && head8[2] == 0x08)
-			m_fileType = "ARCH_GZIP";
-		// BZip2
-		else if(fileSize > 16 && head32[0] == 0x425A6839 && head8[4] == 0x31)
-			m_fileType = "ARCH_BZIP2";
-		// Unknown File Type
-		else
-			return false;
-
-		return true;
-	}
 
 	bool IDFileType::IdAUDI()
 	{
@@ -291,15 +268,6 @@ namespace UniversalFileExplorer
 		// ASF: 30 26 B2 75 8E 66 CF 11 A6 D9 00 AA 00 62 CE 6C 
 		else if(fileSize > 100 && head32[0] == 0x3026B275 && head32[1] == 0x8E66CF11 && head32[2] == 0xA6D900AA && head32[3] == 0x0062CE6C)
 			m_fileType = "BASE_ASF";		
-		// MP3 with ID3 tag
-		else if(fileSize > 16 && head8[0] == 'I' && head8[1] == 'D' && head8[2] == '3')
-			m_fileType = "AUDI_MP3";
-		// MP3 with no ID3
-		//else if(fileSize >= 6 && head8[0] == 0xFF && head8[1] >= 0xE0 && head8[2] <= 0xF0)
-		//	m_FileType = FT_SOUN_MP3;
-		// OGG Vorbis
-		else if(fileSize > 25 && head8[0] == 'O' && head8[1] == 'g' && head8[3] == 'g')
-			m_fileType = "AUDI_OGGVORB";
 		else
 			return false;
 
@@ -317,108 +285,6 @@ namespace UniversalFileExplorer
 		return true;
 	}
 
-	bool IDFileType::IdDOCS()
-	{
-		// Adobe Portable Document Format
-		if(fileSize > 8 && head32[0] == 0x25504446)
-			m_fileType = "DOCS_PORTDOCFORM";
-		// Windows Help Format
-		else if(fileSize > 8 && head32[0] == 0x3F5F0300)
-			m_fileType = "DOCS_WINHELP";
-		// Compiled Help Format
-		else if(fileSize > 8 && head32[0] == 0x49545346)
-			m_fileType = "DOCS_CHM";
-		else
-			return false;
-
-		return true;
-	}
-
-	bool IDFileType::IdEXEC()
-	{
-		// Executable
-		if(fileSize > 16 && head8[0] == 'M' && head8[1] == 'Z')
-		{
-			if(m_fileStream->Length > 60)
-			{
-				m_fileStream->Position = 60;
-				UInt32 offset = m_binaryReader->ReadUInt32();
-				if(m_fileStream->Length > offset)
-				{
-					m_fileStream->Position = offset;
-					UInt32 headerSign = m_binaryReader->ReadUInt32();
-					if(headerSign == 0x4550)
-						m_fileType = "EXEC_PE";
-					if(headerSign == 0x454E)
-						m_fileType = "EXEC_NE";
-				}
-			}
-			else
-			{
-				m_fileType = "EXEC_MZ";
-			}
-		}
-		// Linux ELF Executables
-		else if(fileSize > 16 && head8[0] == 0x7F && head8[1] == 'E' && head8[2] == 'L' && head8[3] == 'F')
-			m_fileType = "EXEC_ELF";
-		// Shockwave files
-		else if(fileSize > 16 && head8[0] == 'F' && head8[1] == 'W' && head8[2] == 'S')
-			m_fileType = "EXEC_SHOCKWAVE";
-		// Super Nintendo ROM
-//		else if(fileSize >= 12 && head8[8] == 0xAA && head8[9] == 0xBB && head8[10] == 0x04)
-//			m_fileType = FT_EXEC_SNES;		
-		// Java Class	0xCAFEBABE
-		else if(fileSize > 8 && head32[0] == 0xCAFEBABE)
-			m_fileType = "EXEC_JAVACLASS";
-		else
-			return false;
-
-		return true;
-	}
-
-	bool IDFileType::IdGRPH()
-	{		
-		// JFIF
-		if(fileSize >= 10 && head8[0] == 0xFF && ((head8[6] == 'J' && head8[7] == 'F' && head8[8] == 'I' && head8[9] == 'F') || (head8[6] == 'J' && head8[7] == 'F' && head8[8] == 'X' && head8[9] == 'X') ||(head8[6] == 'E' && head8[7] == 'x' && head8[8] == 'i' && head8[9] == 'f')))
-			m_fileType = FT_RAST_JPEG;		
-		// Graphic Interchange Format
-		else if(fileSize >= 8 && head8[0] == 'G' && head8[1] == 'I' && head8[2] == 'F' && head8[3] == 0x38 && (head8[4] == 0x37 || head8[4] == 0x39) && head8[5] == 0x61)
-			m_fileType = FT_RAST_GIF;
-		// Portable Network Graphic
-		else if(fileSize >= 16 && head32[0] == SIGN_PNG1 && head32[1] == SIGN_PNG2)
-			m_fileType = FT_RAST_PNG;		
-		// Windows Bitmap - First two bytes must be the signature
-		else if(fileSize >= MINSZ_RAST_WINBMP && head16[0] == SIGN_WBMP)
-			m_fileType = FT_RAST_WINBMP;
-		// Windows Metafile Placeable - First four bytes must be the signature
-		else if(fileSize >= MINSZ_VECT_WMF && head32[0] == 0xD7CDC69A)
-			m_fileType = "GRPH_WMF";
-		// Windows Metafile
-		else if(fileSize >= MINSZ_VECT_WMF && (head8[0] == 0x01 || head8[0] == 0x02) && head8[1] == 0x00 && head8[2] == 0x09 && head8[16] == 0x00 && head8[17] == 0x00)
-			m_fileType = "GRPH_WMF";
-		// Enhanced Metafile
-		else if(fileSize >= MINSZ_VECT_EMF && head32[10] == SIGN_EMF && head32[0] == 0x01000000)
-			m_fileType = "GRPH_EMF";
-		// Windows Cursor File
-		else if(fileSize > 16 && head32[0] == 0x00000200)
-			m_fileType = "GRPH_WINCUR";
-		// Windows Icon File
-		else if(fileSize > 16 && head32[0] == 0x00000100)
-			m_fileType = "GRPH_WINICON";
-		// Windows Animated Cursor
-		else if(fileSize > 16 && head32[0] == SIGN_RIFF && head32[1] == SIGN_ANICUR)
-			m_fileType = "GRPH_ANICUR";
-		else
-			return false;
-
-		return true;
-	}
-
-	bool IDFileType::IdVIDO()
-	{		
-		return false;
-	}
-	
 	bool IDFileType::IdRareTypes()
 	{
 		// Power Tab File
@@ -438,19 +304,7 @@ namespace UniversalFileExplorer
 
 		return true;
 	}
-		
-	bool IDFileType::IdRiff()
-	{
 
-		return false;
-	}
-		
-	bool IDFileType::IdAsf()
-	{
-
-		return false;
-	}
-	
 	String^ IDFileType::GetUFETestType()
 	{
 		if(head8[9] == 'V' && head8[10] == 'C' && head8[11] == 'S')

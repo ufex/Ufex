@@ -10,11 +10,6 @@ using namespace System::Text;
 #define NUM_READ_BYTES		0x00000040	// 64 Bytes
 
 
-// Minimum Valid File Sizes
-#define MINSZ_RAST_WINBMP	54		// This is the size of a 0 x 0 24-Bit bitmap
-#define MINSZ_VECT_WMF		25		// Non-Placable, 1 record: EOF
-#define MINSZ_VECT_EMF		64		// Guess
-
 // Signatures
 #define SIGN_EMF			0x20454D46	// " EMF"
 #define SIGN_RIFF			0x52494646	// "RIFF"
