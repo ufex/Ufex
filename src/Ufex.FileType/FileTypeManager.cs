@@ -92,7 +92,7 @@ public class FileTypeManager
 		LoadIDLibs();
 	}
 
-	public FileTypeRecord GetFileType(string filePath)
+	public FileTypeRecord[] DetectFileType(string filePath)
 	{
 		FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 		Logger.Info("m_idLibsCache.Count = " + idLibsCache.Count.ToString());
@@ -101,11 +101,17 @@ public class FileTypeManager
 			try
 			{
 				fs.Position = 0;
-				string fileType = ftid.GetFileType(filePath, fs);
-				if(!fileType.Equals(FileTypeRecord_UNKNOWN))
+				string[] fileTypes = ftid.DetectFileType(filePath, fs);
+				// TODO: should we exit early if we get a match or iterate over all the classifiers?
+				if(fileTypes.Length > 0)
 				{
 					fs.Close();
-					return FileTypes.GetFileType(fileType);
+					FileTypeRecord[] fileTypeRecords = new FileTypeRecord[fileTypes.Length];
+					for(int i = 0; i < fileTypes.Length; i++)
+					{
+						fileTypeRecords[i] = FileTypes.GetFileType(fileTypes[i]);
+					}
+					return fileTypeRecords;
 				}
 			}
 			catch(Exception e)

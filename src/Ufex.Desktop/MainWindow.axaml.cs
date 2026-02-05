@@ -3,11 +3,13 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Ufex.API;
+using Ufex.API.Format;
 using Ufex.FileType;
 using UfexFileInfo = Ufex.API.FileInfo;
 using UfexFileType = Ufex.API.FileType;
@@ -197,7 +199,7 @@ public partial class MainWindow : Window
 			
 			if (filePath != null)
 			{
-				OpenFile(filePath);
+				await OpenFileAsync(filePath);
 			}
 			else
 			{
@@ -207,17 +209,18 @@ public partial class MainWindow : Window
 	}
 
 	/// <summary>
-	/// Opens a file and loads its information.
+	/// Opens a file and loads its information asynchronously.
+	/// Heavy processing runs on a background thread to keep the UI responsive.
 	/// </summary>
 	/// <param name="filePath">The full path to the file to open.</param>
-	private void OpenFile(string filePath)
+	private async Task OpenFileAsync(string filePath)
 	{
 		try
 		{
 			// Step 1: Display a loading message in the status bar
 			SetStatus("Opening file...");
 
-			// Step 2: Reset the tabs and content
+			// Step 2: Reset the tabs and content (UI thread)
 			CloseCurrentFile();
 			InfoTab.Clear();
 			StructureTab.Clear();
@@ -232,19 +235,22 @@ public partial class MainWindow : Window
 			// Add to recent files
 			_settings.AddRecentFile(filePath);
 
-			// Step 4: Get the FileInfo using Ufex.API.FileInfo.FromFile
+			// Step 4: Get the FileInfo - run on background thread
 			SetStatus("Reading file information...");
-			UfexFileInfo? fileInfo = null;
-			try
+			UfexFileInfo? fileInfo = await Task.Run(() =>
 			{
-				fileInfo = UfexFileInfo.FromFile(filePath);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($"Failed to get FileInfo: {ex.Message}");
-			}
+				try
+				{
+					return UfexFileInfo.FromFile(filePath);
+				}
+				catch (Exception ex)
+				{
+					Logger.Error($"Failed to get FileInfo: {ex.Message}");
+					return null;
+				}
+			});
 
-			// Update the file info/attributes on the Info tab
+			// Update the file info/attributes on the Info tab (UI thread)
 			if (fileInfo != null)
 			{
 				InfoTab.LoadFileInfo(fileInfo);
@@ -255,34 +261,54 @@ public partial class MainWindow : Window
 				InfoTab.LoadFileInfo(filePath);
 			}
 
-			// Step 5: Determine the file type using FileTypeManager
+			// Step 5: Determine the file type using FileTypeManager - run on background thread
 			SetStatus("Identifying file type...");
 			FileTypeRecord? detectedFileType = null;
 			string fileTypeDescription = "Unknown File Type";
 			
 			if (_fileTypeManager != null)
 			{
-				try
+				var fileTypeManager = _fileTypeManager;
+				var result = await Task.Run(() =>
 				{
-					detectedFileType = _fileTypeManager.GetFileType(filePath);
-					if (detectedFileType != null)
+					try
 					{
-						Logger.Info($"Detected file type: {detectedFileType.ID} - {detectedFileType.Description}");
-						fileTypeDescription = detectedFileType.Description;
+						var detectedTypes = fileTypeManager.DetectFileType(filePath);
+						if(detectedTypes.Length == 1)
+						{
+							var detected = detectedTypes[0];
+							Logger.Info($"Detected file type: {detected.ID} - {detected.Description}");
+							return (detected, detected.Description);
+						}
+						else if(detectedTypes.Length > 1)
+						{
+							Logger.Info($"Multiple file types detected ({detectedTypes.Length}):");
+							foreach(var dt in detectedTypes)
+							{
+								Logger.Info($" - {dt.ID} - {dt.Description}");
+							}
+							// TODO: display a dialog box to let the user choose
+							// Just return the first one for now
+							var detected = detectedTypes[0];
+							return (detected, detected.Description);
+						}
+						else
+						{
+							Logger.Info("File type detection returned null");
+							return ((FileTypeRecord?)null, "Unknown File Type");
+						}
 					}
-					else
+					catch (Exception ex)
 					{
-						Logger.Info("File type detection returned null");
+						Logger.Error($"File type detection failed: {ex.Message}");
+						return ((FileTypeRecord?)null, "Unknown File Type");
 					}
-				}
-				catch (Exception ex)
-				{
-					Logger.Error($"File type detection failed: {ex.Message}");
-					Console.WriteLine($"Failed to identify file type: {ex.Message}");
-				}
+				});
+				detectedFileType = result.Item1;
+				fileTypeDescription = result.Item2;
 			}
 
-			// Step 6: Display the file type on the Info tab
+			// Step 6: Display the file type on the Info tab (UI thread)
 			InfoTab.SetFileType(fileTypeDescription);
 
 			// Step 7: Open a read-only file stream for the file
@@ -298,7 +324,7 @@ public partial class MainWindow : Window
 				return;
 			}
 
-			// Step 8: Initialize the hex viewer with the file stream
+			// Step 8: Initialize the hex viewer with the file stream (UI thread)
 			HexTab.LoadStream(_openFileStream);
 
 			// Step 9: If file type is known, check for associated plugin
@@ -327,17 +353,17 @@ public partial class MainWindow : Window
 							_currentFileType.FileInStream = _openFileStream;
 							_currentFileType.FilePath = filePath;
 
-							// Step 10: Run the ProcessFile function
+							// Step 10: Run the ProcessFile function on background thread
 							SetStatus("Processing file...");
-							bool processResult = _currentFileType.ProcessFile();
+							var fileType = _currentFileType;
+							bool processResult = await Task.Run(() => fileType.ProcessFile());
 
 							if (!processResult)
 							{
 								Logger.Error("ProcessFile returned false");
-								Console.WriteLine("ProcessFile returned false");
 							}
 
-							// Step 11: Toggle visible tabs based on file type settings
+							// Step 11: Toggle visible tabs based on file type settings (UI thread)
 							SetTabVisibility(
 								_currentFileType.ShowGraphic,      // Visual tab
 								_currentFileType.ShowTechnical,    // Structure tab
@@ -410,7 +436,7 @@ public partial class MainWindow : Window
 				}
 				catch (Exception ex)
 				{
-					Logger.NewException(ex, description: "Failed to load file type handler", funcName: nameof(OpenFile), className: nameof(MainWindow));
+					Logger.NewException(ex, description: "Failed to load file type handler", funcName: nameof(OpenFileAsync), className: nameof(MainWindow));
 					Logger.Error($"Failed to load file type handler:\n{ex}");
 					// Continue without the plugin - basic file info is still shown
 				}
@@ -424,6 +450,17 @@ public partial class MainWindow : Window
 			ShowError("Error opening file", ex.Message);
 			SetStatus("Error opening file");
 		}
+	}
+
+	/// <summary>
+	/// Opens a file and loads its information.
+	/// </summary>
+	/// <param name="filePath">The full path to the file to open.</param>
+	[Obsolete("Use OpenFileAsync instead for better UI responsiveness")]
+	private void OpenFile(string filePath)
+	{
+		// Fire and forget - for backwards compatibility
+		_ = OpenFileAsync(filePath);
 	}
 
 	/// <summary>

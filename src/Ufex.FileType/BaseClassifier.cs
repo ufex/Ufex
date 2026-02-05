@@ -11,17 +11,11 @@ public abstract class BaseClassifier
 {
 	private FileTypeDb fileTypeDb;
 	public Logger Log { get; private set; }
-	protected static string FT_UNKNOWN = "FT_UNKNOWN";
 
 	public FileTypeDb FileTypes
 	{
 		get { return fileTypeDb; }
 		set { fileTypeDb = value; }
-	}
-
-	public string FileTypeUnknown
-	{
-		get { return FT_UNKNOWN; }
 	}
 
 	public BaseClassifier()
@@ -34,5 +28,11 @@ public abstract class BaseClassifier
 		Log = log;
 	}
 
-	public abstract string GetFileType(string filePath, FileStream fileStream);
+	/// <summary>
+	/// Get all matching file types for the given file
+	/// </summary>
+	/// <param name="filePath">The absolute path to the file</param>
+	/// <param name="fileStream">A read only FileStream</param>
+	/// <returns>An array of file type ID's</returns>
+	public abstract string[] DetectFileType(string filePath, FileStream fileStream);
 }

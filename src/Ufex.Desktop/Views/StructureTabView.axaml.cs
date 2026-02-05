@@ -13,6 +13,7 @@ using Ufex.API;
 using Ufex.API.Tables;
 using Ufex.API.Tree;
 using Ufex.API.Visual;
+using Ufex.API.Format;
 using Ufex.Controls.Avalonia;
 using UfexFileType = Ufex.API.FileType;
 

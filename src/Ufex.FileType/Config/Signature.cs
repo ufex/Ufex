@@ -110,9 +110,9 @@ namespace Ufex.FileType.Config
 			{
 				i++;
 				if(i > count)
-                {
+				{
 					return -1;
-                }
+				}
 			}
 			return startIndex + i;
 		}
@@ -264,11 +264,11 @@ namespace Ufex.FileType.Config
 						case PatternOperator.GreaterThanOrEqual:
 							match = buffer[i] >= Value;
 							break;
-                    }
-                    if (match)
-                    {
+					}
+					if (match)
+					{
 						return true;
-                    }
+					}
 				}
 				return false;
 			}

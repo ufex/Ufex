@@ -4,6 +4,7 @@ using Avalonia.Media;
 using System.Collections.Generic;
 using System.Linq;
 using Ufex.API;
+using Ufex.API.Format;
 
 namespace Ufex.Desktop;
 

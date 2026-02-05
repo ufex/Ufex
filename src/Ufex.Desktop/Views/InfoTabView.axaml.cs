@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using Ufex.API;
 using Ufex.API.Tables;
+using Ufex.API.Format;
 using UfexFileInfo = Ufex.API.FileInfo;
 
 namespace Ufex.Desktop.Views;

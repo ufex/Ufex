@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Ufex.API;
 using Ufex.API.Settings;
+using Ufex.API.Format;
 
 namespace Ufex.Desktop;
 
