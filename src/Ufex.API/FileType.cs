@@ -6,6 +6,7 @@ using System.Reflection;
 using System.IO;
 using Ufex.API.Tree;
 using Ufex.API.Validation;
+using Ufex.API.Format;
 using System.Diagnostics;
 
 namespace Ufex.API;
@@ -13,7 +14,7 @@ namespace Ufex.API;
 /// <summary>
 /// Base class for all File Types
 /// </summary>
-public abstract class FileType
+public abstract class FileType : IFileType
 {
 	public string m_DebugText;
 	public string m_AppPath;
@@ -151,22 +152,10 @@ public abstract class FileType
 
 	abstract public bool ProcessFile();
 
-	// Returns the data table that corresponds to the treenode
-	virtual public Ufex.API.Tables.TableData? GetData(TreeNode tn)
-	{
-		return null;
-	}
-
-	// Returns the File's Creator
-	virtual public String GetFileCreator()
-	{
-		return "";
-	}
 
 	// Functions for interfacing with the ArrayToNum Class
 	public void SetATNEndian(Endian endian) 
 	{ 
 		_arrayToNum.DataEndian = endian == Endian.Little ? Endian.Little : Endian.Big; 
 	}
-
 }

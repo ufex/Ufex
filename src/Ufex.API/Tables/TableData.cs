@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Data;
 using System.Text;
+using Ufex.API.Format;
 
 namespace Ufex.API.Tables;
 
@@ -37,8 +38,6 @@ public abstract class TableData
 
 	// Set to true when a size error occurs
 	protected bool sizeError;
-
-	private bool _isDynamic;
 
 	public int NumColumns
 	{

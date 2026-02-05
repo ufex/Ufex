@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Ufex.API;
+namespace Ufex.API.Format;
+
 public class BinaryNumberFormatter
 {
 	private bool leadZeros = true;

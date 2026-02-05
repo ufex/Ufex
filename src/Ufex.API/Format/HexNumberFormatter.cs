@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Text;
 
-namespace Ufex.API;
+namespace Ufex.API.Format;
 
 public class HexNumberFormatter
 {

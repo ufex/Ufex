@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Ufex.API.Format;
 
 namespace Ufex.API.Tables;
 
@@ -50,27 +51,27 @@ public class DynamicTableData : Ufex.API.Tables.TableData
 		AddRowData(new object[] { });
 	}
 
-	public void AddRow(Object c1)
+	public void AddRow(Object? c1)
 	{
 		AddRowData(new object[] { c1 });
 	}
 
-	public void AddRow(Object c1, Object c2)
+	public void AddRow(Object? c1, Object? c2)
 	{
 		AddRowData(new object[] { c1, c2 });
 	}
 
-	public void AddRow(Object c1, Object c2, Object c3)
+	public void AddRow(Object? c1, Object? c2, Object? c3)
 	{
 		AddRowData(new object[] { c1, c2, c3 });
 	}
 
-	public void AddRow(Object c1, Object c2, Object c3, Object c4)
+	public void AddRow(Object? c1, Object? c2, Object? c3, Object? c4)
 	{
 		AddRowData(new object[] { c1, c2, c3, c4 });
 	}
 
-	public void AddRow(Object c1, Object c2, Object c3, Object c4, Object c5)
+	public void AddRow(Object? c1, Object? c2, Object? c3, Object? c4, Object? c5)
 	{
 		AddRowData(new object[] { c1, c2, c3, c4, c5 });
 	}

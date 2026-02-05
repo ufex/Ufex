@@ -34,7 +34,7 @@ public class FileReader : BinaryReader
 		_endian = endian;
 		int minBufferSize = encoding.GetMaxByteCount(1);  // max bytes per one char
 		if(minBufferSize < 16) 
-				minBufferSize = 16;
+			minBufferSize = 16;
 		_buffer = new byte[minBufferSize];
 	}
 
@@ -58,6 +58,32 @@ public class FileReader : BinaryReader
 	public Byte[] ReadBytes(UInt16 count) 
 	{ 
 		return ReadBytes((int)count);
+	}
+	
+	/// <summary>
+	/// Reads bytes from the stream until the specified termination byte is encountered.
+	/// </summary>
+	/// <param name="terminationByte"></param>
+	/// <param name="includeTerminationByte"></param>
+	/// <returns></returns>
+	/// <exception cref="EndOfStreamException"></exception>
+	public Byte[] ReadBytesUntil(byte terminationByte, bool includeTerminationByte = false)
+	{
+		List<byte> bytes = new List<byte>();
+		while(true)
+		{
+			int b = BaseStream.ReadByte();
+			if(b == -1)
+				throw new EndOfStreamException();
+			if((byte)b == terminationByte)
+			{
+				if(includeTerminationByte)
+					bytes.Add((byte)b);
+				break;
+			}
+			bytes.Add((byte)b);
+		}
+		return bytes.ToArray();
 	}
 
 	/// <summary>

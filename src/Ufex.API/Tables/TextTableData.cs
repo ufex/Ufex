@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Ufex.API.Format;
 
 namespace Ufex.API.Tables;
 

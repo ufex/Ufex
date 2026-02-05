@@ -1,4 +1,5 @@
 ﻿using System;
+using Ufex.API.Format;
 
 namespace Ufex.API.Tables;
 

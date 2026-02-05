@@ -4,6 +4,39 @@ namespace Ufex.API;
 
 public class ByteUtil
 {
+	/// <summary>
+	/// Determines the size in bytes of the given object.
+	/// </summary>
+	/// <param name="value"></param>
+	/// <returns>The object size in bytes</returns>
+	public static long GetObjectSize(object value)
+	{
+		return value switch
+		{
+			byte => sizeof(byte),
+			sbyte => sizeof(sbyte),
+			short => sizeof(short),
+			ushort => sizeof(ushort),
+			int => sizeof(int),
+			uint => sizeof(uint),
+			long => sizeof(long),
+			ulong => sizeof(ulong),
+			float => sizeof(float),
+			double => sizeof(double),
+			byte[] arr => arr.Length,
+			sbyte[] arr => arr.Length,
+			short[] arr => arr.Length * sizeof(short),
+			ushort[] arr => arr.Length * sizeof(ushort),
+			int[] arr => arr.Length * sizeof(int),
+			uint[] arr => arr.Length * sizeof(uint),
+			long[] arr => arr.Length * sizeof(long),
+			ulong[] arr => arr.Length * sizeof(ulong),
+			float[] arr => arr.Length * sizeof(float),
+			double[] arr => arr.Length * sizeof(double),
+			_ => 0 // TODO throw exception?
+		};
+	}
+
 	public static bool GetBit(Byte v, int p) 
 	{ 
 		return ((v & (Byte)(1 << p)) != 0); 
