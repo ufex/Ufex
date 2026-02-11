@@ -346,6 +346,10 @@ public partial class MainWindow : Window
 						_currentFileType = _fileTypeManager.GetNewClassInstance(fileTypeClass.ID);
 						if (_currentFileType != null)
 						{
+							// Set up logger for the file type with memory logging enabled
+							var assemblyName = _currentFileType.GetType().Assembly.GetName().Name ?? "FileType";
+							_currentFileType.Logger = new Logger($"{assemblyName}.log", enableMemoryLog: true);
+
 							Logger.Info($"Created instance of file type class: {_currentFileType.GetType().FullName}");
 
 							// Set the file stream on the file type instance

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Ufex.API;
 
@@ -21,7 +22,7 @@ public struct InfoLogEntry
 
 public struct ErrorLogEntry
 {
-	public string title;		
+	public string title;
 	public string className;
 	public string funcName;
 	public string message;
@@ -43,128 +44,256 @@ public struct ExceptionLogEntry
 	}
 }
 
-public class Logger
+/// <summary>
+/// A logger that implements Microsoft.Extensions.Logging.ILogger and supports
+/// both file-based logging and in-memory log storage for GUI display.
+/// </summary>
+public class Logger : ILogger
 {
-	private ArrayList logEntries;
+	private ArrayList _entries;
 
-	private bool writeToLog;
-	private string logFileName;
-	private string logFileDir;
-	private string logFilePath;
-	private StreamWriter streamWriter;
+	private readonly string _filePath;
+	private readonly bool _writeToFile;
+	private static readonly object _lock = new object();
 
+	/// <summary>
+	/// Gets the combined text of all in-memory log entries.
+	/// </summary>
 	public string Text
 	{
 		get
 		{
+			if (_entries == null)
+				return string.Empty;
+
 			StringBuilder sb = new StringBuilder();
-			foreach(object entry in logEntries)
+			lock (_lock)
 			{
-				sb.AppendLine(entry.ToString());
+				foreach (object entry in _entries)
+				{
+					sb.AppendLine(entry.ToString());
+				}
 			}
 			return sb.ToString();
 		}
 	}
 
-	public Logger()
+	/// <summary>
+	/// Gets the in-memory log entries collection.
+	/// </summary>
+	public ArrayList Entries
 	{
-		logEntries = new ArrayList(1);
-		logFileName = null;
-		writeToLog = false;
+		get { return _entries; }
 	}
 
-	public Logger(string logFileName)
+	[Obsolete("The log file name can only be set via the constructor. This method is a no-op and will be removed in a future version.")]
+	public void SetLogName(string _)
 	{
-		logEntries = new ArrayList(1);
-		writeToLog = false;
-		this.logFileName = null;
-		SetLogName(logFileName);
+		// No-op - log file is set via constructor and cannot be changed.
 	}
 
-	public ArrayList GetAllDebugItems() 
-	{ 
-		return logEntries;
-	}
-
-	public int GetNumObjects() 
-	{ 
-		return logEntries.Count; 
-	}
-
-	public void SetLogName(string fileName)
+	/// <summary>
+	/// Creates a logger with in-memory logging enabled and no file logging.
+	/// </summary>
+	public Logger() : this(true, null)
 	{
-		// Set the log file name
-		logFileName = fileName;
+	}
 
-		// Enable writing to the log file
-		writeToLog = true;
+	/// <summary>
+	/// Creates a logger with a log file in the default ufex logs directory.
+	/// Memory logging is disabled by default to prevent memory leaks in long-lived loggers.
+	/// </summary>
+	/// <param name="fileName">The name of the log file (e.g., "Desktop_MainWindow.log")</param>
+	public Logger(string fileName) : this(false, GetDefaultLogFilePath(fileName))
+	{
+	}
 
-		// Determine the log file directory
-		logFileDir = Path.Combine(
+	/// <summary>
+	/// Creates a logger with a log file in the default ufex logs directory and optional memory logging.
+	/// </summary>
+	/// <param name="fileName">The name of the log file (e.g., "Desktop_MainWindow.log")</param>
+	/// <param name="enableMemoryLog">Whether to enable in-memory log storage (use for short-lived loggers only)</param>
+	public Logger(string fileName, bool enableMemoryLog) : this(enableMemoryLog, GetDefaultLogFilePath(fileName))
+	{
+	}
+
+	/// <summary>
+	/// Creates a logger with optional in-memory logging.
+	/// </summary>
+	/// <param name="enableMemoryLog">Whether to enable in-memory log storage</param>
+	public Logger(bool enableMemoryLog) : this(enableMemoryLog, null)
+	{
+	}
+
+	/// <summary>
+	/// Creates a logger with the specified settings.
+	/// </summary>
+	/// <param name="enableMemoryLog">Whether to enable in-memory log storage</param>
+	/// <param name="filePath">Full path to the log file, or null to disable file logging</param>
+	public Logger(bool enableMemoryLog, string filePath)
+	{
+		if (enableMemoryLog)
+			_entries = new ArrayList(100);
+		else
+			_entries = null;
+
+		_filePath = filePath;
+		_writeToFile = !string.IsNullOrEmpty(filePath);
+
+		// Ensure log directory exists if file logging is enabled
+		if (_writeToFile)
+		{
+			var logDir = Path.GetDirectoryName(_filePath);
+			if (!string.IsNullOrEmpty(logDir) && !Directory.Exists(logDir))
+			{
+				Directory.CreateDirectory(logDir);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Gets the default log file path in the user's AppData folder.
+	/// </summary>
+	private static string GetDefaultLogFilePath(string fileName)
+	{
+		var logDir = Path.Combine(
 			Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
 			"ufex",
 			"Logs"
 		);
-
-		// Create the path if it doesnt exist
-		if (!Directory.Exists(logFileDir))
-			Directory.CreateDirectory(logFileDir);
-
-		// Set the log file full path (dir + fileName)
-		logFilePath = String.Concat(logFileDir, "\\", logFileName);
+		return Path.Combine(logDir, fileName);
 	}
 
+	public IDisposable BeginScope<TState>(TState state) => null;
+
+	public bool IsEnabled(LogLevel logLevel)
+	{
+		// Log everything, or filter here if you want
+		return logLevel != LogLevel.None;
+	}
+
+	public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+	{
+		if (!IsEnabled(logLevel)) return;
+
+		var message = formatter(state, exception);
+		var logRecord = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{logLevel}] {message}";
+
+		if (exception != null)
+		{
+			logRecord += Environment.NewLine + FormatStackTrace(exception);
+		}
+
+		lock (_lock)
+		{
+			// Append to in-memory store
+			if (_entries != null)
+			{
+				_entries.Add(logRecord);
+			}
+
+			// Write to file if enabled
+			if (_writeToFile)
+			{
+				try
+				{
+					File.AppendAllText(_filePath, logRecord + Environment.NewLine);
+				}
+				catch
+				{
+					// Silently ignore file write errors to avoid breaking the application
+				}
+			}
+		}
+	}
+
+	/// <summary>
+	/// Logs an informational message.
+	/// </summary>
+	[Obsolete("Use the ILogger extension method LogInformation instead")]
 	public void Info(string message, string className = "", string funcName = "", string title = "Debug Info")
 	{
-		// Create a new UFE_INFO object
+		// Create a legacy entry for backwards compatibility
 		InfoLogEntry tmpInfo = new InfoLogEntry();
-
-		// Set the member vars
 		tmpInfo.message = message;
 		tmpInfo.className = className;
 		tmpInfo.funcName = funcName;
 		tmpInfo.title = title;
 
-		// Add the object to the logEntries ArrayList
-		logEntries.Add(tmpInfo);
+		// Store legacy entry and log via ILogger
+		lock (_lock)
+		{
+			if (_entries != null)
+			{
+				_entries.Add(tmpInfo);
+			}
+		}
 
-		WriteToLog("Info", message);
+		// Build formatted message including context info
+		string formattedMessage = !string.IsNullOrEmpty(className) || !string.IsNullOrEmpty(funcName)
+			? $"{message} ({className}.{funcName})"
+			: message;
+
+		this.Log(LogLevel.Information, 0, formattedMessage, null, (s, e) => s);
 	}
 
+	/// <summary>
+	/// Logs an error message.
+	/// </summary>
+	[Obsolete("Use the ILogger extension method LogError instead")]
 	public void Error(string message, string className = "", string funcName = "", string title = "Error")
 	{
-		// Create a new ErrorLogEntry object
+		// Create a legacy entry for backwards compatibility
 		ErrorLogEntry tmpError = new ErrorLogEntry();
-
 		tmpError.message = message;
 		tmpError.className = className;
 		tmpError.funcName = funcName;
 		tmpError.title = title;
-		logEntries.Add(tmpError);
-		if(writeToLog)
+
+		// Store legacy entry
+		lock (_lock)
 		{
-			string logmessage;
-			logmessage = String.Format("{0},{1}", message, funcName);
-			WriteToLog("Error", logmessage);
+			if (_entries != null)
+			{
+				_entries.Add(tmpError);
+			}
 		}
+
+		// Build formatted message including context info
+		string formattedMessage = !string.IsNullOrEmpty(className) || !string.IsNullOrEmpty(funcName)
+			? $"{message} ({className}.{funcName})"
+			: message;
+
+		this.Log(LogLevel.Error, 0, formattedMessage, null, (s, e) => s);
 	}
 
+	/// <summary>
+	/// Logs an exception with optional description and context.
+	/// </summary>
 	public void NewException(Exception e, string description = "", string funcName = "", string className = "")
 	{
+		// Create a legacy entry for backwards compatibility
 		ExceptionLogEntry tmpException = new ExceptionLogEntry();
 		tmpException.e = e;
 		tmpException.className = className;
 		tmpException.funcName = funcName;
 		tmpException.description = description;
-		logEntries.Add(tmpException);
-		if(writeToLog)
+
+		// Store legacy entry
+		lock (_lock)
 		{
-			string message;
-			message = String.Format("{0},{1},{2}", e.Message, description, funcName);
-			// Append call stack (with file/line numbers when PDBs are available)
-			message = String.Concat(message, ", StackTrace: ", FormatStackTrace(e));
-			WriteToLog("Exception", message);
+			if (_entries != null)
+			{
+				_entries.Add(tmpException);
+			}
 		}
+
+		// Build formatted message including context info
+		string formattedMessage = !string.IsNullOrEmpty(description)
+			? $"{description} ({className}.{funcName})"
+			: $"Exception in {className}.{funcName}";
+
+		this.Log(LogLevel.Error, 0, formattedMessage, e, (s, ex) => s);
 	}
 
 	private static string FormatStackTrace(Exception e)
@@ -199,16 +328,6 @@ public class Logger
 		catch
 		{
 			return e.StackTrace ?? string.Empty;
-		}
-	}
-
-	private void WriteToLog(string type, string message)
-	{
-		if (writeToLog && logFilePath != null)
-		{
-			streamWriter = File.AppendText(logFilePath);
-			streamWriter.WriteLine(String.Format("{0}: {1}", type, message));
-			streamWriter.Close();
 		}
 	}
 }

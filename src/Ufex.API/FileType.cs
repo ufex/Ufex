@@ -8,6 +8,8 @@ using Ufex.API.Tree;
 using Ufex.API.Validation;
 using Ufex.API.Format;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Ufex.API;
 
@@ -33,7 +35,7 @@ public abstract class FileType : IFileType
 
 	private List<Ufex.API.Visual.Visual> _visuals;
 
-	private Logger log;
+	private ILogger _logger;
 
 	public string FilePath
 	{
@@ -113,16 +115,27 @@ public abstract class FileType : IFileType
 	public Boolean ShowFileCheck { get; protected set; }
 
 	/// <summary>
-	/// Logger instance for the FileType
+	/// Logger instance for the FileType. Defaults to NullLogger.Instance.
+	/// The application should set this to an appropriate logger instance.
 	/// </summary>
-	protected Logger Log
+	public ILogger Logger
 	{
-		get { return log; }
+		get { return _logger; }
+		set { _logger = value ?? NullLogger.Instance; }
+	}
+
+	/// <summary>
+	/// Logger instance for the FileType (for backwards compatibility with derived classes).
+	/// </summary>
+	[Obsolete("Use the Logger property instead")]
+	protected Ufex.API.Logger Log
+	{
+		get { return (Logger)_logger; }
 	}
 
 	public FileType()
 	{
-		log = new Logger("FileTypeInstance.log");
+		_logger = NullLogger.Instance;
 		
 		// By default these tabs are hidden
 		ShowTechnical = false;

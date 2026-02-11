@@ -2,6 +2,7 @@ using System.IO;
 using Ufex.API.Validation;
 using Ufex.API.Format;
 using Ufex.API.Tree;
+using Microsoft.Extensions.Logging;
 
 namespace Ufex.API;
 
@@ -13,6 +14,12 @@ public interface IFileType
 	public Ufex.API.Tables.QuickInfoTableData QuickInfoTable { get;	}
 	public TreeNodeCollection TreeNodes { get; }
 	public Ufex.API.Visual.Visual[] Visuals { get; }
+
+	/// <summary>
+	/// Logger instance for the FileType. Defaults to NullLogger.Instance.
+	/// The application should set this to an appropriate logger instance.
+	/// </summary>
+	public ILogger Logger { get; set; }
 
 	public bool ProcessFile();
 }
