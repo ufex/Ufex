@@ -26,13 +26,23 @@
                 BorderThickness="0"
                 Margin="4">
             <!-- ContentControl for single visual, or TabControl for multiple -->
-            <Panel x:Name="VisualsContainer">
+            <Grid x:Name="VisualsContainer">
                 <!-- Single visual display (no tabs) -->
-                <ContentControl x:Name="SingleVisualContent" IsVisible="False" />
+                <ContentControl x:Name="SingleVisualContent" 
+                                IsVisible="False"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch" />
                 
                 <!-- Multiple visuals display (tabs) -->
-                <TabControl x:Name="VisualsTabControl" IsVisible="False" />
-            </Panel>
+                <TabControl x:Name="VisualsTabControl" 
+                            IsVisible="False"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch" />
+            </Grid>
         </Border>
         
     </Grid>

@@ -20,3 +20,6 @@ ufex utilizes a plugin architecture to support loading .NET assemblies on the fi
 
 * Use tabs instead of spaces for indentation
 * Follow C# best practices
+* Use PascalCase for all class, method, and property names (including const and static readonly fields)
+* Use camelCase for local variables and method parameters
+* Prefer `[ x, y, z]` format for rows instead of `new object[] { x, y, z }` because it is shorter and more readable.

@@ -3,6 +3,7 @@ using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Layout;
 using Avalonia.Media;
+using AvaloniaEdit;
 using FluentIcons.Avalonia;
 using FluentIcons.Common;
 using System;
@@ -337,6 +338,7 @@ public partial class StructureTabView : UserControl
 		{
 			DataGridVisual dgv => CreateDataGridControl(dgv),
 			HexViewerVisual hvv => CreateHexViewControl(hvv),
+			TextVisual tv => CreateTextViewerControl(tv),
 			ImageVisual iv => CreateImageViewerControl(iv),
 			_ => null
 		};
@@ -374,6 +376,33 @@ public partial class StructureTabView : UserControl
 		var hexView = new HexView();
 		hexView.LoadStream(visual.Stream);
 		return hexView;
+	}
+
+	/// <summary>
+	/// Creates a TextEditor control for TextVisual.
+	/// </summary>
+	private Control CreateTextViewerControl(TextVisual visual)
+	{
+		var textEditor = new TextEditor
+		{
+			IsReadOnly = true,
+			ShowLineNumbers = true,
+			FontFamily = new FontFamily("Cascadia Code, Consolas, Courier New, monospace"),
+			FontSize = 13,
+			Text = visual.Text,
+			WordWrap = false,
+			HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+			VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto
+		};
+
+		// Wrap in DockPanel - TextEditor needs a container that provides proper layout measurement
+		var dockPanel = new DockPanel
+		{
+			LastChildFill = true
+		};
+		dockPanel.Children.Add(textEditor);
+
+		return dockPanel;
 	}
 
 	/// <summary>
