@@ -59,6 +59,7 @@
 		</FileType>
 		<FileType>
 			<ID>AUDI_WAVE</ID>
+			<ParentID>BASE_RIFF</ParentID>
 			<Description>Waveform Audio File</Description>
 			<Category>Audio</Category>
 			<MIMEType>audio/x-wav</MIMEType>
