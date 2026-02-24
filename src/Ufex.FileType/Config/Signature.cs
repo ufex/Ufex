@@ -173,7 +173,7 @@ namespace Ufex.FileType.Config
 					bool match = true;
 					for (int i = 0; i < valueLength; i++)
 					{
-						if (buffer[i] != valueBytes[i - startIndex])
+						if (buffer[startIndex + i] != valueBytes[i])
 						{
 							match = false;
 							break;
