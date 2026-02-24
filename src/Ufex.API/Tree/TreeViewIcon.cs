@@ -17,5 +17,6 @@ public enum TreeViewIcon
 	Gear,
 	Binary,
 	Information,
-	Palette
+	Palette,
+	List
 }

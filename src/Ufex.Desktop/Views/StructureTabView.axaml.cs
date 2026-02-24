@@ -56,6 +56,7 @@ public class StructureDataRow
 
 public partial class StructureTabView : UserControl
 {
+	private static readonly Logger Logger = new Logger("Desktop_StructureTab.log");
 	private TreeView? _treeView;
 	private ContentControl? _singleVisualContent;
 	private TabControl? _visualsTabControl;
@@ -249,6 +250,7 @@ public partial class StructureTabView : UserControl
 			TreeViewIcon.Binary => Symbol.Code,
 			TreeViewIcon.Information => Symbol.Info,
 			TreeViewIcon.Palette => Symbol.Color,
+			TreeViewIcon.List => Symbol.List,
 			_ => Symbol.Document
 		};
 	}
@@ -275,8 +277,9 @@ public partial class StructureTabView : UserControl
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine($"Error loading data for node: {ex.Message}");
-			ClearVisuals();
+			Logger.Error($"Error loading data for node '{selectedItem.Text}': {ex}");
+			try { ClearVisuals(); } catch { }
+			ShowErrorVisual($"Error loading data for node: {ex.Message}");
 		}
 	}
 
@@ -334,14 +337,49 @@ public partial class StructureTabView : UserControl
 	/// </summary>
 	private Control? CreateVisualControl(Ufex.API.Visual.Visual visual)
 	{
-		return visual switch
+		try
 		{
-			DataGridVisual dgv => CreateDataGridControl(dgv),
-			HexViewerVisual hvv => CreateHexViewControl(hvv),
-			TextVisual tv => CreateTextViewerControl(tv),
-			ImageVisual iv => CreateImageViewerControl(iv),
-			_ => null
+			return visual switch
+			{
+				DataGridVisual dgv => CreateDataGridControl(dgv),
+				HexViewerVisual hvv => CreateHexViewControl(hvv),
+				TextVisual tv => CreateTextViewerControl(tv),
+				ImageVisual iv => CreateImageViewerControl(iv),
+				_ => null
+			};
+		}
+		catch (Exception ex)
+		{
+			Logger.Error($"Error creating visual control for '{visual.Description}' ({visual.GetType().Name}): {ex}");
+			return CreateErrorPlaceholder($"Error creating {visual.Description}: {ex.Message}");
+		}
+	}
+
+	/// <summary>
+	/// Creates a placeholder control displaying an error message.
+	/// </summary>
+	private static TextBlock CreateErrorPlaceholder(string message)
+	{
+		return new TextBlock
+		{
+			Text = message,
+			Foreground = Brushes.Red,
+			TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+			Margin = new Avalonia.Thickness(8),
+			VerticalAlignment = VerticalAlignment.Top
 		};
+	}
+
+	/// <summary>
+	/// Displays an error message in the visuals area.
+	/// </summary>
+	private void ShowErrorVisual(string message)
+	{
+		if (_singleVisualContent != null)
+		{
+			_singleVisualContent.Content = CreateErrorPlaceholder(message);
+			_singleVisualContent.IsVisible = true;
+		}
 	}
 
 	/// <summary>
