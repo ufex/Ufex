@@ -13,6 +13,7 @@ public class FileTypeRecord
 {
 	public string ConfigFilePath;
 	public string ID;
+	public string ParentID;
 	public string Description;
 	public string Category;
 	public string SubCategory;

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Collections;
 using System.IO;
@@ -111,7 +112,7 @@ public class FileTypeManager
 					{
 						fileTypeRecords[i] = FileTypes.GetFileType(fileTypes[i]);
 					}
-					return fileTypeRecords;
+					return SortBySpecificity(fileTypeRecords);
 				}
 			}
 			catch(Exception e)
@@ -121,6 +122,59 @@ public class FileTypeManager
 		}
 		fs.Close();
 		return null;
+	}
+
+	/// <summary>
+	/// Sorts file type records so that child types appear before their parents.
+	/// For example, WAVE (child of RIFF) will be sorted before RIFF since it's more specific.
+	/// </summary>
+	private FileTypeRecord[] SortBySpecificity(FileTypeRecord[] records)
+	{
+		if (records == null || records.Length <= 1)
+			return records;
+
+		var recordIds = new HashSet<string>(records.Select(r => r.ID));
+
+		Array.Sort(records, (a, b) =>
+		{
+			// If a is a child of b, a is more specific and should come first
+			if (!string.IsNullOrEmpty(a.ParentID) && a.ParentID == b.ID)
+				return -1;
+
+			// If b is a child of a, b is more specific and should come first
+			if (!string.IsNullOrEmpty(b.ParentID) && b.ParentID == a.ID)
+				return 1;
+
+			// For indirect relationships, count ancestry depth among the detected types:
+			// deeper (more specific) types come first
+			int depthA = GetAncestryDepth(a, recordIds);
+			int depthB = GetAncestryDepth(b, recordIds);
+			if (depthA != depthB)
+				return depthB.CompareTo(depthA);
+
+			return 0;
+		});
+
+		return records;
+	}
+
+	/// <summary>
+	/// Counts how many ancestors of this record are present in the detected set.
+	/// A higher depth means the type is more specific.
+	/// </summary>
+	private int GetAncestryDepth(FileTypeRecord record, HashSet<string> detectedIds)
+	{
+		int depth = 0;
+		string currentId = record.ParentID;
+
+		while (!string.IsNullOrEmpty(currentId) && detectedIds.Contains(currentId))
+		{
+			depth++;
+			FileTypeRecord parent = FileTypes.FileTypesByID.TryGetValue(currentId, out var p) ? p : null;
+			currentId = parent?.ParentID;
+		}
+
+		return depth;
 	}
 
 	public FileTypeClassRecord[] GetFileTypeClassesByFileType(string fileTypeId)
