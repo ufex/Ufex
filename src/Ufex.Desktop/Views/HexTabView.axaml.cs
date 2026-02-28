@@ -7,11 +7,24 @@ namespace Ufex.Desktop.Views;
 public partial class HexTabView : UserControl
 {
 	private HexView? _hexViewer;
+	private HexSearchBar? _hexSearchBar;
 
 	public HexTabView()
 	{
 		InitializeComponent();
 		_hexViewer = this.FindControl<HexView>("HexViewer");
+		_hexSearchBar = this.FindControl<HexSearchBar>("HexSearchBar");
+
+		if (_hexSearchBar != null && _hexViewer != null)
+		{
+			_hexSearchBar.HexView = _hexViewer;
+
+			// Align the search bar width to the hex grid content width
+			_hexViewer.ContentWidthChanged += (_, width) =>
+			{
+				_hexSearchBar.Width = width;
+			};
+		}
 	}
 
 	/// <summary>
@@ -82,5 +95,20 @@ public partial class HexTabView : UserControl
 			if (_hexViewer != null)
 				_hexViewer.HexUpperCase = value;
 		}
+	}
+	/// <summary>
+	/// Focuses the search text box in the search bar.
+	/// </summary>
+	public void FocusSearchBox()
+	{
+		_hexSearchBar?.FocusSearchBox();
+	}
+
+	/// <summary>
+	/// Triggers a "Find Next" action on the search bar.
+	/// </summary>
+	public void TriggerFindNext()
+	{
+		_hexSearchBar?.TriggerFindNext();
 	}
 }

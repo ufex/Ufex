@@ -236,21 +236,25 @@ public partial class StructureTabView : UserControl
 		{
 			TreeViewIcon.NullIcon => Symbol.Document,
 			TreeViewIcon.Section => Symbol.DocumentBulletList,
-			TreeViewIcon.Properties => Symbol.Settings,
+			TreeViewIcon.Properties => Symbol.TextColumnTwoLeft,
 			TreeViewIcon.Header => Symbol.DocumentHeader,
+			TreeViewIcon.Footer => Symbol.DocumentFooter,
 			TreeViewIcon.Comment => Symbol.Comment,
-			TreeViewIcon.Text => Symbol.TextDescription,
+			TreeViewIcon.Text => Symbol.Text,
 			TreeViewIcon.Table => Symbol.Table,
 			TreeViewIcon.Image => Symbol.Image,
+			TreeViewIcon.Video => Symbol.Video,
 			TreeViewIcon.FolderOpen => Symbol.FolderOpen,
 			TreeViewIcon.FolderClosed => Symbol.Folder,
 			TreeViewIcon.Document => Symbol.Document,
 			TreeViewIcon.Object => Symbol.Cube,
 			TreeViewIcon.Gear => Symbol.Settings,
-			TreeViewIcon.Binary => Symbol.Code,
+			TreeViewIcon.Binary => Symbol.GridDots, // TODO: find a better icon
 			TreeViewIcon.Information => Symbol.Info,
 			TreeViewIcon.Palette => Symbol.Color,
 			TreeViewIcon.List => Symbol.List,
+			TreeViewIcon.Certificate => Symbol.Certificate,
+			TreeViewIcon.Code => Symbol.Code,
 			_ => Symbol.Document
 		};
 	}

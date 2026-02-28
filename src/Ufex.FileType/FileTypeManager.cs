@@ -117,7 +117,7 @@ public class FileTypeManager
 			}
 			catch(Exception e)
 			{
-				Logger.NewException(e, "Failed to identify file type using " + ftid.ToString());
+				Logger.Error(e, "FileTypeManager.DetectFileType: Failed to identify file type using {FileType}", ftid.ToString());
 			}
 		}
 		fs.Close();
@@ -283,7 +283,7 @@ public class FileTypeManager
 			}
 			catch (Exception e)
 			{
-				Logger.NewException(e, "FileTypeManager", "LoadIDLibs()", "Failed to load classifier: " + idLib.fullTypeName);
+				Logger.Error(e, "FileTypeManager.LoadIDLibs: Failed to load classifier: {FileType}", idLib.fullTypeName);
 			}
 		}
 	}

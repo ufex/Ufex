@@ -5,9 +5,44 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Ufex.Controls.Avalonia;
+
+/// <summary>
+/// Represents the state of a search operation within a HexView.
+/// Holds the search pattern, cached match positions, and current index.
+/// </summary>
+public class HexSearchState
+{
+	/// <summary>
+	/// The byte pattern that was searched for.
+	/// </summary>
+	public byte[] Pattern { get; }
+
+	/// <summary>
+	/// All match positions found in the stream.
+	/// </summary>
+	public List<long> Matches { get; }
+
+	/// <summary>
+	/// The index of the currently selected match, or -1 if none.
+	/// </summary>
+	public int CurrentIndex { get; set; }
+
+	/// <summary>
+	/// The total number of results found.
+	/// </summary>
+	public int TotalResults => Matches.Count;
+
+	public HexSearchState(byte[] pattern)
+	{
+		Pattern = pattern;
+		Matches = new List<long>();
+		CurrentIndex = -1;
+	}
+}
 
 /// <summary>
 /// Cross-platform hex viewer control for Avalonia.
@@ -58,6 +93,14 @@ public partial class HexView : UserControl
 	// Highlight support
 	private long _highlightStart;
 	private long _highlightEnd;
+
+	// Content width tracking
+	private double _contentWidth;
+
+	/// <summary>
+	/// Raised when the content width changes (e.g. due to column count change).
+	/// </summary>
+	public event EventHandler<double>? ContentWidthChanged;
 
 	// Format settings
 	private bool _hexCaps = true;
@@ -234,6 +277,22 @@ public partial class HexView : UserControl
 		{
 			_asciiCanvas.Width = _calculatedCols * _asciiCellWidth;
 			_asciiCanvas.Height = canvasHeight;
+		}
+
+		// Calculate and notify content width
+		// position border + hex border + ascii border + scrollbar + spacing + border thicknesses
+		double newContentWidth = _positionCellWidth + 2  // position + border
+			+ _gridHorizontalSpacing
+			+ (_calculatedCols * _hexCellWidth) + 2  // hex + border
+			+ _gridHorizontalSpacing
+			+ (_calculatedCols * _asciiCellWidth) + 2  // ascii + border
+			+ _gridHorizontalSpacing
+			+ 20; // scrollbar
+
+		if (Math.Abs(newContentWidth - _contentWidth) > 0.5)
+		{
+			_contentWidth = newContentWidth;
+			ContentWidthChanged?.Invoke(this, _contentWidth);
 		}
 	}
 
@@ -611,6 +670,238 @@ public partial class HexView : UserControl
 		_highlightStart = 0;
 		_highlightEnd = 0;
 		RedrawAll();
+	}
+
+	// Search API
+
+	/// <summary>
+	/// Searches the entire loaded file for the given byte pattern.
+	/// Returns a HexSearchState containing all match positions.
+	/// Navigates to and highlights the first match if found.
+	/// </summary>
+	public HexSearchState Find(byte[] pattern)
+	{
+		var state = new HexSearchState(pattern);
+		if (!_fileLoaded || _fileStream == null || pattern.Length == 0)
+			return state;
+
+		// Save current stream position
+		long savedPosition = _fileStream.Position;
+
+		try
+		{
+			_fileStream.Seek(0, SeekOrigin.Begin);
+
+			int searchBufferSize = Math.Max(_bufferSize, pattern.Length * 4);
+			byte[] searchBuffer = new byte[searchBufferSize];
+			long fileOffset = 0;
+			int overlap = pattern.Length - 1;
+			int carryOver = 0;
+
+			while (fileOffset < _fileSize)
+			{
+				// Read chunk (preserving overlap from previous chunk)
+				int bytesToRead = searchBufferSize - carryOver;
+				int bytesRead = 0;
+				while (bytesRead < bytesToRead)
+				{
+					int read = _fileStream.Read(searchBuffer, carryOver + bytesRead, bytesToRead - bytesRead);
+					if (read == 0) break;
+					bytesRead += read;
+				}
+
+				int totalBytes = carryOver + bytesRead;
+				if (totalBytes < pattern.Length) break;
+
+				// Search for pattern in buffer
+				long searchStartOffset = fileOffset - carryOver;
+				int searchLimit = totalBytes - pattern.Length + 1;
+
+				for (int i = 0; i < searchLimit; i++)
+				{
+					bool match = true;
+					for (int j = 0; j < pattern.Length; j++)
+					{
+						if (searchBuffer[i + j] != pattern[j])
+						{
+							match = false;
+							break;
+						}
+					}
+					if (match)
+					{
+						state.Matches.Add(searchStartOffset + i);
+					}
+				}
+
+				fileOffset += bytesRead;
+
+				// Preserve overlap for next iteration
+				if (bytesRead > 0 && fileOffset < _fileSize)
+				{
+					Array.Copy(searchBuffer, totalBytes - overlap, searchBuffer, 0, overlap);
+					carryOver = overlap;
+				}
+				else
+				{
+					carryOver = 0;
+				}
+			}
+		}
+		finally
+		{
+			// Restore stream position
+			_fileStream.Seek(savedPosition, SeekOrigin.Begin);
+		}
+
+		// Navigate to first result
+		if (state.TotalResults > 0)
+		{
+			state.CurrentIndex = 0;
+			NavigateToMatch(state);
+		}
+
+		return state;
+	}
+
+	/// <summary>
+	/// Searches the entire loaded file for the given byte pattern (case-insensitive).
+	/// Each byte in the pattern is compared ignoring ASCII case.
+	/// Returns a HexSearchState containing all match positions.
+	/// </summary>
+	public HexSearchState FindCaseInsensitive(byte[] pattern)
+	{
+		var state = new HexSearchState(pattern);
+		if (!_fileLoaded || _fileStream == null || pattern.Length == 0)
+			return state;
+
+		long savedPosition = _fileStream.Position;
+
+		try
+		{
+			_fileStream.Seek(0, SeekOrigin.Begin);
+
+			int searchBufferSize = Math.Max(_bufferSize, pattern.Length * 4);
+			byte[] searchBuffer = new byte[searchBufferSize];
+			long fileOffset = 0;
+			int overlap = pattern.Length - 1;
+			int carryOver = 0;
+
+			// Pre-compute lowercase pattern
+			byte[] lowerPattern = new byte[pattern.Length];
+			for (int k = 0; k < pattern.Length; k++)
+			{
+				byte b = pattern[k];
+				if (b >= (byte)'A' && b <= (byte)'Z')
+					lowerPattern[k] = (byte)(b + 32);
+				else
+					lowerPattern[k] = b;
+			}
+
+			while (fileOffset < _fileSize)
+			{
+				int bytesToRead = searchBufferSize - carryOver;
+				int bytesRead = 0;
+				while (bytesRead < bytesToRead)
+				{
+					int read = _fileStream.Read(searchBuffer, carryOver + bytesRead, bytesToRead - bytesRead);
+					if (read == 0) break;
+					bytesRead += read;
+				}
+
+				int totalBytes = carryOver + bytesRead;
+				if (totalBytes < pattern.Length) break;
+
+				long searchStartOffset = fileOffset - carryOver;
+				int searchLimit = totalBytes - pattern.Length + 1;
+
+				for (int i = 0; i < searchLimit; i++)
+				{
+					bool match = true;
+					for (int j = 0; j < pattern.Length; j++)
+					{
+						byte b = searchBuffer[i + j];
+						if (b >= (byte)'A' && b <= (byte)'Z')
+							b = (byte)(b + 32);
+						if (b != lowerPattern[j])
+						{
+							match = false;
+							break;
+						}
+					}
+					if (match)
+					{
+						state.Matches.Add(searchStartOffset + i);
+					}
+				}
+
+				fileOffset += bytesRead;
+
+				if (bytesRead > 0 && fileOffset < _fileSize)
+				{
+					Array.Copy(searchBuffer, totalBytes - overlap, searchBuffer, 0, overlap);
+					carryOver = overlap;
+				}
+				else
+				{
+					carryOver = 0;
+				}
+			}
+		}
+		finally
+		{
+			_fileStream.Seek(savedPosition, SeekOrigin.Begin);
+		}
+
+		if (state.TotalResults > 0)
+		{
+			state.CurrentIndex = 0;
+			NavigateToMatch(state);
+		}
+
+		return state;
+	}
+
+	/// <summary>
+	/// Navigates to the next search result (wraps around at end).
+	/// </summary>
+	public void FindNext(HexSearchState state)
+	{
+		if (state.TotalResults == 0) return;
+
+		state.CurrentIndex = (state.CurrentIndex + 1) % state.TotalResults;
+		NavigateToMatch(state);
+	}
+
+	/// <summary>
+	/// Navigates to the previous search result (wraps around at start).
+	/// </summary>
+	public void FindPrevious(HexSearchState state)
+	{
+		if (state.TotalResults == 0) return;
+
+		state.CurrentIndex = (state.CurrentIndex - 1 + state.TotalResults) % state.TotalResults;
+		NavigateToMatch(state);
+	}
+
+	/// <summary>
+	/// Clears the search highlight.
+	/// </summary>
+	public void ClearSearch()
+	{
+		ClearHighlight();
+	}
+
+	/// <summary>
+	/// Navigates to the current match in the search state and highlights it.
+	/// </summary>
+	private void NavigateToMatch(HexSearchState state)
+	{
+		if (state.CurrentIndex < 0 || state.CurrentIndex >= state.TotalResults) return;
+
+		long matchPos = state.Matches[state.CurrentIndex];
+		GotoPosition(matchPos);
+		SetHighlight(matchPos, matchPos + state.Pattern.Length - 1);
 	}
 
 	// Properties

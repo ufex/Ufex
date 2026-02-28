@@ -37,31 +37,77 @@ public class ByteUtil
 		};
 	}
 
+	/// <summary>
+	/// Get a bit from a byte
+	/// </summary>
+	/// <param name="v">The byte to get the bit from.</param>
+	/// <param name="p">The position of the bit to get.</param>
+	/// <returns>The bit at the specified position.</returns>
 	public static bool GetBit(Byte v, int p) 
 	{ 
 		return ((v & (Byte)(1 << p)) != 0); 
 	}
+	/// <summary>
+	/// Get a bit from a UInt16
+	/// </summary>
+	/// <param name="v">The UInt16 to get the bit from.</param>
+	/// <param name="p">The position of the bit to get.</param>
+	/// <returns>The bit at the specified position.</returns>
 	public static bool GetBit(UInt16 v, int p) 
 	{ 
 		return ((v & (UInt16)(1 << p)) != 0); 
 	}
+
+	/// <summary>
+	/// Get a bit from a UInt32
+	/// </summary>
+	/// <param name="v">The UInt32 to get the bit from.</param>
+	/// <param name="p">The position of the bit to get.</param>
+	/// <returns>The bit at the specified position.</returns>
 	public static bool GetBit(UInt32 v, int p) 
 	{ 
 		return ((v & (UInt32)(1 << p)) != 0); 
 	}
+
+	/// <summary>
+	/// Get a bit from a UInt64
+	/// </summary>
+	/// <param name="v">The UInt64 to get the bit from.</param>
+	/// <param name="p">The position of the bit to get.</param>
+	/// <returns>The bit at the specified position.</returns>
 	public static bool GetBit(UInt64 v, int p) 
 	{ 
 		return ((v & (UInt64)(1 << p)) != 0); 
 	}
 
+	/// <summary>
+	/// Get a byte from a UInt16
+	/// </summary>
+	/// <param name="value">The UInt16 to get the byte from.</param>
+	/// <param name="position">The position of the byte to get.</param>
+	/// <returns>The byte at the specified position.</returns>
 	public static Byte GetByte(UInt16 value, int position) 
 	{ 
 		return (Byte)((value & (UInt16)(0xFF << (position * 8))) >> (position * 8)); 
 	}
+
+	/// <summary>
+	/// Get a byte from a UInt32
+	/// </summary>
+	/// <param name="value">The UInt32 to get the byte from.</param>
+	/// <param name="position">The position of the byte to get.</param>
+	/// <returns>The byte at the specified position.</returns>
 	public static Byte GetByte(UInt32 value, int position) 
 	{ 
 		return (Byte)((value & (UInt32)(0xFF << (position * 8))) >> (position * 8)); 
 	}
+
+	/// <summary>
+	/// Get a byte from a UInt64
+	/// </summary>
+	/// <param name="value">The UInt64 to get the byte from.</param>
+	/// <param name="position">The position of the byte to get.</param>
+	/// <returns>The byte at the specified position.</returns>
 	public static Byte GetByte(UInt64 value, int position) 
 	{ 
 		return (Byte)((value & (UInt64)(0xFF << (position * 8))) >> (position * 8)); 
@@ -70,34 +116,68 @@ public class ByteUtil
 	/// <summary>
 	/// Get the high byte from a UInt16
 	/// </summary>
-	/// <param name="x"></param>
+	/// <param name="x">The UInt16 to get the high byte from.</param>
 	/// <returns>The high byte of the UInt16 value.</returns>
 	public static Byte GetHighByte(UInt16 x) 
 	{ 
 		return (Byte)(x >> 8); 
 	}
 
+	/// <summary>
+	/// Get the low byte from a UInt16
+	/// </summary>
+	/// <param name="x">The UInt16 to get the low byte from.</param>
+	/// <returns>The low byte of the UInt16 value.</returns>
 	public static Byte GetLowByte(UInt16 x) 
 	{ 
 		return (Byte)(x & 0x00FF); 
 	}
 
-	// Get a WORD from a DWORD
+	/// <summary>
+	/// Get the high word from a UInt32
+	/// </summary>
+	/// <param name="x">The UInt32 to get the high word from.</param>
+	/// <returns>The high word of the UInt32 value.</returns>
 	public static UInt16 GetHighWord(UInt32 x) { return (UInt16)(x >> 16); }
+	
+	/// <summary>
+	/// Get the low word from a UInt32
+	/// </summary>
+	/// <param name="x">The UInt32 to get the low word from.</param>
+	/// <returns>The low word of the UInt32 value.</returns>
 	public static UInt16 GetLowWord(UInt32 x) { return (UInt16)(x & 0x0000FFFF); }
 
-	// Get a DWORD from a QWORD
+	/// <summary>
+	/// Get the high dword from a UInt64
+	/// </summary>
+	/// <param name="x">The UInt64 to get the high dword from.</param>
+	/// <returns>The high dword of the UInt64 value.</returns>
 	public static UInt32 GetHighDword(UInt64 x) { return (UInt32)(x >> 32); }
 	public static UInt32 GetLowDword(UInt64 x) { return (UInt32)(x & 0x00000000FFFFFFFF); }
 
-	// Get a specific byte from a DWORD
+	/// <summary>
+	/// Get a specific byte from a UInt32
+	/// </summary>
+	/// <param name="v">The UInt32 to get the byte from.</param>
+	/// <param name="p">The position of the byte to get.</param>
+	/// <returns>The byte at the specified position.</returns>
 	public static Byte GetByteFromDWORD(UInt32 v, int p) { return (Byte)((v & (UInt32)(0xFF << (p * 8))) >> (p * 8)); }
 
+	/// <summary>
+	/// Swap the endianness of a UInt16
+	/// </summary>
+	/// <param name="x">The UInt16 to swap the endianness of.</param>
+	/// <returns>The UInt16 with the endianness swapped.</returns>
 	public static UInt16 SwapEndian(UInt16 x)
 	{
 		return (UInt16)((x >> 8) + (0xFF00 & (x << 8)));
 	}
 
+	/// <summary>
+	/// Swap the endianness of a UInt32
+	/// </summary>
+	/// <param name="x">The UInt32 to swap the endianness of.</param>
+	/// <returns>The UInt32 with the endianness swapped.</returns>
 	public static UInt32 SwapEndian(UInt32 x)
 	{
 		return (0x000000FF) & (x >> 24) |
@@ -105,6 +185,12 @@ public class ByteUtil
 			(0x00FF0000) & (x << 8) |
 			(0xFF000000) & (x << 24);
 	}
+
+	/// <summary>
+	/// Swap the endianness of a UInt64
+	/// </summary>
+	/// <param name="x">The UInt64 to swap the endianness of.</param>
+	/// <returns>The UInt64 with the endianness swapped.</returns>
 	public static UInt64 SwapEndian(UInt64 x)
 	{
 		return (0x00000000000000FF) & (x >> 56) | 
@@ -117,21 +203,43 @@ public class ByteUtil
 			(0xFF00000000000000) & (x << 56);
 	}
 
+	/// <summary>
+	/// Swap the endianness of an Int16
+	/// </summary>
+	/// <param name="x">The Int16 to swap the endianness of.</param>
+	/// <returns>The Int16 with the endianness swapped.</returns>
 	public static Int16 SwapEndian(Int16 x)
 	{
 		return (Int16)SwapEndian((UInt16)x);
 	}
 
+	/// <summary>
+	/// Swap the endianness of an Int32
+	/// </summary>
+	/// <param name="x">The Int32 to swap the endianness of.</param>
+	/// <returns>The Int32 with the endianness swapped.</returns>
 	public static Int32 SwapEndian(Int32 x)
 	{
 		return (Int32)SwapEndian((UInt32)x);
 	}
 
+	/// <summary>
+	/// Swap the endianness of an Int64
+	/// </summary>
+	/// <param name="x">The Int64 to swap the endianness of.</param>
+	/// <returns>The Int64 with the endianness swapped.</returns>
 	public static Int64 SwapEndian(Int64 x)
 	{
 		return (Int64)SwapEndian((UInt64)x);
 	}
 
+	/// <summary>
+	/// Convert a byte array to a UInt16
+	/// </summary>
+	/// <param name="data">The byte array to convert.</param>
+	/// <param name="endian">The endianness of the byte array.</param>
+	/// <param name="offset">The offset to start from.</param>
+	/// <returns>The UInt16.</returns>
 	public static UInt16 BytesToUInt16(Byte[] data, Endian endian, int offset = 0)
 	{
 		if (endian == Endian.Little)

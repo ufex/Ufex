@@ -2,7 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="using:Ufex.Controls.Avalonia"
              x:Class="Ufex.Desktop.Views.HexTabView">
-    
-    <controls:HexView x:Name="HexViewer" />
-    
+
+    <DockPanel>
+        <controls:HexSearchBar x:Name="HexSearchBar" DockPanel.Dock="Top" HorizontalAlignment="Left" />
+        <controls:HexView x:Name="HexViewer" />
+    </DockPanel>
+
 </UserControl>

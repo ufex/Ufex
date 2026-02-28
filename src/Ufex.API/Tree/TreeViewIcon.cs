@@ -6,10 +6,12 @@ public enum TreeViewIcon
 	Section,
 	Properties,
 	Header,
+	Footer,
 	Comment,
 	Text,
 	Table,
 	Image,
+	Video,
 	FolderOpen,
 	FolderClosed,
 	Document,
@@ -18,5 +20,7 @@ public enum TreeViewIcon
 	Binary,
 	Information,
 	Palette,
-	List
+	List,
+	Certificate,
+	Code
 }

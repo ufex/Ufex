@@ -1,11 +1,13 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Layout;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using System;
+using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Ufex.API;
@@ -51,6 +53,10 @@ public partial class MainWindow : Window
 
 		// Subscribe to window close event to save settings
 		Closing += OnWindowClosing;
+
+		// Wire up drag-and-drop on the drop panel
+		AddHandler(DragDrop.DragOverEvent, OnDragOver);
+		AddHandler(DragDrop.DropEvent, OnDrop);
 	}
 
 	private void InitializeSettings()
@@ -180,7 +186,35 @@ public partial class MainWindow : Window
 		SetTabVisibility(true, true, true);
 	}
 
+	/// <summary>
+	/// Shows the tab control and hides the drop panel (file is open).
+	/// </summary>
+	private void ShowFileContent()
+	{
+		DropPanel.IsVisible = false;
+		MainTabControl.IsVisible = true;
+	}
+
+	/// <summary>
+	/// Shows the drop panel and hides the tab control (no file open).
+	/// </summary>
+	private void ShowDropPanel()
+	{
+		MainTabControl.IsVisible = false;
+		DropPanel.IsVisible = true;
+	}
+
 	private async void OnOpenClick(object? sender, RoutedEventArgs e)
+	{
+		await BrowseAndOpenFileAsync();
+	}
+
+	private async void OnBrowseClick(object? sender, RoutedEventArgs e)
+	{
+		await BrowseAndOpenFileAsync();
+	}
+
+	private async Task BrowseAndOpenFileAsync()
 	{
 		var topLevel = GetTopLevel(this);
 		if (topLevel == null) return;
@@ -211,6 +245,29 @@ public partial class MainWindow : Window
 		}
 	}
 
+	private void OnDragOver(object? sender, DragEventArgs e)
+	{
+		e.DragEffects = e.Data.Contains(DataFormats.Files)
+			? DragDropEffects.Copy
+			: DragDropEffects.None;
+	}
+
+	private async void OnDrop(object? sender, DragEventArgs e)
+	{
+		if (!e.Data.Contains(DataFormats.Files)) return;
+
+		var files = e.Data.GetFiles();
+		if (files == null) return;
+
+		var file = files.FirstOrDefault();
+		var filePath = file?.TryGetLocalPath();
+
+		if (filePath != null && File.Exists(filePath))
+		{
+			await OpenFileAsync(filePath);
+		}
+	}
+
 	/// <summary>
 	/// Opens a file and loads its information asynchronously.
 	/// Heavy processing runs on a background thread to keep the UI responsive.
@@ -230,6 +287,7 @@ public partial class MainWindow : Window
 			ValidationTab.Clear();
 			VisualTab.Clear();
 			ResetTabs();
+			ShowFileContent();
 
 			// Step 3: Update the title bar
 			var fileName = Path.GetFileName(filePath);
@@ -248,7 +306,7 @@ public partial class MainWindow : Window
 				}
 				catch (Exception ex)
 				{
-					Logger.Error($"Failed to get FileInfo: {ex.Message}");
+					Logger.Error(ex, "MainWindow.OpenFileAsync: Failed to get FileInfo");
 					return null;
 				}
 			});
@@ -303,7 +361,7 @@ public partial class MainWindow : Window
 					}
 					catch (Exception ex)
 					{
-						Logger.Error($"File type detection failed: {ex.Message}");
+						Logger.Error(ex, $"File type detection failed: {ex.Message}");
 						return ((FileTypeRecord?)null, "Unknown File Type");
 					}
 				});
@@ -443,8 +501,7 @@ public partial class MainWindow : Window
 				}
 				catch (Exception ex)
 				{
-					Logger.NewException(ex, description: "Failed to load file type handler", funcName: nameof(OpenFileAsync), className: nameof(MainWindow));
-					Logger.Error($"Failed to load file type handler:\n{ex}");
+					Logger.Error(ex, "MainWindow.OpenFileAsync: Failed to load file type handler");
 					// Continue without the plugin - basic file info is still shown
 				}
 			}
@@ -531,6 +588,7 @@ public partial class MainWindow : Window
 		ValidationTab.Clear();
 		VisualTab.Clear();
 		ResetTabs();
+		ShowDropPanel();
 		SetStatus("Ready");
 	}
 
@@ -545,9 +603,16 @@ public partial class MainWindow : Window
 		// TODO: Implement cut functionality
 	}
 
-	private void OnCopyClick(object? sender, RoutedEventArgs e)
+	private async void OnCopyClick(object? sender, RoutedEventArgs e)
 	{
-		// TODO: Implement copy functionality
+		if (await TryCopySelectionToClipboardAsync())
+		{
+			SetStatus("Copied selection to clipboard");
+		}
+		else
+		{
+			SetStatus("Nothing selected to copy");
+		}
 	}
 
 	private void OnPasteClick(object? sender, RoutedEventArgs e)
@@ -604,12 +669,14 @@ public partial class MainWindow : Window
 	// Search Menu Handlers
 	private void OnFindClick(object? sender, RoutedEventArgs e)
 	{
-		// TODO: Open find dialog
+		MainTabControl.SelectedItem = TabHex;
+		HexTab.FocusSearchBox();
 	}
 
 	private void OnFindNextClick(object? sender, RoutedEventArgs e)
 	{
-		// TODO: Find next occurrence
+		MainTabControl.SelectedItem = TabHex;
+		HexTab.TriggerFindNext();
 	}
 
 	// Tools Menu Handlers
@@ -653,24 +720,7 @@ public partial class MainWindow : Window
 
 	private async void OnAboutClick(object? sender, RoutedEventArgs e)
 	{
-		var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown";
-
-		var textContent = new TextBlock
-		{
-			Text = $"ufex - Universal File Explorer\n\nVersion: {version}\n\n" +
-				   "A cross-platform desktop application for viewing internal data structures and metadata of file formats.",
-			Margin = new Thickness(16)
-		};
-
-		var aboutWindow = new Window
-		{
-			Title = "About ufex",
-			Width = 400,
-			Height = 300,
-			WindowStartupLocation = WindowStartupLocation.CenterOwner,
-			Content = textContent
-		};
-
+		var aboutWindow = new AboutWindow();
 		await aboutWindow.ShowDialog(this);
 	}
 
@@ -691,5 +741,131 @@ public partial class MainWindow : Window
 				? FluentIcons.Common.Symbol.WeatherSunny
 				: FluentIcons.Common.Symbol.WeatherMoon;
 		}
+	}
+
+	private async Task<bool> TryCopySelectionToClipboardAsync()
+	{
+		var topLevel = TopLevel.GetTopLevel(this);
+		if (topLevel?.Clipboard == null)
+		{
+			return false;
+		}
+
+		string? clipboardText = GetSelectedTextFromFocusedTextBox();
+		if (string.IsNullOrEmpty(clipboardText))
+		{
+			clipboardText = GetSelectedRowTextFromFocusedDataGrid();
+		}
+
+		if (string.IsNullOrEmpty(clipboardText))
+		{
+			return false;
+		}
+
+		await topLevel.Clipboard.SetTextAsync(clipboardText);
+		return true;
+	}
+
+	private string? GetSelectedTextFromFocusedTextBox()
+	{
+		var focusedElement = GetFocusedStyledElement();
+		var textBox = FindAncestorOfType<TextBox>(focusedElement);
+		if (textBox == null)
+		{
+			return null;
+		}
+
+		return string.IsNullOrEmpty(textBox.SelectedText) ? null : textBox.SelectedText;
+	}
+
+	private string? GetSelectedRowTextFromFocusedDataGrid()
+	{
+		var focusedElement = GetFocusedStyledElement();
+		var dataGrid = FindAncestorOfType<DataGrid>(focusedElement);
+		if (dataGrid == null)
+		{
+			return null;
+		}
+
+		var selectedItems = GetSelectedDataGridItems(dataGrid)
+			.Select(FormatRowForClipboard)
+			.Where(text => !string.IsNullOrWhiteSpace(text))
+			.ToArray();
+
+		if (selectedItems.Length == 0 && dataGrid.SelectedItem != null)
+		{
+			string fallbackRow = FormatRowForClipboard(dataGrid.SelectedItem);
+			if (!string.IsNullOrWhiteSpace(fallbackRow))
+			{
+				return fallbackRow;
+			}
+		}
+
+		return selectedItems.Length == 0 ? null : string.Join(Environment.NewLine, selectedItems);
+	}
+
+	private static object[] GetSelectedDataGridItems(DataGrid dataGrid)
+	{
+		var selectedItemsProperty = dataGrid.GetType().GetProperty("SelectedItems", BindingFlags.Instance | BindingFlags.Public);
+		if (selectedItemsProperty?.GetValue(dataGrid) is IEnumerable selectedItems)
+		{
+			return selectedItems.Cast<object>().Where(item => item != null).ToArray()!;
+		}
+
+		return [];
+	}
+
+	private static string FormatRowForClipboard(object item)
+	{
+		var values = item.GetType()
+			.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+			.Where(prop => prop.CanRead)
+			.Where(prop => prop.GetIndexParameters().Length == 0)
+			.Where(prop => IsSimpleClipboardType(prop.PropertyType))
+			.Select(prop => prop.GetValue(item)?.ToString())
+			.Where(value => !string.IsNullOrWhiteSpace(value))
+			.ToArray();
+
+		if (values.Length == 0)
+		{
+			return item.ToString() ?? string.Empty;
+		}
+
+		return string.Join("\t", values);
+	}
+
+	private static bool IsSimpleClipboardType(Type propertyType)
+	{
+		Type actualType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+
+		return actualType == typeof(string) ||
+			   actualType == typeof(decimal) ||
+			   actualType == typeof(DateTime) ||
+			   actualType == typeof(DateTimeOffset) ||
+			   actualType == typeof(TimeSpan) ||
+			   actualType == typeof(Guid) ||
+			   actualType.IsPrimitive ||
+			   actualType.IsEnum;
+	}
+
+	private StyledElement? GetFocusedStyledElement()
+	{
+		var topLevel = TopLevel.GetTopLevel(this);
+		return topLevel?.FocusManager?.GetFocusedElement() as StyledElement;
+	}
+
+	private static T? FindAncestorOfType<T>(StyledElement? element) where T : class
+	{
+		while (element != null)
+		{
+			if (element is T match)
+			{
+				return match;
+			}
+
+			element = element.Parent;
+		}
+
+		return null;
 	}
 }

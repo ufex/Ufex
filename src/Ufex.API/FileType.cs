@@ -127,7 +127,7 @@ public abstract class FileType : IFileType
 	/// <summary>
 	/// Logger instance for the FileType (for backwards compatibility with derived classes).
 	/// </summary>
-	[Obsolete("Use the Logger property instead")]
+	//[Obsolete("Use the Logger property instead")]
 	protected Ufex.API.Logger Log
 	{
 		get { return (Logger)_logger; }

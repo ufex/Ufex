@@ -1,0 +1,69 @@
+<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:local="clr-namespace:Ufex.Desktop"
+		x:Class="Ufex.Desktop.AboutWindow"
+		Title="About ufex"
+		Icon="/assets/app-icon-256.png"
+		Width="820"
+		Height="520"
+		WindowStartupLocation="CenterOwner"
+		CanResize="True">
+	<Grid Margin="16"
+		  RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+		<TextBlock Grid.Row="0"
+				   Text="ufex - Universal File Explorer"
+				   FontSize="18"
+				   FontWeight="SemiBold" />
+
+		<TextBlock Grid.Row="1"
+				   x:Name="VersionTextBlock"
+				   Margin="0,12,0,0"
+				   FontWeight="Medium" />
+
+		<TextBlock Grid.Row="2"
+				   Margin="0,12,0,0"
+				   Text="A cross-platform desktop application for viewing internal data structures and metadata of file formats."
+				   TextWrapping="Wrap" />
+
+		<StackPanel Grid.Row="3"
+					Margin="0,12,0,0"
+					Spacing="4">
+			<TextBlock Text="Plugin Assemblies"
+					   FontWeight="SemiBold" />
+			<TextBlock x:Name="PluginSummaryTextBlock"
+					   Text="Scanning plugins..."
+					   TextWrapping="Wrap" />
+		</StackPanel>
+
+		<Border Grid.Row="4"
+				Margin="0,12,0,0"
+				BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+				BorderThickness="1"
+				CornerRadius="4"
+				MinHeight="260">
+			<DataGrid x:Name="PluginDataGrid"
+					  x:DataType="local:PluginAssemblyInfoRow"
+					  AutoGenerateColumns="False"
+					  IsReadOnly="True"
+					  CanUserReorderColumns="False"
+					  CanUserResizeColumns="True"
+					  GridLinesVisibility="Horizontal"
+					  BorderThickness="0"
+					  ScrollViewer.VerticalScrollBarVisibility="Auto"
+					  ScrollViewer.HorizontalScrollBarVisibility="Auto">
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="Assembly" Binding="{Binding AssemblyName}" Width="180" />
+					<DataGridTextColumn Header="Namespace" Binding="{Binding RootNamespace}" Width="*" />
+					<DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="160" />
+				</DataGrid.Columns>
+			</DataGrid>
+		</Border>
+
+		<Button Grid.Row="5"
+				Margin="0,12,0,0"
+				Content="Close"
+				HorizontalAlignment="Right"
+				Width="80"
+				Click="OnCloseClick" />
+	</Grid>
+</Window>

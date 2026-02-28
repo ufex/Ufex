@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+	<Package Name="Ufex"
+	         Manufacturer="Ufex"
+	         Version="$(var.MsiVersion)"
+	         UpgradeCode="6E3A9D2F-8B7C-4D1E-9F5A-2C8B7D6E4F3A">
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of Ufex is already installed." />
+
+		<!-- Advanced install wizard UI (per-user vs per-machine choice, folder selection, progress, finish) -->
+		<ui:WixUI Id="WixUI_Advanced" />
+		<Property Id="ApplicationFolderName" Value="Ufex" />
+		<Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+		<MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+		<!-- Application icon shown in Add/Remove Programs -->
+		<Icon Id="UfexIcon" SourceFile="../assets/icon.ico" />
+		<Property Id="ARPPRODUCTICON" Value="UfexIcon" />
+
+		<StandardDirectory Id="ProgramFiles64Folder">
+			<Directory Id="INSTALLFOLDER" Name="Ufex">
+				<Directory Id="ConfigFolder" Name="config" />
+				<Directory Id="PluginsFolder" Name="plugins" />
+			</Directory>
+		</StandardDirectory>
+
+		<StandardDirectory Id="LocalAppDataFolder">
+			<Directory Id="LocalAppDataUfex" Name="Ufex" />
+		</StandardDirectory>
+
+		<StandardDirectory Id="ProgramMenuFolder">
+			<Directory Id="ApplicationProgramsFolder" Name="Ufex" />
+		</StandardDirectory>
+
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<Component Id="MainExecutable" Guid="7F4B9E2A-3C8D-4E1F-A6B5-9D2C8E7F4A3B">
+				<File Id="UfexExe" Source="$(var.PublishDir)\Ufex.Desktop.exe" KeyPath="yes">
+					<Shortcut Id="StartMenuShortcut"
+					          Directory="ApplicationProgramsFolder"
+					          Name="Ufex"
+					          WorkingDirectory="INSTALLFOLDER"
+					          Advertise="yes" />
+				</File>
+			</Component>
+		</ComponentGroup>
+
+		<ComponentGroup Id="ConfigFiles" Directory="ConfigFolder">
+			<Files Include="$(var.PublishDir)\config\**\*.*" />
+		</ComponentGroup>
+
+		<ComponentGroup Id="PluginFiles" Directory="PluginsFolder">
+			<Files Include="$(var.PublishDir)\plugins\**\*.*" />
+		</ComponentGroup>
+
+		<Feature Id="ProductFeature" Title="Ufex" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+			<ComponentGroupRef Id="ConfigFiles" />
+			<ComponentGroupRef Id="PluginFiles" />
+		</Feature>
+	</Package>
+</Wix>

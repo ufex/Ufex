@@ -18,11 +18,11 @@
                 <MenuItem Header="E_xit" InputGesture="Alt+F4" Click="OnExitClick" />
             </MenuItem>
             <MenuItem Header="_Edit">
-                <MenuItem Header="Cu_t" InputGesture="Ctrl+X" Click="OnCutClick" />
+                <MenuItem Header="Cu_t" InputGesture="Ctrl+X" Click="OnCutClick" IsEnabled="False" />
                 <MenuItem Header="_Copy" InputGesture="Ctrl+C" Click="OnCopyClick" />
-                <MenuItem Header="_Paste" InputGesture="Ctrl+V" Click="OnPasteClick" />
-                <Separator />
-                <MenuItem Header="_Delete" InputGesture="Delete" Click="OnDeleteClick" />
+                <MenuItem Header="_Paste" InputGesture="Ctrl+V" Click="OnPasteClick" IsEnabled="False" />
+                <Separator IsVisible="False"/>
+                <MenuItem Header="_Delete" InputGesture="Delete" Click="OnDeleteClick" IsVisible="False" />
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem Header="Number Format">
@@ -92,24 +92,50 @@
                        Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
         </Border>
         
-        <!-- Main Content Area - Tab Control -->
-        <TabControl x:Name="MainTabControl">
-            <TabItem Header="Info" x:Name="TabInfo">
-                <views:InfoTabView x:Name="InfoTab" />
-            </TabItem>
-            <TabItem Header="Hex" x:Name="TabHex">
-                <views:HexTabView x:Name="HexTab" />
-            </TabItem>
-            <TabItem Header="Visual" x:Name="TabVisual">
-                <views:VisualTabView x:Name="VisualTab" />
-            </TabItem>
-            <TabItem Header="Structure" x:Name="TabStructure">
-                <views:StructureTabView x:Name="StructureTab" />
-            </TabItem>
-            <TabItem Header="Validation" x:Name="TabValidation">
-                <views:ValidationTabView x:Name="ValidationTab" />
-            </TabItem>
-        </TabControl>
+        <!-- Main Content Area - Panel lets both children fill the remaining space -->
+        <Panel>
+            <!-- Drop Panel - shown when no file is open -->
+            <Border x:Name="DropPanel"
+                    Background="Transparent"
+                    DragDrop.AllowDrop="True"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Margin="32">
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="16">
+                    <TextBlock Text="Drag and drop a file here"
+                               FontSize="20"
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                    <Button x:Name="BrowseButton"
+                            Content="Browse"
+                            HorizontalAlignment="Center"
+                            Padding="24,8"
+                            Click="OnBrowseClick" />
+                </StackPanel>
+            </Border>
+            
+            <!-- Tab Control - shown when a file is open -->
+            <TabControl x:Name="MainTabControl" IsVisible="False">
+                <TabItem Header="Info" x:Name="TabInfo">
+                    <views:InfoTabView x:Name="InfoTab" />
+                </TabItem>
+                <TabItem Header="Hex" x:Name="TabHex">
+                    <views:HexTabView x:Name="HexTab" />
+                </TabItem>
+                <TabItem Header="Visual" x:Name="TabVisual">
+                    <views:VisualTabView x:Name="VisualTab" />
+                </TabItem>
+                <TabItem Header="Structure" x:Name="TabStructure">
+                    <views:StructureTabView x:Name="StructureTab" />
+                </TabItem>
+                <TabItem Header="Validation" x:Name="TabValidation">
+                    <views:ValidationTabView x:Name="ValidationTab" />
+                </TabItem>
+            </TabControl>
+        </Panel>
     </DockPanel>
     
 </Window>

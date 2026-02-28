@@ -39,7 +39,7 @@ class SignatureClassifier : FileType.BaseClassifier
 			}
 			catch(Exception ex)
 			{
-				Log.NewException(ex, "Failed to match signatures for " + fileType.ID, "SignatureClassifier", "GetFileType");
+				Log.Error(ex, "SignatureClassifier.DetectFileType: Failed to match signatures for {FileType}", fileType.ID);
 			}
 		}
 		return matches.ToArray();

@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Ufex.API;
 
+/// <summary>
+/// Interface for file types.
+/// </summary>
 public interface IFileType
 {
 	public string FilePath { get; set; }

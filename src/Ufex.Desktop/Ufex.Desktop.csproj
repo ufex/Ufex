@@ -10,6 +10,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <ApplicationIcon>assets\icon.ico</ApplicationIcon>
+    <Version>2.0.0</Version>
   </PropertyGroup>
 
   <!-- App icon assets (PNG/SVG) available as Avalonia resources for window icons -->
