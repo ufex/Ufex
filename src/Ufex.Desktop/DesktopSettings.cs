@@ -1,9 +1,22 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Ufex.API;
 using Ufex.API.Settings;
 using Ufex.API.Format;
 
 namespace Ufex.Desktop;
+
+/// <summary>
+/// Source-generated JSON serializer context for trim-safe settings serialization.
+/// </summary>
+[JsonSourceGenerationOptions(
+	WriteIndented = true,
+	PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
+	DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+[JsonSerializable(typeof(DesktopSettings))]
+internal partial class DesktopSettingsJsonContext : JsonSerializerContext
+{
+}
 
 /// <summary>
 /// Settings for the hex viewer.
@@ -88,11 +101,17 @@ public class DesktopSettings : SettingsBase
 	public Dictionary<string, List<double>> StructureColumnWidths { get; set; } = new();
 
 	/// <summary>
-	/// Loads the desktop settings from disk.
+	/// Loads the desktop settings from disk (trim-safe).
 	/// </summary>
 	public static DesktopSettings Load()
 	{
-		return SettingsManager.Load<DesktopSettings>(SETTINGS_FILE);
+		return SettingsManager.Load(SETTINGS_FILE, DesktopSettingsJsonContext.Default.DesktopSettings);
+	}
+
+	/// <inheritdoc />
+	protected override void SaveCore()
+	{
+		SettingsManager.Save(this, FileName, DesktopSettingsJsonContext.Default.DesktopSettings);
 	}
 
 	/// <summary>

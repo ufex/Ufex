@@ -1,3 +1,5 @@
+using System;
+
 namespace Ufex.API.Settings;
 
 /// <summary>
@@ -13,8 +15,21 @@ public abstract class SettingsBase
 
 	/// <summary>
 	/// Saves this settings instance to disk.
+	/// Derived classes should override <see cref="SaveCore"/> to provide
+	/// trim-safe serialization via a source-generated JsonTypeInfo.
 	/// </summary>
 	public void Save()
+	{
+		SaveCore();
+	}
+
+	/// <summary>
+	/// Override in derived classes to call <see cref="SettingsManager.Save{T}(T, string, System.Text.Json.Serialization.Metadata.JsonTypeInfo{T})"/>
+	/// with the appropriate source-generated JsonTypeInfo for trim-safe serialization.
+	/// The default implementation falls back to reflection-based serialization which
+	/// may fail in trimmed/AOT builds.
+	/// </summary>
+	protected virtual void SaveCore()
 	{
 		SettingsManager.Save(this, FileName);
 	}

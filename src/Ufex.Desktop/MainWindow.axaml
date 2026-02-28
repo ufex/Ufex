@@ -1,8 +1,10 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="clr-namespace:Ufex.Desktop.Views"
+        xmlns:fi="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
         x:Class="Ufex.Desktop.MainWindow"
         Title="ufex - Universal File Explorer"
+        Icon="/assets/app-icon-256.png"
         Width="1024"
         Height="768">
     
@@ -55,9 +57,7 @@
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4">
                     <Button x:Name="ThemeToggleButton" Click="OnThemeToggleClick" ToolTip.Tip="Toggle Light/Dark Theme">
                         <StackPanel Orientation="Horizontal" Spacing="4">
-                            <PathIcon x:Name="ThemeIcon" 
-                                      Data="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z" 
-                                      Width="16" Height="16" />
+                            <fi:SymbolIcon x:Name="ThemeIcon" Symbol="WeatherMoon" FontSize="16" Width="16" Height="16" />
                             <TextBlock x:Name="ThemeButtonText" Text="Dark" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
@@ -66,15 +66,13 @@
                 <StackPanel Orientation="Horizontal" Spacing="4">
                     <Button Click="OnOpenClick" ToolTip.Tip="Open File (Ctrl+O)">
                         <StackPanel Orientation="Horizontal" Spacing="4">
-                            <PathIcon Data="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2z" 
-                                      Width="16" Height="16" />
+                            <fi:SymbolIcon Symbol="FolderOpen" FontSize="16" Width="16" Height="16" />
                             <TextBlock Text="Open" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <Button Click="OnCloseClick" ToolTip.Tip="Close File (Ctrl+W)">
                         <StackPanel Orientation="Horizontal" Spacing="4">
-                            <PathIcon Data="M18 6L6 18M6 6l12 12" 
-                                      Width="16" Height="16" />
+                            <fi:SymbolIcon Symbol="Dismiss" FontSize="16" Width="16" Height="16" />
                             <TextBlock Text="Close" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>

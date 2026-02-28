@@ -29,13 +29,13 @@ public partial class App : Application
     /// </summary>
     public void ToggleTheme()
     {
-        if (RequestedThemeVariant == ThemeVariant.Light)
+        if (RequestedThemeVariant == ThemeVariant.Dark)
         {
-            RequestedThemeVariant = ThemeVariant.Dark;
+            RequestedThemeVariant = ThemeVariant.Light;
         }
         else
         {
-            RequestedThemeVariant = ThemeVariant.Light;
+            RequestedThemeVariant = ThemeVariant.Dark;
         }
     }
 

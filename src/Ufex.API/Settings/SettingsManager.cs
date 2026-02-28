@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Ufex.API.Settings;
 
@@ -43,7 +44,50 @@ public static class SettingsManager
 	}
 
 	/// <summary>
+	/// Gets the shared JsonSerializerOptions (for use by source-generated contexts).
+	/// </summary>
+	public static JsonSerializerOptions SharedJsonOptions => JsonOptions;
+
+	/// <summary>
+	/// Loads settings from a JSON file using a source-generated JsonTypeInfo (trim-safe).
+	/// </summary>
+	public static T Load<T>(string fileName, JsonTypeInfo<T> typeInfo) where T : new()
+	{
+		var filePath = GetSettingsFilePath(fileName);
+
+		if (!File.Exists(filePath))
+		{
+			return new T();
+		}
+
+		try
+		{
+			var json = File.ReadAllText(filePath);
+			return JsonSerializer.Deserialize(json, typeInfo) ?? new T();
+		}
+		catch (Exception)
+		{
+			return new T();
+		}
+	}
+
+	/// <summary>
+	/// Saves settings to a JSON file using a source-generated JsonTypeInfo (trim-safe).
+	/// </summary>
+	public static void Save<T>(T settings, string fileName, JsonTypeInfo<T> typeInfo)
+	{
+		var filePath = GetSettingsFilePath(fileName);
+
+		Directory.CreateDirectory(AppDataPath);
+
+		var json = JsonSerializer.Serialize(settings, typeInfo);
+		File.WriteAllText(filePath, json);
+	}
+
+	/// <summary>
 	/// Loads settings from a JSON file. Returns a new instance if file doesn't exist.
+	/// Note: This reflection-based overload may fail in trimmed/AOT builds. Prefer
+	/// the overload accepting JsonTypeInfo&lt;T&gt; for trim-safe serialization.
 	/// </summary>
 	/// <typeparam name="T">The settings type to deserialize</typeparam>
 	/// <param name="fileName">The settings file name</param>
@@ -71,6 +115,8 @@ public static class SettingsManager
 
 	/// <summary>
 	/// Saves settings to a JSON file.
+	/// Note: This reflection-based overload may fail in trimmed/AOT builds. Prefer
+	/// the overload accepting JsonTypeInfo&lt;T&gt; for trim-safe serialization.
 	/// </summary>
 	/// <typeparam name="T">The settings type to serialize</typeparam>
 	/// <param name="settings">The settings instance to save</param>
