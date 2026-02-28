@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>annotations</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<RootNamespace>Ufex.API</RootNamespace>
+		<AssemblyVersion>2.0.0.0</AssemblyVersion>
+		<FileVersion>2.0.0.0</FileVersion>
+		<PackageVersion>2.0.0</PackageVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
+		<PackageReference Include="System.Drawing.Common" Version="10.0.2" />
+		<PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.24.2" />
+	</ItemGroup>
+
+</Project>

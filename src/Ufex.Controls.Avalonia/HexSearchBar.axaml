@@ -1,0 +1,87 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Ufex.Controls.Avalonia.HexSearchBar"
+             Margin="0,0,0,4">
+
+    <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto,Auto,Auto">
+
+        <!-- Address Bar Section (Left) -->
+
+        <!-- Seek Mode Dropdown -->
+        <ComboBox x:Name="SeekModeCombo"
+                  Grid.Column="0"
+                  SelectedIndex="0"
+                  MinWidth="70"
+                  VerticalAlignment="Center"
+                  Margin="0,0,4,0">
+            <ComboBoxItem Content="Hex" />
+            <ComboBoxItem Content="Dec" />
+        </ComboBox>
+
+        <!-- Seek Offset Text Box -->
+        <TextBox x:Name="SeekTextBox"
+                 Grid.Column="1"
+                 Watermark="Offset"
+                 MinWidth="100"
+                 VerticalAlignment="Center"
+                 Margin="0,0,4,0" />
+
+        <!-- Go Button -->
+        <Button x:Name="GoButton"
+                Grid.Column="2"
+                Content="Go"
+                VerticalAlignment="Center"
+                Padding="8,2" />
+
+        <!-- Spacer (takes remaining space, pushes search to right) -->
+        <!-- Grid.Column="3" is the * column -->
+
+        <!-- Search Section (Right-aligned) -->
+
+        <!-- Search Mode Dropdown -->
+        <ComboBox x:Name="SearchModeCombo"
+                  Grid.Column="4"
+                  SelectedIndex="0"
+                  MinWidth="80"
+                  VerticalAlignment="Center"
+                  Margin="0,0,4,0">
+            <ComboBoxItem Content="Hex" />
+            <ComboBoxItem Content="Text" />
+        </ComboBox>
+
+        <!-- Search Text Box (fixed width) -->
+        <TextBox x:Name="SearchTextBox"
+                 Grid.Column="5"
+                 Watermark="Search..."
+                 Width="200"
+                 VerticalAlignment="Center"
+                 Margin="0,0,4,0" />
+
+        <!-- Results Label -->
+        <TextBlock x:Name="ResultsLabel"
+                   Grid.Column="6"
+                   Text="No results"
+                   VerticalAlignment="Center"
+                   Margin="0,0,4,0"
+                   MinWidth="60" />
+
+        <!-- Up Button -->
+        <Button x:Name="PrevButton"
+                Grid.Column="7"
+                Content="▲"
+                IsEnabled="False"
+                VerticalAlignment="Center"
+                Padding="6,2"
+                Margin="0,0,2,0" />
+
+        <!-- Down Button -->
+        <Button x:Name="NextButton"
+                Grid.Column="8"
+                Content="▼"
+                IsEnabled="False"
+                VerticalAlignment="Center"
+                Padding="6,2" />
+
+    </Grid>
+
+</UserControl>

@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Ufex.Desktop.Views"
+             x:Class="Ufex.Desktop.Views.ValidationTabView"
+             x:DataType="local:ValidationEntryRow">
+    
+    <Grid RowDefinitions="*,Auto">
+        <!-- Validation Data Grid -->
+        <DataGrid x:Name="DataGridValidation"
+                  Grid.Row="0"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserReorderColumns="False"
+                  CanUserResizeColumns="True"
+                  GridLinesVisibility="Horizontal"
+                  BorderThickness="0"
+                  Margin="4">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="" Width="32" CanUserResize="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="local:ValidationEntryRow">
+                            <ContentControl Content="{Binding Icon}" 
+                                            HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Type" Binding="{Binding TypeText}" Width="80" />
+                <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+        
+        <!-- Summary Bar -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="8,4"
+                Margin="4,0,4,4">
+            <TextBlock x:Name="SummaryText" 
+                       Text="No validation results"
+                       VerticalAlignment="Center" />
+        </Border>
+    </Grid>
+    
+</UserControl>

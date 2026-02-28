@@ -59,6 +59,7 @@
 		</FileType>
 		<FileType>
 			<ID>AUDI_WAVE</ID>
+			<ParentID>BASE_RIFF</ParentID>
 			<Description>Waveform Audio File</Description>
 			<Category>Audio</Category>
 			<MIMEType>audio/x-wav</MIMEType>
@@ -111,6 +112,92 @@
 			<Signatures>
 				<Signature>
 					<Pattern xsi:type="bytes" offset="0">0x4D546864</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>AUDI_FLAC</ID>
+			<Description>Free Lossless Audio Codec</Description>
+			<Category>Audio</Category>
+			<MIMEType>audio/flac</MIMEType>
+			<Wikipedia>FLAC</Wikipedia>
+			<Extensions>
+				<Extension>flac</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="0">fLaC</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>AUDI_AAC</ID>
+			<Description>Advanced Audio Coding</Description>
+			<Category>Audio</Category>
+			<MIMEType>audio/aac</MIMEType>
+			<Wikipedia>Advanced_Audio_Coding</Wikipedia>
+			<Extensions>
+				<Extension>aac</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="0">ADIF</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>AUDI_AC3</ID>
+			<Description>Dolby Digital AC-3 Audio</Description>
+			<Category>Audio</Category>
+			<MIMEType>audio/ac3</MIMEType>
+			<Wikipedia>Dolby_Digital</Wikipedia>
+			<Extensions>
+				<Extension>ac3</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x0B77</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>AUDI_DTS</ID>
+			<Description>DTS Digital Surround Audio</Description>
+			<Category>Audio</Category>
+			<MIMEType>audio/vnd.dts</MIMEType>
+			<Wikipedia>DTS_(company)</Wikipedia>
+			<Extensions>
+				<Extension>dts</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x7FFE8001</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>AUDI_MP2</ID>
+			<Description>MPEG Layer-2 Audio File</Description>
+			<Category>Audio</Category>
+			<MIMEType>audio/mpeg</MIMEType>
+			<Wikipedia>MPEG-1_Audio_Layer_II</Wikipedia>
+			<Extensions>
+				<Extension>mp2</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>AUDI_3GP</ID>
+			<Description>3GPP Multimedia Audio</Description>
+			<Category>Audio</Category>
+			<MIMEType>audio/3gpp</MIMEType>
+			<Wikipedia>3GP_and_3G2</Wikipedia>
+			<Extensions>
+				<Extension>3gp</Extension>
+				<Extension>3gpp</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="4">ftyp3gp</Pattern>
 				</Signature>
 			</Signatures>
 		</FileType>

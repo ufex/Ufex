@@ -115,6 +115,11 @@
 			<Extensions>
 				<Extension>rtf</Extension>
 			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="0">{\rtf</Pattern>
+				</Signature>
+			</Signatures>
 		</FileType>
 	</FileTypes>
 </Ufex>

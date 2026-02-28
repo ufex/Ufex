@@ -1,0 +1,17 @@
+{
+	"editor.detectIndentation": false,
+	"editor.insertSpaces": false,
+	"editor.tabSize": 2,
+	"[markdown]": {
+		"editor.insertSpaces": true,
+		"editor.tabSize": 2
+	},
+	"[csharp]": {
+		"editor.insertSpaces": false,
+		"editor.tabSize": 2
+	},
+	"[xml]": {
+		"editor.insertSpaces": false,
+		"editor.tabSize": 2
+	}
+}

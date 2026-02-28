@@ -1,0 +1,141 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:Ufex.Desktop.Views"
+        xmlns:fi="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
+        x:Class="Ufex.Desktop.MainWindow"
+        Title="ufex - Universal File Explorer"
+        Icon="/assets/app-icon-256.png"
+        Width="1024"
+        Height="768">
+    
+    <DockPanel>
+        <!-- Menu Bar -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open" InputGesture="Ctrl+O" Click="OnOpenClick" />
+                <MenuItem Header="_Close" InputGesture="Ctrl+W" Click="OnCloseClick" />
+                <Separator />
+                <MenuItem Header="E_xit" InputGesture="Alt+F4" Click="OnExitClick" />
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="Cu_t" InputGesture="Ctrl+X" Click="OnCutClick" IsEnabled="False" />
+                <MenuItem Header="_Copy" InputGesture="Ctrl+C" Click="OnCopyClick" />
+                <MenuItem Header="_Paste" InputGesture="Ctrl+V" Click="OnPasteClick" IsEnabled="False" />
+                <Separator IsVisible="False"/>
+                <MenuItem Header="_Delete" InputGesture="Delete" Click="OnDeleteClick" IsVisible="False" />
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Header="Number Format">
+                    <MenuItem Header="Default" Click="OnNumberFormatDefaultClick" />
+                    <MenuItem Header="Hexadecimal" Click="OnNumberFormatHexClick" />
+                    <MenuItem Header="Decimal" Click="OnNumberFormatDecClick" />
+                    <MenuItem Header="Binary" Click="OnNumberFormatBinClick" />
+                    <MenuItem Header="ASCII" Click="OnNumberFormatAsciiClick" />
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Search">
+                <MenuItem Header="_Find" InputGesture="Ctrl+F" Click="OnFindClick" />
+                <MenuItem Header="Find _Next" InputGesture="F3" Click="OnFindNextClick" />
+            </MenuItem>
+            <MenuItem Header="_Tools">
+                <MenuItem Header="File Type Manager" Click="OnFileTypeManagerClick" />
+                <MenuItem Header="Options" Click="OnOptionsClick" />
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_Help" InputGesture="F1" Click="OnHelpClick" />
+                <Separator />
+                <MenuItem Header="_About" Click="OnAboutClick" />
+            </MenuItem>
+        </Menu>
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" 
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" 
+                BorderThickness="0,0,0,1"
+                Padding="4">
+            <DockPanel>
+                <!-- Right-aligned theme toggle button -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4">
+                    <Button x:Name="ThemeToggleButton" Click="OnThemeToggleClick" ToolTip.Tip="Toggle Light/Dark Theme">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <fi:SymbolIcon x:Name="ThemeIcon" Symbol="WeatherMoon" FontSize="16" Width="16" Height="16" />
+                            <TextBlock x:Name="ThemeButtonText" Text="Dark" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <!-- Left-aligned file buttons -->
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <Button Click="OnOpenClick" ToolTip.Tip="Open File (Ctrl+O)">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <fi:SymbolIcon Symbol="FolderOpen" FontSize="16" Width="16" Height="16" />
+                            <TextBlock Text="Open" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Click="OnCloseClick" ToolTip.Tip="Close File (Ctrl+W)">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <fi:SymbolIcon Symbol="Dismiss" FontSize="16" Width="16" Height="16" />
+                            <TextBlock Text="Close" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+        
+        <!-- Status Bar -->
+        <Border DockPanel.Dock="Bottom"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="8,4">
+            <TextBlock x:Name="StatusBar" 
+                       Text="Ready"
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+        </Border>
+        
+        <!-- Main Content Area - Panel lets both children fill the remaining space -->
+        <Panel>
+            <!-- Drop Panel - shown when no file is open -->
+            <Border x:Name="DropPanel"
+                    Background="Transparent"
+                    DragDrop.AllowDrop="True"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Margin="32">
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="16">
+                    <TextBlock Text="Drag and drop a file here"
+                               FontSize="20"
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                    <Button x:Name="BrowseButton"
+                            Content="Browse"
+                            HorizontalAlignment="Center"
+                            Padding="24,8"
+                            Click="OnBrowseClick" />
+                </StackPanel>
+            </Border>
+            
+            <!-- Tab Control - shown when a file is open -->
+            <TabControl x:Name="MainTabControl" IsVisible="False">
+                <TabItem Header="Info" x:Name="TabInfo">
+                    <views:InfoTabView x:Name="InfoTab" />
+                </TabItem>
+                <TabItem Header="Hex" x:Name="TabHex">
+                    <views:HexTabView x:Name="HexTab" />
+                </TabItem>
+                <TabItem Header="Visual" x:Name="TabVisual">
+                    <views:VisualTabView x:Name="VisualTab" />
+                </TabItem>
+                <TabItem Header="Structure" x:Name="TabStructure">
+                    <views:StructureTabView x:Name="StructureTab" />
+                </TabItem>
+                <TabItem Header="Validation" x:Name="TabValidation">
+                    <views:ValidationTabView x:Name="ValidationTab" />
+                </TabItem>
+            </TabControl>
+        </Panel>
+    </DockPanel>
+    
+</Window>

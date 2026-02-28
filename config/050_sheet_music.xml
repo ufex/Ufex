@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FileTypes>
+		<FileType>
+			<ID>MUSIC_POWERTAB</ID>
+			<Description>Power Tab</Description>
+			<Category>Sheet Music</Category>
+			<MIMEType/>
+			<Wikipedia>Power_Tab_Editor</Wikipedia>
+			<Extensions>
+				<Extension>ptb</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="0">ptab</Pattern>
+					<Pattern xsi:type="byte" offset="4" operator="lte">0x04</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>MUSIC_GUITARPRO_LEGACY</ID>
+			<Description>Guitar Pro (Legacy)</Description>
+			<Category>Sheet Music</Category>
+			<MIMEType/>
+			<Wikipedia>Guitar_Pro</Wikipedia>
+			<Extensions>
+				<Extension>gp3</Extension>
+				<Extension>gp4</Extension>
+				<Extension>gp5</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="byte" offset="0">0x18</Pattern>
+					<Pattern xsi:type="string" offset="1">FICHIER GUITAR PRO </Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>MUSIC_GUITARPRO_GPX</ID>
+			<ParentID>ARCH_ZIP</ParentID>
+			<Description>Guitar Pro 6+ (GPX)</Description>
+			<Category>Sheet Music</Category>
+			<MIMEType/>
+			<Wikipedia>Guitar_Pro</Wikipedia>
+			<Extensions>
+				<Extension>gpx</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>MUSIC_MUSESCORE_MSCZ</ID>
+			<ParentID>ARCH_ZIP</ParentID>
+			<Description>MuseScore Compressed Score</Description>
+			<Category>Sheet Music</Category>
+			<MIMEType/>
+			<Wikipedia>MuseScore</Wikipedia>
+			<Extensions>
+				<Extension>mscz</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>MUSIC_MUSESCORE_MSCX</ID>
+			<Description>MuseScore Uncompressed Score</Description>
+			<Category>Sheet Music</Category>
+			<MIMEType/>
+			<Wikipedia>MuseScore</Wikipedia>
+			<Extensions>
+				<Extension>mscx</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>MUSIC_FINALE_MUSX</ID>
+			<ParentID>ARCH_ZIP</ParentID>
+			<Description>Finale (MUSX)</Description>
+			<Category>Sheet Music</Category>
+			<MIMEType/>
+			<Wikipedia>Finale_(software)</Wikipedia>
+			<Extensions>
+				<Extension>musx</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>MUSIC_FINALE_MUS</ID>
+			<Description>Finale (MUS)</Description>
+			<Category>Sheet Music</Category>
+			<MIMEType/>
+			<Wikipedia>Finale_(software)</Wikipedia>
+			<Extensions>
+				<Extension>mus</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>MUSIC_SIBELIUS</ID>
+			<Description>Sibelius</Description>
+			<Category>Sheet Music</Category>
+			<MIMEType/>
+			<Wikipedia>Sibelius_(scorewriter)</Wikipedia>
+			<Extensions>
+				<Extension>sib</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>MUSIC_LILYPOND</ID>
+			<Description>LilyPond</Description>
+			<Category>Sheet Music</Category>
+			<MIMEType/>
+			<Wikipedia>LilyPond</Wikipedia>
+			<Extensions>
+				<Extension>ly</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>MUSIC_ABC</ID>
+			<Description>ABC Notation</Description>
+			<Category>Sheet Music</Category>
+			<MIMEType/>
+			<Wikipedia>ABC_notation</Wikipedia>
+			<Extensions>
+				<Extension>abc</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>MUSIC_MEI</ID>
+			<Description>Music Encoding Initiative</Description>
+			<Category>Sheet Music</Category>
+			<MIMEType/>
+			<Wikipedia>Music_Encoding_Initiative</Wikipedia>
+			<Extensions>
+				<Extension>mei</Extension>
+			</Extensions>
+		</FileType>
+	</FileTypes>
+</Ufex>

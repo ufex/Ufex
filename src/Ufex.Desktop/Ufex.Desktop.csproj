@@ -1,0 +1,100 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Ufex.Desktop</AssemblyName>
+    <RootNamespace>Ufex.Desktop</RootNamespace>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <ApplicationIcon>assets\icon.ico</ApplicationIcon>
+    <Version>2.0.0</Version>
+  </PropertyGroup>
+
+  <!-- App icon assets (PNG/SVG) available as Avalonia resources for window icons -->
+  <ItemGroup>
+    <AvaloniaResource Include="assets\*.png" />
+    <AvaloniaResource Include="assets\*.svg" />
+  </ItemGroup>
+
+  <!--
+    Trimming safety: when publishing with PublishTrimmed=true (TrimMode=partial),
+    framework assemblies are trimmed. Plugins loaded at runtime via reflection may
+    depend on types the trimmer cannot statically discover. Explicitly root assemblies
+    that plugins or Ufex.API use at runtime.
+  -->
+  <ItemGroup Condition="'$(PublishTrimmed)' == 'true'">
+    <TrimmerRootAssembly Include="System.Data.Common" />
+    <TrimmerRootAssembly Include="Ufex.API" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.3" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.3" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.4.1" />
+    <PackageReference Include="FluentIcons.Avalonia" Version="1.1.265" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ufex.API\Ufex.API.csproj" />
+    <ProjectReference Include="..\Ufex.FileType\Ufex.FileType.csproj" />
+    <ProjectReference Include="..\Ufex.Controls.Avalonia\Ufex.Controls.Avalonia.csproj" />
+  </ItemGroup>
+
+  <!-- Copy config files from project root to output directory -->
+  <ItemGroup>
+    <Content Include="..\..\config\**\*.*">
+      <Link>config\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Copy build/config files to output config directory (overwrites main config if conflicts) -->
+  <PropertyGroup>
+    <BuildConfigSourceDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\..\..\build\$(Configuration)\$(TargetFramework)\config'))</BuildConfigSourceDir>
+  </PropertyGroup>
+
+  <Target Name="CopyBuildConfigToOutput" AfterTargets="Build">
+    <ItemGroup>
+      <BuildConfigFiles Include="$(BuildConfigSourceDir)\**\*.*" Condition="Exists('$(BuildConfigSourceDir)')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(BuildConfigFiles)" DestinationFiles="@(BuildConfigFiles->'$(OutputPath)config\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="@(BuildConfigFiles->Count()) > 0" />
+  </Target>
+
+  <Target Name="CopyBuildConfigToPublishOutput" AfterTargets="Publish">
+    <ItemGroup>
+      <BuildConfigFilesPublish Include="$(BuildConfigSourceDir)\**\*.*" Condition="Exists('$(BuildConfigSourceDir)')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(BuildConfigFilesPublish)" DestinationFiles="@(BuildConfigFilesPublish->'$(PublishDir)config\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="@(BuildConfigFilesPublish->Count()) > 0" />
+  </Target>
+
+  <!-- Copy any pre-built plugins from build/plugins to output plugins directory -->
+  <PropertyGroup>
+    <PluginSourceDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\..\..\build\$(Configuration)\$(TargetFramework)\plugins'))</PluginSourceDir>
+  </PropertyGroup>
+
+  <Target Name="CopyPluginsToOutput" AfterTargets="Build">
+    <ItemGroup>
+      <PluginFiles Include="$(PluginSourceDir)\**\*.*" Condition="Exists('$(PluginSourceDir)')" />
+    </ItemGroup>
+    <MakeDir Directories="$(OutputPath)plugins" Condition="@(PluginFiles->Count()) > 0" />
+    <Copy SourceFiles="@(PluginFiles)" DestinationFiles="@(PluginFiles->'$(OutputPath)plugins\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="@(PluginFiles->Count()) > 0" />
+    <Message Text="Copied %(PluginFiles.RecursiveDir)%(PluginFiles.Filename)%(PluginFiles.Extension) to plugins directory" Importance="normal" Condition="@(PluginFiles->Count()) > 0" />
+  </Target>
+
+  <Target Name="CopyPluginsToPublishOutput" AfterTargets="Publish">
+    <ItemGroup>
+      <PluginFilesPublish Include="$(PluginSourceDir)\**\*.*" Condition="Exists('$(PluginSourceDir)')" />
+    </ItemGroup>
+    <MakeDir Directories="$(PublishDir)plugins" Condition="@(PluginFilesPublish->Count()) > 0" />
+    <Copy SourceFiles="@(PluginFilesPublish)" DestinationFiles="@(PluginFilesPublish->'$(PublishDir)plugins\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="@(PluginFilesPublish->Count()) > 0" />
+    <Message Text="Copied %(PluginFilesPublish.RecursiveDir)%(PluginFilesPublish.Filename)%(PluginFilesPublish.Extension) to publish plugins directory" Importance="normal" Condition="@(PluginFilesPublish->Count()) > 0" />
+  </Target>
+
+</Project>

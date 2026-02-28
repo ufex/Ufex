@@ -57,7 +57,7 @@
 			<Description>Ruby Source Code</Description>
 			<Category>Source Code</Category>
 			<MIMEType>text/plain</MIMEType>
-			<Wikipedia>https://en.wikipedia.org/wiki/Ruby_(programming_language)</Wikipedia>
+			<Wikipedia>Ruby_(programming_language)</Wikipedia>
 			<Extensions>
 				<Extension>rb</Extension>
 			</Extensions>
@@ -67,7 +67,7 @@
 			<Description>Python Source Code</Description>
 			<Category>Source Code</Category>
 			<MIMEType>text/plain</MIMEType>
-			<Wikipedia>https://en.wikipedia.org/wiki/Python_(programming_language)</Wikipedia>
+			<Wikipedia>Python_(programming_language)</Wikipedia>
 			<Extensions>
 				<Extension>py</Extension>
 			</Extensions>

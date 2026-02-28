@@ -1,0 +1,122 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Ufex.Desktop.FileTypeManagerWindow"
+        Title="File Type Manager"
+        Icon="/assets/app-icon-256.png"
+        Width="700"
+        Height="500"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        MinWidth="600"
+        MinHeight="400">
+    
+    <DockPanel Margin="8">
+        <!-- Search box at top -->
+        <TextBox x:Name="SearchTextBox"
+                 DockPanel.Dock="Top"
+                 Watermark="Search file types..."
+                 Margin="0,0,0,8" />
+        
+        <!-- Bottom close button -->
+        <StackPanel DockPanel.Dock="Bottom" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,8,0,0">
+            <Button Content="Close" Width="80" Click="OnCloseClick" />
+        </StackPanel>
+        
+        <!-- Main content: Left list, Right properties -->
+        <Grid ColumnDefinitions="200,Auto,*">
+            
+            <!-- Left Panel: File Type List -->
+            <Border Grid.Column="0"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                <ListBox x:Name="FileTypeListBox"
+                         SelectionMode="Single" />
+            </Border>
+            
+            <!-- GridSplitter for resizing -->
+            <GridSplitter Grid.Column="1"
+                          Width="4"
+                          Background="Transparent"
+                          ResizeDirection="Columns"
+                          Margin="4,0" />
+            
+            <!-- Right Panel: File Type Properties -->
+            <Border Grid.Column="2"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="12">
+                <ScrollViewer>
+                    <StackPanel x:Name="PropertiesPanel" Spacing="12">
+                        <TextBlock Text="File Type Properties" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="14"
+                                   Margin="0,0,0,8" />
+                        
+                        <!-- Type ID -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Type ID:" FontWeight="SemiBold" />
+                            <TextBox x:Name="TypeIdTextBox" 
+                                     IsReadOnly="True"
+                                     Background="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+                        </StackPanel>
+                        
+                        <!-- Description -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Description:" FontWeight="SemiBold" />
+                            <TextBox x:Name="DescriptionTextBox" 
+                                     IsReadOnly="True"
+                                     Background="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+                        </StackPanel>
+                        
+                        <!-- Category -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Category:" FontWeight="SemiBold" />
+                            <TextBox x:Name="CategoryTextBox" 
+                                     IsReadOnly="True"
+                                     Background="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+                        </StackPanel>
+                        
+                        <!-- MIME Types -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="MIME Types:" FontWeight="SemiBold" />
+                            <TextBox x:Name="MimeTypesTextBox" 
+                                     IsReadOnly="True"
+                                     Background="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+                        </StackPanel>
+                        
+                        <!-- Extensions -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Extensions:" FontWeight="SemiBold" />
+                            <TextBox x:Name="ExtensionsTextBox" 
+                                     IsReadOnly="True"
+                                     Background="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+                        </StackPanel>
+                        
+                        <!-- Wikipedia Page -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Wikipedia Page:" FontWeight="SemiBold" />
+                            <TextBox x:Name="WikipediaTextBox" 
+                                     IsReadOnly="True"
+                                     Background="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+                        </StackPanel>
+                        
+                        <!-- Signatures (Future) -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Signatures:" FontWeight="SemiBold" />
+                            <TextBlock Text="(Future feature)" 
+                                       Foreground="Gray" 
+                                       FontStyle="Italic" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+            
+        </Grid>
+    </DockPanel>
+    
+</Window>

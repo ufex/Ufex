@@ -2,8 +2,8 @@
 <Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<FileTypes>
 		<FileType>
-			<ID>GRPH_JPEG</ID>
-			<Description>JPEG Interchange File Format</Description>
+			<ID>GRPH_JFIF</ID>
+			<Description>JPEG File Interchange Format</Description>
 			<Category>Graphic</Category>
 			<MIMETypes>
 				<MIMEType>image/jpeg</MIMEType>
@@ -116,7 +116,7 @@
 			<MIMETypes>
 				<MIMEType>image/x-icon</MIMEType>
 			</MIMETypes>
-			<Wikipedia>https://en.wikipedia.org/wiki/ICO_(file_format)</Wikipedia>
+			<Wikipedia>ICO_(file_format)</Wikipedia>
 			<Extensions>
 				<Extension>ico</Extension>
 			</Extensions>
@@ -162,6 +162,25 @@
 				<Extension>tif</Extension>
 				<Extension>tiff</Extension>
 			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>GRPH_WEBP</ID>
+			<ParentID>BASE_RIFF</ParentID>
+			<Description>WebP Image Format</Description>
+			<Category>Graphic</Category>
+			<MIMETypes>
+				<MIMEType>image/webp</MIMEType>
+			</MIMETypes>
+			<Wikipedia>WebP</Wikipedia>
+			<Extensions>
+				<Extension>webp</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature minSize="12">
+					<Pattern xsi:type="string" offset="0">RIFF</Pattern>
+					<Pattern xsi:type="string" offset="8">WEBP</Pattern>
+				</Signature>
+			</Signatures>
 		</FileType>
 	</FileTypes>
 </Ufex>

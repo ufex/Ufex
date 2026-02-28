@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FileTypes>
+		<FileType>
+			<ID>DB_MS_ACCESS</ID>
+			<Description>Microsoft Access Database</Description>
+			<Category>Database</Category>
+			<MIMEType/>
+			<Wikipedia>Microsoft_Access</Wikipedia>
+			<Extensions>
+				<Extension>mdb</Extension>
+				<Extension>accdb</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0x00010000</Pattern>
+					<Pattern xsi:type="string" offset="4">Standard Jet</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>DB_SQLITE3</ID>
+			<Description>SQLite Database</Description>
+			<Category>Database</Category>
+			<MIMEType>application/x-sqlite3</MIMEType>
+			<Wikipedia>SQLite</Wikipedia>
+			<Extensions>
+				<Extension>sqlite</Extension>
+				<Extension>sqlite3</Extension>
+				<Extension>db</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="0">SQLite format 3</Pattern>
+					<Pattern xsi:type="byte" offset="15">0x00</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>DB_POSTGRESQL_DUMP</ID>
+			<Description>PostgreSQL Custom Dump</Description>
+			<Category>Database</Category>
+			<MIMEType/>
+			<Wikipedia>Pg_dump</Wikipedia>
+			<Extensions>
+				<Extension>dump</Extension>
+				<Extension>backup</Extension>
+				<Extension>pgdump</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="0">PGDMP</Pattern>
+					<Pattern xsi:type="byte" offset="5">0x01</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+	</FileTypes>
+</Ufex>

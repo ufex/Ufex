@@ -1,0 +1,103 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Xml.Serialization;
+using Ufex.FileType.Config;
+
+namespace Ufex.FileType;
+
+public class FileTypeClassRecord
+{
+	public string ConfigFilePath;
+	public string ID;
+	public string AssemblyPath;
+	public string FullTypeName;
+	[XmlArray]
+	[XmlArrayItem(ElementName = "ID")]
+	public string[] FileTypes = new string[0];
+}
+
+/// <summary>
+/// File Type Classes Database
+/// </summary>
+public class FileTypeClassesDb : Ufex.FileType.Database
+{
+	Dictionary<string, FileTypeClassRecord> fileTypeClasses;
+
+	public int Count
+	{
+		get { return FileTypeClasses.Length; }
+	}
+
+	public FileTypeClassRecord[] FileTypeClasses
+	{
+		get { return FileTypeClassesByID.Values.ToArray(); }
+	}
+
+	public Dictionary<string, FileTypeClassRecord> FileTypeClassesByID
+	{
+		get
+		{
+			if (fileTypeClasses == null || fileTypeClasses.Count == 0)
+				Load();
+			return fileTypeClasses;
+		}
+	}
+
+	public FileTypeClassesDb(FileInfo[] configFiles) : base(configFiles)
+	{
+		this.fileTypeClasses = new Dictionary<string, FileTypeClassRecord>();
+	}
+
+	private void Load()
+	{
+		fileTypeClasses = new Dictionary<string, FileTypeClassRecord>();
+		XmlSerializer xmlSerializer = new XmlSerializer(typeof(Document));
+		foreach (FileInfo filePath in configFiles)
+		{
+			StreamReader reader = new StreamReader(filePath.FullName);
+			Document doc = (Document)xmlSerializer.Deserialize(reader);
+			if (doc.FileTypeClasses != null)
+			{
+				foreach (FileTypeClassRecord fileTypeClass in doc.FileTypeClasses)
+				{
+					fileTypeClass.ConfigFilePath = filePath.FullName;
+					fileTypeClasses[fileTypeClass.ID] = fileTypeClass;
+				}
+			}
+			reader.Close();
+		}
+	}
+
+	public FileTypeClassRecord[] GetFileTypeClasses(bool refresh = false)
+	{
+		if (refresh)
+			Load();
+
+		return FileTypeClasses;
+	}
+
+	public FileTypeClassRecord[] GetFileTypeClassesByFileType(string fileTypeId)
+	{
+		List<FileTypeClassRecord> results = new List<FileTypeClassRecord>();
+		foreach(FileTypeClassRecord fileTypeClass in FileTypeClasses)
+		{
+			if (Array.Exists(fileTypeClass.FileTypes, x => x == fileTypeId))
+			{
+				results.Add(fileTypeClass);
+			}
+		}
+		return results.ToArray();
+	}
+
+	public FileTypeClassRecord GetFileTypeClass(string classId)
+	{
+		return FileTypeClassesByID[classId];
+	}
+
+	public bool Exists(string classId)
+	{
+		return FileTypeClassesByID.ContainsKey(classId);
+	}
+}

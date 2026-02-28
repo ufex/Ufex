@@ -1,0 +1,18 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build Ufex.Desktop",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"src/Ufex.Desktop/Ufex.Desktop.csproj"
+			],
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		}
+	]
+}

@@ -1,0 +1,60 @@
+name: Build Extension
+
+on:
+  workflow_call:
+    inputs:
+      repository:
+        description: "GitHub repository for the extension (e.g., ufex/Ufex.Extensions.Core)"
+        required: true
+        type: string
+      checkout-path:
+        description: "Path to checkout the extension into (e.g., ext/Ufex.Extensions.Core)"
+        required: true
+        type: string
+      solution-file:
+        description: "Path to the solution file to build (e.g., ext/Ufex.Extensions.Core/Ufex.Extensions.Core.sln)"
+        required: true
+        type: string
+
+env:
+  DOTNET_VERSION: "10.0.x"
+
+jobs:
+  build-extension:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v4
+
+      - name: Checkout extension repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repository }}
+          path: ${{ inputs['checkout-path'] }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Build extension
+        run: dotnet build ${{ inputs['solution-file'] }} -c Release
+
+      - name: Sanitize repository name
+        id: repo
+        run: echo "safe_name=$(echo '${{ inputs.repository }}' | tr '/' '-')" >> $GITHUB_OUTPUT
+
+      - name: Upload plugin artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-plugins-${{ steps.repo.outputs.safe_name }}
+          path: build/Release/net10.0/plugins/
+          if-no-files-found: warn
+
+      - name: Upload config artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-config-${{ steps.repo.outputs.safe_name }}
+          path: build/Release/net10.0/config/
+          if-no-files-found: warn

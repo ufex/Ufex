@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 425 425"
+   width="425"
+   height="425"
+   version="1.1"
+   id="svg33"
+   sodipodi:docname="app-icon.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   inkscape:export-filename="app-icon-48.png"
+   inkscape:export-xdpi="10.842353"
+   inkscape:export-ydpi="10.842353"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview33"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="2.8671875"
+     inkscape:cx="255.82561"
+     inkscape:cy="223.56403"
+     inkscape:window-width="3200"
+     inkscape:window-height="1712"
+     inkscape:window-x="3192"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg33" />
+  <defs
+     id="defs18">
+    <linearGradient
+       id="docGradient"
+       x1="324.98343"
+       y1="50.77182"
+       x2="324.98343"
+       y2="393.4816"
+       gradientTransform="scale(0.84619701,1.1817579)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0%"
+         stop-color="#7EC8F2"
+         id="stop1" />
+      <stop
+         offset="100%"
+         stop-color="#4A9BE8"
+         id="stop2" />
+    </linearGradient>
+    <linearGradient
+       id="foldGradient"
+       x1="350"
+       y1="60"
+       x2="420"
+       y2="130"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0%"
+         stop-color="#B8DCF5"
+         id="stop3" />
+      <stop
+         offset="100%"
+         stop-color="#6BAFE8"
+         id="stop4" />
+    </linearGradient>
+    <linearGradient
+       id="rimGradient"
+       x1="143"
+       y1="198"
+       x2="143"
+       y2="382"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-75.264302,-48.899185)">
+      <stop
+         offset="0%"
+         stop-color="#A0A0A0"
+         id="stop5" />
+      <stop
+         offset="50%"
+         stop-color="#787878"
+         id="stop6" />
+      <stop
+         offset="100%"
+         stop-color="#606060"
+         id="stop7" />
+    </linearGradient>
+    <linearGradient
+       id="handleGradient"
+       x1="411.50043"
+       y1="197.99432"
+       x2="465.62067"
+       y2="252.11456"
+       gradientTransform="scale(0.53584393,1.8662151)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0%"
+         stop-color="#909090"
+         id="stop8" />
+      <stop
+         offset="100%"
+         stop-color="#606060"
+         id="stop9" />
+    </linearGradient>
+    <radialGradient
+       id="lensGradient"
+       cx="226.8"
+       cy="273.60001"
+       r="90.200005"
+       fx="226.8"
+       fy="273.60001"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-75.264302,-48.899185)">
+      <stop
+         offset="0%"
+         stop-color="#E8F4FC"
+         id="stop10" />
+      <stop
+         offset="60%"
+         stop-color="#C5E4F7"
+         id="stop11" />
+      <stop
+         offset="100%"
+         stop-color="#A0D4F0"
+         id="stop12" />
+    </radialGradient>
+    <linearGradient
+       id="rimHighlight"
+       x1="193"
+       y1="185"
+       x2="277"
+       y2="395"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-75.264302,-48.899185)">
+      <stop
+         offset="0%"
+         stop-color="#C0C0C0"
+         id="stop13" />
+      <stop
+         offset="40%"
+         stop-color="#888888"
+         id="stop14" />
+      <stop
+         offset="100%"
+         stop-color="#555555"
+         id="stop15" />
+    </linearGradient>
+    <filter
+       id="docShadow"
+       x="-0.099310345"
+       y="-0.071111111"
+       width="1.2124138"
+       height="1.1619753">
+      <feGaussianBlur
+         in="SourceAlpha"
+         stdDeviation="12"
+         result="blur"
+         id="feGaussianBlur15" />
+      <feOffset
+         in="blur"
+         dx="4"
+         dy="8"
+         result="offsetBlur"
+         id="feOffset15" />
+      <feFlood
+         flood-color="#000000"
+         flood-opacity="0.25"
+         result="color"
+         id="feFlood15" />
+      <feComposite
+         in="color"
+         in2="offsetBlur"
+         operator="in"
+         result="shadow"
+         id="feComposite15" />
+      <feMerge
+         id="feMerge16">
+        <feMergeNode
+           in="shadow"
+           id="feMergeNode15" />
+        <feMergeNode
+           in="SourceGraphic"
+           id="feMergeNode16" />
+      </feMerge>
+    </filter>
+    <filter
+       id="magShadow"
+       x="-3.5"
+       y="-3"
+       width="7.5"
+       height="7.75">
+      <feGaussianBlur
+         in="SourceAlpha"
+         stdDeviation="10"
+         result="blur"
+         id="feGaussianBlur16" />
+      <feOffset
+         in="blur"
+         dx="-4"
+         dy="6"
+         result="offsetBlur"
+         id="feOffset16" />
+      <feFlood
+         flood-color="#000000"
+         flood-opacity="0.22"
+         result="color"
+         id="feFlood16" />
+      <feComposite
+         in="color"
+         in2="offsetBlur"
+         operator="in"
+         result="shadow"
+         id="feComposite16" />
+      <feMerge
+         id="feMerge18">
+        <feMergeNode
+           in="shadow"
+           id="feMergeNode17" />
+        <feMergeNode
+           in="SourceGraphic"
+           id="feMergeNode18" />
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Document body -->
+  <g
+     filter="url(#docShadow)"
+     id="g24"
+     transform="translate(-48.059942,-50.643045)">
+    <path
+       d="m 130,60 h 220 l 70,70 v 320 q 0,15 -15,15 H 145 q -15,0 -15,-15 z"
+       fill="url(#docGradient)"
+       id="path18"
+       style="fill:url(#docGradient)" />
+    <path
+       d="m 350,60 v 55 q 0,15 15,15 h 55 z"
+       fill="url(#foldGradient)"
+       id="path19"
+       style="fill:url(#foldGradient)" />
+  </g>
+  <!-- Magnifying glass group -->
+  <g
+     id="g33"
+     transform="translate(-109.09536,-62.152585)">
+    <rect
+       x="221"
+       y="370"
+       width="28"
+       height="100"
+       rx="14"
+       fill="url(#handleGradient)"
+       transform="rotate(45,219.29278,338.03337)"
+       stroke="#555555"
+       stroke-width="1"
+       id="rect25"
+       style="fill:url(#handleGradient);filter:url(#magShadow)" />
+    <rect
+       x="229"
+       y="375"
+       width="8"
+       height="85"
+       rx="4"
+       fill="#aaaaaa"
+       opacity="0.4"
+       transform="rotate(45,219.29278,338.03337)"
+       id="rect26"
+       style="filter:url(#magShadow)" />
+  </g>
+  <circle
+     cx="159.7357"
+     cy="241.10081"
+     r="105"
+     fill="url(#rimHighlight)"
+     id="circle26"
+     style="fill:url(#rimHighlight);filter:url(#magShadow)" />
+  <circle
+     cx="159.7357"
+     cy="241.10081"
+     r="92"
+     fill="url(#rimGradient)"
+     id="circle27"
+     style="fill:url(#rimGradient);filter:url(#magShadow)" />
+  <circle
+     cx="159.7357"
+     cy="241.10081"
+     r="82"
+     fill="url(#lensGradient)"
+     id="circle28"
+     style="fill:url(#lensGradient);filter:url(#magShadow)" />
+  <ellipse
+     cx="215"
+     cy="265"
+     rx="40"
+     ry="25"
+     fill="#ffffff"
+     opacity="0.25"
+     transform="rotate(-20,38.707328,453.97293)"
+     id="ellipse28"
+     style="filter:url(#magShadow)" />
+  <rect
+     x="119.73569"
+     y="209.1008"
+     width="30"
+     height="30"
+     rx="4"
+     fill="#3d8fdb"
+     id="rect28"
+     style="filter:url(#magShadow)" />
+  <rect
+     x="164.7357"
+     y="209.1008"
+     width="30"
+     height="30"
+     rx="4"
+     fill="#3d8fdb"
+     id="rect29"
+     style="filter:url(#magShadow)" />
+  <rect
+     x="119.73569"
+     y="253.10083"
+     width="30"
+     height="30"
+     rx="4"
+     fill="#3d8fdb"
+     id="rect30"
+     style="filter:url(#magShadow)" />
+  <rect
+     x="121.73569"
+     y="211.1008"
+     width="12"
+     height="8"
+     rx="2"
+     fill="#ffffff"
+     opacity="0.25"
+     id="rect31"
+     style="filter:url(#magShadow)" />
+  <rect
+     x="166.7357"
+     y="211.1008"
+     width="12"
+     height="8"
+     rx="2"
+     fill="#ffffff"
+     opacity="0.25"
+     id="rect32"
+     style="filter:url(#magShadow)" />
+  <rect
+     x="121.73569"
+     y="255.10083"
+     width="12"
+     height="8"
+     rx="2"
+     fill="#ffffff"
+     opacity="0.25"
+     id="rect33"
+     style="filter:url(#magShadow)" />
+</svg>
