@@ -62,10 +62,6 @@ jobs:
             artifact: macos-arm64
 
     runs-on: ${{ matrix.os }}
-    if: >-
-      github.event_name == 'release' ||
-      github.event.inputs.platform == 'all' ||
-      github.event.inputs.platform == matrix.artifact
 
     steps:
       - name: Checkout repository
