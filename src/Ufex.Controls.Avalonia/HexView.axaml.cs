@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Styling;
 using System;
 using System.IO;
 
@@ -61,15 +62,19 @@ public partial class HexView : UserControl
 	// Format settings
 	private bool _hexCaps = true;
 
-	// Colors
+	// Colors (used as fallbacks when theme resources are not available)
 	private Color _textColor = Colors.Black;
 	private Color _cellBorderColor = Color.FromRgb(127, 157, 185);
 	private Color _gridBorderColor = Color.FromRgb(100, 100, 100);
 	private int _gridHorizontalSpacing = 6;
 
+	// Whether to use theme resources for colors (true by default)
+	private bool _useThemeColors = true;
+
 	public HexView()
 	{
 		InitializeComponent();
+		ActualThemeVariantChanged += OnActualThemeVariantChanged;
 	}
 
 	protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -105,9 +110,51 @@ public partial class HexView : UserControl
 		RedrawAll();
 	}
 
+	private void OnActualThemeVariantChanged(object? sender, EventArgs e)
+	{
+		ApplyColors();
+		RedrawAll();
+	}
+
+	/// <summary>
+	/// Gets a brush from theme resources, falling back to the specified color.
+	/// </summary>
+	private IBrush GetThemeBrush(string resourceKey, Color fallback)
+	{
+		if (_useThemeColors && this.TryFindResource(resourceKey, ActualThemeVariant, out var resource) && resource is IBrush brush)
+		{
+			return brush;
+		}
+		return new SolidColorBrush(fallback);
+	}
+
+	/// <summary>
+	/// Gets the current text brush, using theme foreground or the fallback _textColor.
+	/// </summary>
+	private IBrush GetTextBrush()
+	{
+		return GetThemeBrush("SystemControlForegroundBaseHighBrush", _textColor);
+	}
+
+	/// <summary>
+	/// Gets the current cell border brush, using theme resources or the fallback.
+	/// </summary>
+	private IBrush GetCellBorderBrush()
+	{
+		return GetThemeBrush("SystemControlForegroundBaseMediumBrush", _cellBorderColor);
+	}
+
+	/// <summary>
+	/// Gets the current grid border brush, using theme resources or the fallback.
+	/// </summary>
+	private IBrush GetGridBorderBrush()
+	{
+		return GetThemeBrush("SystemControlForegroundBaseMediumLowBrush", _gridBorderColor);
+	}
+
 	private void ApplyColors()
 	{
-		var gridBrush = new SolidColorBrush(_gridBorderColor);
+		var gridBrush = GetGridBorderBrush();
 
 		if (_positionBorder != null)
 		{
@@ -367,8 +414,8 @@ public partial class HexView : UserControl
 	{
 		if (_positionCanvas == null) return;
 
-		var textBrush = new SolidColorBrush(_textColor);
-		var cellBorderBrush = new SolidColorBrush(_cellBorderColor);
+		var textBrush = GetTextBrush();
+		var cellBorderBrush = GetCellBorderBrush();
 
 		for (int row = 0; row < _calculatedRows; row++)
 		{
@@ -410,8 +457,8 @@ public partial class HexView : UserControl
 	{
 		if (_hexCanvas == null || _buffer == null) return;
 
-		var textBrush = new SolidColorBrush(_textColor);
-		var cellBorderBrush = new SolidColorBrush(_cellBorderColor);
+		var textBrush = GetTextBrush();
+		var cellBorderBrush = GetCellBorderBrush();
 		var highlightBrush = new SolidColorBrush(Colors.Yellow);
 		var highlightTextBrush = new SolidColorBrush(Colors.Black);
 
@@ -463,8 +510,8 @@ public partial class HexView : UserControl
 	{
 		if (_asciiCanvas == null || _buffer == null) return;
 
-		var textBrush = new SolidColorBrush(_textColor);
-		var cellBorderBrush = new SolidColorBrush(_cellBorderColor);
+		var textBrush = GetTextBrush();
+		var cellBorderBrush = GetCellBorderBrush();
 		var highlightBrush = new SolidColorBrush(Colors.Yellow);
 		var highlightTextBrush = new SolidColorBrush(Colors.Black);
 
