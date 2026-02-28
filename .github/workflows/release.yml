@@ -25,6 +25,9 @@ on:
           - macos
           - macos-arm64
 
+permissions:
+  contents: write
+
 env:
   DOTNET_VERSION: "10.0.x"
   PROJECT_PATH: src/Ufex.Desktop/Ufex.Desktop.csproj
@@ -498,10 +501,30 @@ jobs:
       - name: List artifacts
         run: ls -la installers/
 
+      - name: Resolve release tag
+        id: release_tag
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.release_tag }}"
+            if [ -z "$TAG" ]; then
+              TAG="v${{ github.event.inputs.version }}"
+            fi
+          else
+            TAG="${{ github.event.release.tag_name }}"
+          fi
+
+          if [ -z "$TAG" ]; then
+            echo "Unable to resolve release tag. Set release_tag when running manually."
+            exit 1
+          fi
+
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
           files: installers/*
-          tag_name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag || github.event.release.tag_name }}
+          tag_name: ${{ steps.release_tag.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
