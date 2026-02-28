@@ -2,13 +2,31 @@ name: Build and Release
 
 on:
   release:
-    types: [created]
+    types: [published]
   workflow_dispatch:
     inputs:
       version:
         description: "Version number (e.g., 1.0.0)"
         required: true
         default: "0.0.0-dev"
+      release_tag:
+        description: "Existing Git tag to upload assets to (e.g., v1.2.3)"
+        required: false
+        default: ""
+      platform:
+        description: "Platform to build (all, windows, linux, macos, macos-arm64)"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - windows
+          - linux
+          - macos
+          - macos-arm64
+
+permissions:
+  contents: write
 
 env:
   DOTNET_VERSION: "10.0.x"
@@ -118,8 +136,12 @@ jobs:
   # Windows MSI Installer
   package-windows:
     needs: build
+    if: >-
+      github.event_name == 'release' ||
+      !github.event.inputs.platform ||
+      github.event.inputs.platform == 'all' ||
+      github.event.inputs.platform == 'windows'
     runs-on: windows-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -145,7 +167,7 @@ jobs:
       - name: Install WiX Toolset
         run: |
           dotnet tool install --global wix
-          wix extension add WixToolset.UI.wixext
+          wix extension add WixToolset.UI.wixext/6.0.2
 
       - name: Compute MSI version
         id: msi_version
@@ -162,6 +184,7 @@ jobs:
         run: |
           wix build src/Ufex.Desktop/packaging/Ufex.wxs `
             -ext WixToolset.UI.wixext `
+            -bindpath src/Ufex.Desktop/packaging `
             -d MsiVersion=${{ steps.msi_version.outputs.msi_version }} `
             -d PublishDir=${{ github.workspace }}\publish\win-x64 `
             -o Ufex-${{ steps.version.outputs.version }}-win-x64.msi
@@ -175,8 +198,12 @@ jobs:
   # Linux AppImage
   package-linux:
     needs: build
+    if: >-
+      github.event_name == 'release' ||
+      !github.event.inputs.platform ||
+      github.event.inputs.platform == 'all' ||
+      github.event.inputs.platform == 'linux'
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -261,8 +288,12 @@ jobs:
   # macOS DMG (Intel)
   package-macos:
     needs: build
+    if: >-
+      github.event_name == 'release' ||
+      !github.event.inputs.platform ||
+      github.event.inputs.platform == 'all' ||
+      github.event.inputs.platform == 'macos'
     runs-on: macos-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -356,8 +387,12 @@ jobs:
   # macOS DMG (Apple Silicon)
   package-macos-arm:
     needs: build
+    if: >-
+      github.event_name == 'release' ||
+      !github.event.inputs.platform ||
+      github.event.inputs.platform == 'all' ||
+      github.event.inputs.platform == 'macos-arm64'
     runs-on: macos-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -453,7 +488,7 @@ jobs:
   upload-release:
     needs: [package-windows, package-linux, package-macos, package-macos-arm]
     runs-on: ubuntu-latest
-    if: github.event_name == 'release'
+    if: (github.event_name == 'release' || github.event_name == 'workflow_dispatch') && !failure() && !cancelled()
 
     steps:
       - name: Download all installer artifacts
@@ -466,9 +501,30 @@ jobs:
       - name: List artifacts
         run: ls -la installers/
 
+      - name: Resolve release tag
+        id: release_tag
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.release_tag }}"
+            if [ -z "$TAG" ]; then
+              TAG="v${{ github.event.inputs.version }}"
+            fi
+          else
+            TAG="${{ github.event.release.tag_name }}"
+          fi
+
+          if [ -z "$TAG" ]; then
+            echo "Unable to resolve release tag. Set release_tag when running manually."
+            exit 1
+          fi
+
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
           files: installers/*
+          tag_name: ${{ steps.release_tag.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
