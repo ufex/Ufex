@@ -10,6 +10,7 @@
 
 		<!-- Advanced install wizard UI (per-user vs per-machine choice, folder selection, progress, finish) -->
 		<ui:WixUI Id="WixUI_Advanced" />
+		<WixVariable Id="WixUILicenseRtf" Value="EULA.rtf" />
 		<Property Id="ApplicationFolderName" Value="Ufex" />
 		<Property Id="WixAppFolder" Value="WixPerMachineFolder" />
 		<MediaTemplate EmbedCab="yes" CompressionLevel="high" />
