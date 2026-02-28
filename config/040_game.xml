@@ -139,5 +139,40 @@
 				</Signature>
 			</Signatures>
 		</FileType>
+		<FileType>
+			<ID>BIZHAWK_CDL</ID>
+			<Description>BizHawk Code/Data Logger File</Description>
+			<Category>Game</Category>
+			<MIMEType/>
+			<Extensions>
+				<Extension>cdl</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="string" offset="0">BIZHAWK-CDL-2</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>GAME_UNREAL_PKG</ID>
+			<Description>Unreal Engine Package</Description>
+			<Category>Game</Category>
+			<MIMEType/>
+			<Wikipedia>Unreal_Engine</Wikipedia>
+			<Extensions>
+				<Extension>upk</Extension>
+				<Extension>u</Extension>
+				<Extension>uax</Extension>
+				<Extension>utx</Extension>
+				<Extension>umx</Extension>
+				<Extension>ukx</Extension>
+				<Extension>uz</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Pattern xsi:type="bytes" offset="0">0xC1832A9E</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
 	</FileTypes>
 </Ufex>

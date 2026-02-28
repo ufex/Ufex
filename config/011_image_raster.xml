@@ -2,8 +2,8 @@
 <Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<FileTypes>
 		<FileType>
-			<ID>GRPH_JPEG</ID>
-			<Description>JPEG Interchange File Format</Description>
+			<ID>GRPH_JFIF</ID>
+			<Description>JPEG File Interchange Format</Description>
 			<Category>Graphic</Category>
 			<MIMETypes>
 				<MIMEType>image/jpeg</MIMEType>

@@ -15,5 +15,19 @@
 				</Signature>
 			</Signatures>
 		</FileType>
+		<FileType>
+			<ID>BASE_CFB</ID>
+			<Description>Microsoft Compound File Binary Format</Description>
+			<Category>Container</Category>
+			<MIMETypes>
+				<MIMEType>application/x-cfb</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Compound_File_Binary_Format</Wikipedia>
+			<Signatures>
+				<Signature minSize="512">
+					<Pattern xsi:type="bytes" offset="0">0xD0CF11E0A1B11AE1</Pattern>
+				</Signature>
+			</Signatures>
+		</FileType>
 	</FileTypes>
 </Ufex>
