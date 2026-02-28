@@ -1,0 +1,472 @@
+name: Build and Release
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number (e.g., 1.0.0)"
+        required: true
+        default: "0.0.0-dev"
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  PROJECT_PATH: src/Ufex.Desktop/Ufex.Desktop.csproj
+  APP_NAME: Ufex
+
+jobs:
+  # Build extension plugins using the reusable workflow
+  build-extensions:
+    uses: ./.github/workflows/build-extension.yml
+    with:
+      repository: ufex/Ufex.Extensions.Core
+      checkout-path: ext/Ufex.Extensions.Core
+      solution-file: ext/Ufex.Extensions.Core/Ufex.Extensions.Core.sln
+
+  # Build and future extension repos can be added here, e.g.:
+  # build-extensions-image:
+  #   uses: ./.github/workflows/build-extension.yml
+  #   with:
+  #     repository: ufex/Ufex.Extensions.Image
+  #     checkout-path: ext/Ufex.Extensions.Image
+  #     solution-file: ext/Ufex.Extensions.Image/Ufex.Extensions.Image.sln
+
+  build:
+    needs: [build-extensions]
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            artifact: windows
+          - os: ubuntu-latest
+            rid: linux-x64
+            artifact: linux
+          - os: macos-latest
+            rid: osx-x64
+            artifact: macos
+          - os: macos-latest
+            rid: osx-arm64
+            artifact: macos-arm64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Get version
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" == "release" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            # Strip 'v' prefix if present
+            VERSION="${VERSION#v}"
+          else
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      # Download plugin and config artifacts from extension builds
+      - name: Download plugin artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: extension-plugins-*
+          path: build/Release/net10.0/plugins
+          merge-multiple: true
+
+      - name: Download config artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: extension-config-*
+          path: build/Release/net10.0/config
+          merge-multiple: true
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Publish application
+        # Trimming is disabled for now:
+        #   -p:PublishTrimmed=true
+        #   -p:TrimMode=partial
+        run: |
+          dotnet publish ${{ env.PROJECT_PATH }} \
+            -c Release \
+            -r ${{ matrix.rid }} \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:EnableCompressionInSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            -p:Version=${{ steps.version.outputs.version }} \
+            -o publish/${{ matrix.rid }}
+        shell: bash
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}-${{ matrix.artifact }}
+          path: publish/${{ matrix.rid }}
+          retention-days: 1
+
+  # Windows MSI Installer
+  package-windows:
+    needs: build
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Windows build
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}-windows
+          path: publish/win-x64
+
+      - name: Get version
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" == "release" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#v}"
+          else
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Install WiX Toolset
+        run: dotnet tool install --global wix
+
+      - name: Compute MSI version
+        id: msi_version
+        shell: pwsh
+        run: |
+          $version = "${{ steps.version.outputs.version }}"
+          $versionParts = $version.Split('.')
+          while ($versionParts.Count -lt 4) { $versionParts += "0" }
+          $msiVersion = ($versionParts[0..3] -join '.')
+          echo "msi_version=$msiVersion" >> $env:GITHUB_OUTPUT
+
+      - name: Build MSI installer
+        shell: pwsh
+        run: |
+          wix build src/Ufex.Desktop/packaging/Ufex.wxs `
+            -ext WixToolset.UI.wixext `
+            -d MsiVersion=${{ steps.msi_version.outputs.msi_version }} `
+            -d PublishDir=${{ github.workspace }}\publish\win-x64 `
+            -o Ufex-${{ steps.version.outputs.version }}-win-x64.msi
+
+      - name: Upload MSI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}-installer-windows
+          path: "*.msi"
+
+  # Linux AppImage
+  package-linux:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Linux build
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}-linux
+          path: publish/linux-x64
+
+      - name: Get version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "release" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#v}"
+          else
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Install AppImage tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfuse2
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
+
+      - name: Create AppDir structure
+        run: |
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/share/applications
+          mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
+
+          # Copy application files
+          cp -r publish/linux-x64/* AppDir/usr/bin/
+          chmod +x AppDir/usr/bin/Ufex.Desktop
+
+          # Create desktop entry
+          cat > AppDir/usr/share/applications/ufex.desktop << EOF
+          [Desktop Entry]
+          Type=Application
+          Name=Ufex
+          Comment=Universal File Explorer
+          Exec=Ufex.Desktop %F
+          Icon=ufex
+          Categories=Utility;FileTools;
+          Terminal=false
+          EOF
+
+          # Copy desktop file to AppDir root (required by AppImage)
+          cp AppDir/usr/share/applications/ufex.desktop AppDir/
+
+          # Create a simple icon (placeholder - replace with actual icon)
+          # Using ImageMagick to create a placeholder icon
+          sudo apt-get install -y imagemagick
+          convert -size 256x256 xc:#4a90d9 -fill white -gravity center \
+            -pointsize 72 -annotate 0 "UF" \
+            AppDir/usr/share/icons/hicolor/256x256/apps/ufex.png
+          cp AppDir/usr/share/icons/hicolor/256x256/apps/ufex.png AppDir/ufex.png
+
+          # Create AppRun script
+          cat > AppDir/AppRun << 'EOF'
+          #!/bin/bash
+          SELF=$(readlink -f "$0")
+          HERE=${SELF%/*}
+          export PATH="${HERE}/usr/bin:${PATH}"
+          exec "${HERE}/usr/bin/Ufex.Desktop" "$@"
+          EOF
+          chmod +x AppDir/AppRun
+
+      - name: Build AppImage
+        run: |
+          ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir Ufex-${{ steps.version.outputs.version }}-linux-x86_64.AppImage
+
+      - name: Upload AppImage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}-installer-linux
+          path: "*.AppImage"
+
+  # macOS DMG (Intel)
+  package-macos:
+    needs: build
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download macOS Intel build
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}-macos
+          path: publish/osx-x64
+
+      - name: Get version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "release" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#v}"
+          else
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Create app bundle
+        run: |
+          APP_DIR="Ufex.app"
+          mkdir -p "$APP_DIR/Contents/MacOS"
+          mkdir -p "$APP_DIR/Contents/Resources"
+
+          # Copy application files
+          cp -r publish/osx-x64/* "$APP_DIR/Contents/MacOS/"
+          chmod +x "$APP_DIR/Contents/MacOS/Ufex.Desktop"
+
+          # Create Info.plist
+          cat > "$APP_DIR/Contents/Info.plist" << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleExecutable</key>
+            <string>Ufex.Desktop</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.ufex.desktop</string>
+            <key>CFBundleName</key>
+            <string>Ufex</string>
+            <key>CFBundleDisplayName</key>
+            <string>Ufex</string>
+            <key>CFBundleVersion</key>
+            <string>${{ steps.version.outputs.version }}</string>
+            <key>CFBundleShortVersionString</key>
+            <string>${{ steps.version.outputs.version }}</string>
+            <key>CFBundlePackageType</key>
+            <string>APPL</string>
+            <key>CFBundleSignature</key>
+            <string>????</string>
+            <key>LSMinimumSystemVersion</key>
+            <string>10.15</string>
+            <key>NSHighResolutionCapable</key>
+            <true/>
+            <key>NSSupportsAutomaticGraphicsSwitching</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Create DMG
+        run: |
+          create-dmg \
+            --volname "Ufex Installer" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "Ufex.app" 150 185 \
+            --app-drop-link 450 185 \
+            "Ufex-${{ steps.version.outputs.version }}-macos-x64.dmg" \
+            "Ufex.app" || true
+
+          # Fallback to simple DMG if create-dmg fails
+          if [ ! -f "Ufex-${{ steps.version.outputs.version }}-macos-x64.dmg" ]; then
+            hdiutil create -volname "Ufex" -srcfolder "Ufex.app" -ov -format UDZO \
+              "Ufex-${{ steps.version.outputs.version }}-macos-x64.dmg"
+          fi
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}-installer-macos-x64
+          path: "*.dmg"
+
+  # macOS DMG (Apple Silicon)
+  package-macos-arm:
+    needs: build
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download macOS ARM build
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}-macos-arm64
+          path: publish/osx-arm64
+
+      - name: Get version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "release" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#v}"
+          else
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Create app bundle
+        run: |
+          APP_DIR="Ufex.app"
+          mkdir -p "$APP_DIR/Contents/MacOS"
+          mkdir -p "$APP_DIR/Contents/Resources"
+
+          cp -r publish/osx-arm64/* "$APP_DIR/Contents/MacOS/"
+          chmod +x "$APP_DIR/Contents/MacOS/Ufex.Desktop"
+
+          cat > "$APP_DIR/Contents/Info.plist" << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleExecutable</key>
+            <string>Ufex.Desktop</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.ufex.desktop</string>
+            <key>CFBundleName</key>
+            <string>Ufex</string>
+            <key>CFBundleDisplayName</key>
+            <string>Ufex</string>
+            <key>CFBundleVersion</key>
+            <string>${{ steps.version.outputs.version }}</string>
+            <key>CFBundleShortVersionString</key>
+            <string>${{ steps.version.outputs.version }}</string>
+            <key>CFBundlePackageType</key>
+            <string>APPL</string>
+            <key>CFBundleSignature</key>
+            <string>????</string>
+            <key>LSMinimumSystemVersion</key>
+            <string>11.0</string>
+            <key>LSArchitecturePriority</key>
+            <array>
+              <string>arm64</string>
+            </array>
+            <key>NSHighResolutionCapable</key>
+            <true/>
+            <key>NSSupportsAutomaticGraphicsSwitching</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Create DMG
+        run: |
+          create-dmg \
+            --volname "Ufex Installer" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "Ufex.app" 150 185 \
+            --app-drop-link 450 185 \
+            "Ufex-${{ steps.version.outputs.version }}-macos-arm64.dmg" \
+            "Ufex.app" || true
+
+          if [ ! -f "Ufex-${{ steps.version.outputs.version }}-macos-arm64.dmg" ]; then
+            hdiutil create -volname "Ufex" -srcfolder "Ufex.app" -ov -format UDZO \
+              "Ufex-${{ steps.version.outputs.version }}-macos-arm64.dmg"
+          fi
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}-installer-macos-arm64
+          path: "*.dmg"
+
+  # Upload all installers to the GitHub release
+  upload-release:
+    needs: [package-windows, package-linux, package-macos, package-macos-arm]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+
+    steps:
+      - name: Download all installer artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: installers
+          pattern: ${{ env.APP_NAME }}-installer-*
+          merge-multiple: true
+
+      - name: List artifacts
+        run: ls -la installers/
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installers/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
