@@ -164,6 +164,19 @@ jobs:
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Sign Windows executable
+        uses: azure/trusted-signing-action@v0.5.0
+        with:
+          azure-tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          azure-client-id: ${{ vars.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: ${{ vars.AZURE_SIGNING_ACCOUNT_URI }}
+          trusted-signing-account-name: ${{ vars.AZURE_SIGNING_ACOUNT_NAME }}
+          certificate-profile-name: ${{ vars.AZURE_CERT_PROFILE_NAME }}
+          files-folder: publish/win-x64
+          files-folder-filter: exe
+          files-folder-recurse: false
+
       - name: Install WiX Toolset
         run: |
           dotnet tool install --global wix
@@ -188,6 +201,19 @@ jobs:
             -d MsiVersion=${{ steps.msi_version.outputs.msi_version }} `
             -d PublishDir=${{ github.workspace }}\publish\win-x64 `
             -o Ufex-${{ steps.version.outputs.version }}-win-x64.msi
+
+      - name: Sign MSI installer
+        uses: azure/trusted-signing-action@v0.5.0
+        with:
+          azure-tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          azure-client-id: ${{ vars.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: ${{ vars.AZURE_SIGNING_ACCOUNT_URI }}
+          trusted-signing-account-name: ${{ vars.AZURE_SIGNING_ACOUNT_NAME }}
+          certificate-profile-name: ${{ vars.AZURE_CERT_PROFILE_NAME }}
+          files-folder: ${{ github.workspace }}
+          files-folder-filter: msi
+          files-folder-recurse: false
 
       - name: Upload MSI artifact
         uses: actions/upload-artifact@v4
