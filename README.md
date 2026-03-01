@@ -2,6 +2,10 @@
 
 Ufex is a cross-platform desktop application for inspecting the internal structure and metadata of many different file formats. Open any file and instantly see its hex data, parsed structure, visual layout, and validation results — all in one place.
 
+## Getting Started
+
+Downloads: https://github.com/ufex/Ufex/releases
+
 ## Features
 
 - **File Format Identification** — Automatically identifies file types using a signature-based database of magic bytes, file extensions, and MIME types. The database is defined in XML config files and can be extended without writing any code.
