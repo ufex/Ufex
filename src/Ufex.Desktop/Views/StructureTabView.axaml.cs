@@ -229,6 +229,7 @@ public partial class StructureTabView : UserControl
 
 	/// <summary>
 	/// Maps TreeViewIcon enum values to FluentIcons Symbol values.
+	/// See: https://fluenticons.co/
 	/// </summary>
 	private static Symbol MapTreeViewIcon(TreeViewIcon icon)
 	{

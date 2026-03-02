@@ -715,7 +715,19 @@ public partial class MainWindow : Window
 	// Help Menu Handlers
 	private void OnHelpClick(object? sender, RoutedEventArgs e)
 	{
-		// TODO: Open help
+		try
+		{
+			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+			{
+				FileName = "https://github.com/ufex/Ufex/wiki",
+				UseShellExecute = true
+			});
+		}
+		catch (Exception ex)
+		{
+			Logger.Error(ex, "Failed to open help URL");
+			SetStatus("Failed to open help page");
+		}
 	}
 
 	private async void OnAboutClick(object? sender, RoutedEventArgs e)

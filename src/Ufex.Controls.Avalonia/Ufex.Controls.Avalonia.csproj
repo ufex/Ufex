@@ -6,6 +6,7 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<RootNamespace>Ufex.Controls.Avalonia</RootNamespace>
 		<AssemblyName>Ufex.Controls.Avalonia</AssemblyName>
+    <Version>2.0.1.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
