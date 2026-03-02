@@ -23,3 +23,4 @@ ufex utilizes a plugin architecture to support loading .NET assemblies on the fi
 * Use PascalCase for all class, method, and property names (including const and static readonly fields)
 * Use camelCase for local variables and method parameters
 * Prefer `[ x, y, z]` format for rows instead of `new object[] { x, y, z }` because it is shorter and more readable.
+* Prefer explicit types (Int32, UInt16, etc.) when working with data read from files in file type plugins. 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using Ufex.API.Types;
 
 namespace Ufex.API;
 
@@ -142,6 +143,18 @@ public class FileReader : BinaryReader
 			return (UInt16)((_buffer[0] & 255) | (_buffer[1] << 8));
 		else
 			return (UInt16)((_buffer[0] << 8) | (_buffer[1] & 255));
+	}
+
+	/// <summary>
+	/// Reads an unsigned 24-bit integer from the current stream.
+	/// </summary>
+	public UInt24 ReadUInt24()
+	{
+		FillBuffer2(3);
+		if (_endian == Endian.Little)
+			return (UInt24)(((_buffer[0] | (_buffer[1] << 8)) | (_buffer[2] << 16)));
+		else
+			return (UInt24)(((_buffer[2] | (_buffer[1] << 8)) | (_buffer[0] << 16)));
 	}
 
 	/// <summary>

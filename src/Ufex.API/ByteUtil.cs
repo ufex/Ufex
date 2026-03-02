@@ -1,4 +1,5 @@
 ﻿using System;
+using Ufex.API.Types;
 
 namespace Ufex.API;
 
@@ -17,6 +18,7 @@ public class ByteUtil
 			sbyte => sizeof(sbyte),
 			short => sizeof(short),
 			ushort => sizeof(ushort),
+			UInt24 => 3,
 			int => sizeof(int),
 			uint => sizeof(uint),
 			long => sizeof(long),
