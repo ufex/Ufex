@@ -190,6 +190,24 @@ public class FileReader : BinaryReader
 	}
 
 	/// <summary>
+	/// Reads an unsigned integer in LEB128 format from the current stream.
+	/// </summary>
+	public Leb128UInt ReadLeb128UInt()
+	{
+		List<byte> bytes = new List<byte>();
+		while(true)
+		{
+			int b = BaseStream.ReadByte();
+			if(b == -1)
+				throw new EndOfStreamException();
+			bytes.Add((byte)b);
+			if ((b & 0x80) == 0)
+				break;
+		}
+		return new Leb128UInt(bytes.ToArray());
+	}
+
+	/// <summary>
 	/// Reads an ASCII null-terminated string from the current stream.
 	/// </summary>
 	/// <returns>String read from the stream</returns>

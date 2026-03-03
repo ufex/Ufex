@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using Ufex.API;
+using Ufex.API.Format;
+using Ufex.API.Types;
 
 namespace Ufex.API.Tests
 {
@@ -20,6 +21,8 @@ namespace Ufex.API.Tests
 			Assert.AreEqual(nf.UInt16(0x0074), "0x0074");
 			Assert.AreEqual(nf.UInt16(0x014A), "0x014A");
 			Assert.AreEqual(nf.UInt16(0x1234), "0x1234");
+			Assert.AreEqual(nf.UInt24((UInt24)0x001234u), "0x001234");
+			Assert.AreEqual(nf.UInt24((UInt24)0xABCDEFu), "0xABCDEF");
 			Assert.AreEqual(nf.UInt32(0x0004), "0x00000004");
 			Assert.AreEqual(nf.UInt32(0x0074), "0x00000074");
 			Assert.AreEqual(nf.UInt32(0x014A), "0x0000014A");
@@ -55,6 +58,7 @@ namespace Ufex.API.Tests
 			nf.Endian = Endian.Little;
 			Assert.AreEqual("0x0201", nf.UInt16(0x0102));
 			Assert.AreEqual("0x3412", nf.UInt16(0x1234));
+			Assert.AreEqual("0x030201", nf.UInt24((UInt24)0x010203u));
 			Assert.AreEqual("0x44332211", nf.UInt32(0x11223344));
 			Assert.AreEqual("0x78563412", nf.UInt32(0x12345678));
 			Assert.AreEqual("0x78560000", nf.UInt32(0x00005678));
@@ -89,6 +93,8 @@ namespace Ufex.API.Tests
 			Assert.AreEqual("0074", nf.UInt16(0x0074));
 			Assert.AreEqual("014A", nf.UInt16(0x014A));
 			Assert.AreEqual("1234", nf.UInt16(0x1234));
+			Assert.AreEqual("001234", nf.UInt24((UInt24)0x001234u));
+			Assert.AreEqual("ABCDEF", nf.UInt24((UInt24)0xABCDEFu));
 			Assert.AreEqual("00000004", nf.UInt32(0x0004));
 			Assert.AreEqual("00000074", nf.UInt32(0x0074));
 			Assert.AreEqual("0000014A", nf.UInt32(0x014A));

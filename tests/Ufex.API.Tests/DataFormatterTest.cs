@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using Ufex.API.Format;
 
 namespace Ufex.API.Tests
 {
@@ -11,19 +12,18 @@ namespace Ufex.API.Tests
 		{
 			var f = new DataFormatter();
 			f.NumFormat = NumberFormat.Decimal;
-			f.SetDecFormat(false);
-			Assert.AreEqual("{7, 34, 100}", f.ByteArray(new byte[] { 7, 34, 100 }));
-			Assert.AreEqual("{88}", f.ByteArray(new byte[] { 88 }));
+			Assert.AreEqual("[7, 34, 100]", f.ByteArray(new byte[] { 7, 34, 100 }));
+			Assert.AreEqual("[88]", f.ByteArray(new byte[] { 88 }));
 
 			f.NumFormat = NumberFormat.Hexadecimal;
 			f.HexCaps = true;
 			f.HexLeadZeros = true;
 			f.HexShowLead0X = true;
-			Assert.AreEqual("{0x58}", f.ByteArray(new byte[] { 88 }));
-			Assert.AreEqual("{0x07, 0x22, 0x64}", f.ByteArray(new byte[] { 7, 34, 100 }));
+			Assert.AreEqual("[0x58]", f.ByteArray(new byte[] { 88 }));
+			Assert.AreEqual("[0x07, 0x22, 0x64]", f.ByteArray(new byte[] { 7, 34, 100 }));
 
 			f.NumFormat = NumberFormat.Binary;
-			Assert.AreEqual("{01011000}", f.ByteArray(new byte[] { 88 }));
+			Assert.AreEqual("[01011000]", f.ByteArray(new byte[] { 88 }));
 
 		}
 
@@ -33,7 +33,6 @@ namespace Ufex.API.Tests
 		{
 			var f = new DataFormatter();
 			f.NumFormat = NumberFormat.Decimal;
-			f.SetDecFormat(false);
 			Assert.AreEqual("20", f.UInt8(20));
 			Assert.AreEqual("2500", f.UInt16(2500));
 			Assert.AreEqual("123456789", f.UInt32(123456789));
