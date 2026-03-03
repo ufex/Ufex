@@ -502,6 +502,10 @@ public partial class MainWindow : Window
 				catch (Exception ex)
 				{
 					Logger.Error(ex, "MainWindow.OpenFileAsync: Failed to load file type handler");
+					ShowError("File Type Handler Error", 
+						$"Failed to load file type handler for {detectedFileType.Description}.\n\n" +
+						$"Error: {ex.Message}\n\n" +
+						"Basic file information is still available.");
 					// Continue without the plugin - basic file info is still shown
 				}
 			}

@@ -21,7 +21,7 @@ public partial class ImageViewerControl : UserControl
 	private TextBlock? _zoomLevelText;
 	private Panel? _imageContainer;
 
-	private Bitmap? _currentBitmap;
+	private global::Avalonia.Media.Imaging.Bitmap? _currentBitmap;
 	private Size _originalImageSize;
 	private bool _isRasterImage;
 

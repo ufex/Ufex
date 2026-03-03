@@ -73,7 +73,18 @@ public partial class VisualTabView : UserControl
 				};
 				return fileMapControl;
 
+			case ByteLevelFileMapVisual byteLevelFileMap:
+				var byteLevelControl = new ByteLevelFileMapControl
+				{
+					Visual = byteLevelFileMap,
+					MinHeight = 300,
+					HorizontalAlignment = HorizontalAlignment.Stretch,
+					VerticalAlignment = VerticalAlignment.Stretch
+				};
+				return byteLevelControl;
+
 			case RasterImage rasterImage:
+			case RasterImageVisual rasterImageVisual:
 			case VectorImage vectorImage:
 				var imageViewer = new ImageViewerControl
 				{
