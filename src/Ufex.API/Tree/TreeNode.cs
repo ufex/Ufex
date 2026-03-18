@@ -24,6 +24,16 @@ public class TreeNode
 	/// </summary>
 	public virtual Ufex.API.Visual.Visual[] Visuals => [];
 
+	/// <summary>
+	/// Gets the array of visuals to display when the tree node is selected,
+	/// with access to the file context for on-the-fly data reading.
+	/// The default implementation returns the value of the <see cref="Visuals"/> property
+	/// for backwards compatibility with existing tree node subclasses.
+	/// </summary>
+	/// <param name="context">The file context providing access to the file stream and reader.</param>
+	/// <returns>An array of visuals to display for this node.</returns>
+	public virtual Ufex.API.Visual.Visual[] GetVisuals(IFileContext context) => Visuals;
+
 	public TreeNode()
 	{
 		Text = string.Empty;

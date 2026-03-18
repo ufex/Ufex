@@ -277,7 +277,8 @@ public partial class StructureTabView : UserControl
 
 		try
 		{
-			var visuals = selectedItem.SourceNode.Visuals;
+			var context = new FileContext(_fileType.FileInStream, _fileType.NumFormat);
+			var visuals = selectedItem.SourceNode.GetVisuals(context);
 			LoadVisuals(visuals);
 		}
 		catch (Exception ex)
@@ -661,7 +662,8 @@ public partial class StructureTabView : UserControl
 
 		try
 		{
-			var visuals = selectedItem.SourceNode.Visuals;
+			var context = new FileContext(_fileType.FileInStream, _fileType.NumFormat);
+			var visuals = selectedItem.SourceNode.GetVisuals(context);
 			LoadVisuals(visuals);
 		}
 		catch
