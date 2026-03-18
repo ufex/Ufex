@@ -49,7 +49,7 @@ public partial class ByteLevelFileMapControl : UserControl
 	private const double OffsetAxisReservedWidth = 100;
 
 	private static readonly int[] RowWidthOptions = [64, 128, 256, 512, 1024, 2048];
-	private static readonly double[] ZoomOptions = [0.50, 0.75, 1.00, 1.50, 2.00];
+	private static readonly double[] ZoomOptions = [0.50, 0.75, 1.00, 1.50, 2.00, 2.50, 3.00, 4.00, 5.00];
 
 	private WriteableBitmap? _bitmap;
 	private OffsetAxisControl? _offsetAxis;
@@ -381,7 +381,7 @@ public partial class ByteLevelFileMapControl : UserControl
 	private static Color ResolveColor(uint? labelColor, int index)
 	{
 		if (labelColor.HasValue)
-			return Color.FromUInt32(labelColor.Value);
+			return Color.FromUInt32(0xFF000000 | labelColor.Value); // Ensure alpha is set to 255 (no transparency)
 
 		return DefaultPalette[index % DefaultPalette.Length];
 	}
@@ -400,17 +400,6 @@ public partial class ByteLevelFileMapControl : UserControl
 			totalRead += read;
 		}
 		return totalRead;
-	}
-
-	private static string FormatSize(ulong bytes)
-	{
-		if (bytes < 1024)
-			return $"{bytes} B";
-		if (bytes < 1024 * 1024)
-			return $"{bytes / 1024.0:F1} KB";
-		if (bytes < 1024 * 1024 * 1024)
-			return $"{bytes / (1024.0 * 1024.0):F1} MB";
-		return $"{bytes / (1024.0 * 1024.0 * 1024.0):F2} GB";
 	}
 
 	/// <summary>

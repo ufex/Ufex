@@ -24,6 +24,10 @@
 					<ComboBoxItem Content="100%" />
 					<ComboBoxItem Content="150%" />
 					<ComboBoxItem Content="200%" />
+					<ComboBoxItem Content="250%" />
+					<ComboBoxItem Content="300%" />
+					<ComboBoxItem Content="400%" />
+					<ComboBoxItem Content="500%" />
 				</ComboBox>
 			</StackPanel>
 		</StackPanel>

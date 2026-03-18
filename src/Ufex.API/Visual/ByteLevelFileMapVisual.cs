@@ -18,6 +18,7 @@ public class ByteLevelFileMapVisual : Visual
 		/// <summary>
 		/// The color associated with this label, represented as a 32-bit unsigned 
 		/// integer in ARGB format (e.g., 0xFFFF0000 for opaque red).
+		/// The alpha component is ignored and treated as 255 (fully opaque).
 		/// Leave null to use a default color palette.
 		/// </summary>
 		public uint? Color { get; set; }
