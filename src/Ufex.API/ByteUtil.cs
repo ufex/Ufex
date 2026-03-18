@@ -83,6 +83,7 @@ public class ByteUtil
 	{ 
 		return ((v & (Byte)(1 << p)) != 0); 
 	}
+
 	/// <summary>
 	/// Get a bit from a UInt16
 	/// </summary>
