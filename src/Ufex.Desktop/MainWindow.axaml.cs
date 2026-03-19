@@ -330,43 +330,47 @@ public partial class MainWindow : Window
 			if (_fileTypeManager != null)
 			{
 				var fileTypeManager = _fileTypeManager;
-				var result = await Task.Run(() =>
+				FileTypeRecord[]? detectedTypes = await Task.Run(() =>
 				{
 					try
 					{
-						var detectedTypes = fileTypeManager.DetectFileType(filePath);
-						if(detectedTypes.Length == 1)
-						{
-							var detected = detectedTypes[0];
-							Logger.Info($"Detected file type: {detected.ID} - {detected.Description}");
-							return (detected, detected.Description);
-						}
-						else if(detectedTypes.Length > 1)
-						{
-							Logger.Info($"Multiple file types detected ({detectedTypes.Length}):");
-							foreach(var dt in detectedTypes)
-							{
-								Logger.Info($" - {dt.ID} - {dt.Description}");
-							}
-							// TODO: display a dialog box to let the user choose
-							// Just return the first one for now
-							var detected = detectedTypes[0];
-							return (detected, detected.Description);
-						}
-						else
-						{
-							Logger.Info("File type detection returned null");
-							return ((FileTypeRecord?)null, "Unknown File Type");
-						}
+						return fileTypeManager.DetectFileType(filePath);
 					}
 					catch (Exception ex)
 					{
 						Logger.Error(ex, $"File type detection failed: {ex.Message}");
-						return ((FileTypeRecord?)null, "Unknown File Type");
+						return null;
 					}
 				});
-				detectedFileType = result.Item1;
-				fileTypeDescription = result.Item2;
+
+				if (detectedTypes != null && detectedTypes.Length == 1)
+				{
+					detectedFileType = detectedTypes[0];
+					Logger.Info($"Detected file type: {detectedFileType.ID} - {detectedFileType.Description}");
+				}
+				else if (detectedTypes != null && detectedTypes.Length > 1)
+				{
+					Logger.Info($"Multiple file types detected ({detectedTypes.Length}):");
+					foreach (var dt in detectedTypes)
+					{
+						Logger.Info($" - {dt.ID} - {dt.Description}");
+					}
+
+					detectedFileType = ResolveMultipleFileTypes(detectedTypes);
+
+					// If hierarchy/no-plugin checks didn't resolve it, show selection dialog
+					if (detectedFileType == null)
+					{
+						var selectionWindow = new FileTypeSelectionWindow(detectedTypes, fileTypeManager);
+						detectedFileType = await selectionWindow.ShowDialog<FileTypeRecord?>(this);
+					}
+				}
+				else
+				{
+					Logger.Info("File type detection returned null");
+				}
+
+				fileTypeDescription = detectedFileType?.Description ?? "Unknown File Type";
 			}
 
 			// Step 6: Display the file type on the Info tab (UI thread)
@@ -430,9 +434,9 @@ public partial class MainWindow : Window
 
 							// Step 11: Toggle visible tabs based on file type settings (UI thread)
 							SetTabVisibility(
-								_currentFileType.ShowGraphic,      // Visual tab
-								_currentFileType.ShowTechnical,    // Structure tab
-								_currentFileType.ShowFileCheck     // Validation tab
+								_currentFileType.EnableVisual,      // Visual tab
+								_currentFileType.EnableStructure,    // Structure tab
+								_currentFileType.EnableValidation     // Validation tab
 							);
 
 							// Step 12: Set number format on the file type instance
@@ -529,6 +533,50 @@ public partial class MainWindow : Window
 	{
 		// Fire and forget - for backwards compatibility
 		_ = OpenFileAsync(filePath);
+	}
+
+	/// <summary>
+	/// Resolves multiple detected file types without user interaction when possible.
+	/// Returns the resolved file type, or null if a user selection dialog is needed.
+	/// </summary>
+	private FileTypeRecord? ResolveMultipleFileTypes(FileTypeRecord[] detectedTypes)
+	{
+		// Rule 1: If the types form a parent/child hierarchy (2-3 types), pick the most specific (first).
+		if (detectedTypes.Length <= 3 && IsParentChildHierarchy(detectedTypes))
+		{
+			Logger.Info($"File types form a parent/child hierarchy, selecting most specific: {detectedTypes[0].ID}");
+			return detectedTypes[0];
+		}
+
+		// Rule 2: If none of the types have a plugin handler, pick the first (most specific).
+		if (_fileTypeManager != null && !detectedTypes.Any(ft => _fileTypeManager.GetFileTypeClassesByFileType(ft.ID).Length > 0))
+		{
+			Logger.Info($"No file types have plugin handlers, selecting first: {detectedTypes[0].ID}");
+			return detectedTypes[0];
+		}
+
+		// Rule 3: Need user selection
+		return null;
+	}
+
+	/// <summary>
+	/// Checks whether the detected file types form a single parent/child chain.
+	/// The array is expected to be sorted by specificity (most specific first).
+	/// </summary>
+	private static bool IsParentChildHierarchy(FileTypeRecord[] types)
+	{
+		if (types.Length < 2)
+			return false;
+
+		// Walk the chain: each type (except the last) should have its ParentID
+		// equal to the next type's ID.
+		for (int i = 0; i < types.Length - 1; i++)
+		{
+			if (string.IsNullOrEmpty(types[i].ParentID) || types[i].ParentID != types[i + 1].ID)
+				return false;
+		}
+
+		return true;
 	}
 
 	/// <summary>

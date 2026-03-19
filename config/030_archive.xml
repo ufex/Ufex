@@ -5,14 +5,16 @@
 			<ID>ARCH_7Z</ID>
 			<Description>7z Archive File</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/x-7z-compressed</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-7z-compressed</MIMEType>
+			</MIMETypes>
 			<Wikipedia>7z</Wikipedia>
 			<Extensions>
-				<Extension>7Z</Extension>
+				<Extension>7z</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x377ABCAF271C</Pattern>
+					<Rule type="bytes" offset="0">0x377ABCAF271C</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -20,14 +22,16 @@
 			<ID>ARCH_BZIP2</ID>
 			<Description>bzip2 Archive File</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/x-bzip2</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-bzip2</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Bzip2</Wikipedia>
 			<Extensions>
 				<Extension>bz2</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x425A683931</Pattern>
+					<Rule type="bytes" offset="0">0x425A683931</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -35,14 +39,16 @@
 			<ID>ARCH_CAB</ID>
 			<Description>Microsoft Cabinent File</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/x-cab-compressed</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-cab-compressed</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Cabinet_%28file_format%29</Wikipedia>
 			<Extensions>
-				<Extension>CAB</Extension>
+				<Extension>cab</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x4D534346</Pattern>
+					<Rule type="bytes" offset="0">0x4D534346</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -50,14 +56,16 @@
 			<ID>ARCH_GZIP</ID>
 			<Description>GNU Zip File</Description>
 			<Category>Archive</Category>
-			<MIMEType/>
+			<MIMETypes>
+				<MIMEType>application/gzip</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Gzip</Wikipedia>
 			<Extensions>
-				<Extension>GZ</Extension>
+				<Extension>gz</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x1F8B08</Pattern>
+					<Rule type="bytes" offset="0">0x1F8B08</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -65,14 +73,16 @@
 			<ID>ARCH_RAR</ID>
 			<Description>RAR Archive File</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/x-rar-compressed</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-rar-compressed</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Rar</Wikipedia>
 			<Extensions>
-				<Extension>RAR</Extension>
+				<Extension>rar</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">Rar!</Pattern>
+					<Rule type="string" offset="0">Rar!</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -80,24 +90,28 @@
 			<ID>ARCH_TAR</ID>
 			<Description>TAR Archive File</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/x-tar</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-tar</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Tar_%28file_format%29</Wikipedia>
 			<Extensions>
-				<Extension>TAR</Extension>
+				<Extension>tar</Extension>
 			</Extensions>
 		</FileType>
 		<FileType>
 			<ID>ARCH_ZIP</ID>
 			<Description>ZIP Archive File</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/zip</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/zip</MIMEType>
+			</MIMETypes>
 			<Wikipedia>ZIP_file_format</Wikipedia>
 			<Extensions>
-				<Extension>ZIP</Extension>
+				<Extension>zip</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x504B0304</Pattern>
+					<Rule type="bytes" offset="0">0x504B0304</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -105,7 +119,9 @@
 			<ID>ARCH_XZ</ID>
 			<Description>XZ Compressed Archive</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/x-xz</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-xz</MIMEType>
+			</MIMETypes>
 			<Wikipedia>XZ_Utils</Wikipedia>
 			<Extensions>
 				<Extension>xz</Extension>
@@ -113,7 +129,7 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0xFD377A585A00</Pattern>
+					<Rule type="bytes" offset="0">0xFD377A585A00</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -121,7 +137,9 @@
 			<ID>ARCH_ZSTD</ID>
 			<Description>Zstandard Compressed Archive</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/zstd</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/zstd</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Zstd</Wikipedia>
 			<Extensions>
 				<Extension>zst</Extension>
@@ -129,7 +147,7 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x28B52FFD</Pattern>
+					<Rule type="bytes" offset="0">0x28B52FFD</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -137,7 +155,9 @@
 			<ID>ARCH_LZH</ID>
 			<Description>LZH/LHA Compressed Archive</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/x-lzh-compressed</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-lzh-compressed</MIMEType>
+			</MIMETypes>
 			<Wikipedia>LHA_(file_format)</Wikipedia>
 			<Extensions>
 				<Extension>lzh</Extension>
@@ -145,7 +165,7 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="2">-lh</Pattern>
+					<Rule type="string" offset="2">-lh</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -153,14 +173,16 @@
 			<ID>ARCH_ISO</ID>
 			<Description>ISO 9660 Disc Image</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/x-iso9660-image</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-iso9660-image</MIMEType>
+			</MIMETypes>
 			<Wikipedia>ISO_9660</Wikipedia>
 			<Extensions>
 				<Extension>iso</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="32769">CD001</Pattern>
+					<Rule type="string" offset="32769">CD001</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -168,14 +190,16 @@
 			<ID>ARCH_LZMA</ID>
 			<Description>LZMA Compressed Archive</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/x-lzma</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-lzma</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Lempel%E2%80%93Ziv%E2%80%93Markov_chain_algorithm</Wikipedia>
 			<Extensions>
 				<Extension>lzma</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x5D0000</Pattern>
+					<Rule type="bytes" offset="0">0x5D0000</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -183,14 +207,16 @@
 			<ID>ARCH_DMG</ID>
 			<Description>Apple Disk Image</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/x-apple-diskimage</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-apple-diskimage</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Apple_Disk_Image</Wikipedia>
 			<Extensions>
 				<Extension>dmg</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x7801730D626260</Pattern>
+					<Rule type="bytes" offset="0">0x7801730D626260</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -198,15 +224,17 @@
 			<ID>ARCH_DEB</ID>
 			<Description>Debian Package</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/vnd.debian.binary-package</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/vnd.debian.binary-package</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Deb_(file_format)</Wikipedia>
 			<Extensions>
 				<Extension>deb</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">!&lt;arch&gt;</Pattern>
-					<Pattern xsi:type="string" offset="8">debian</Pattern>
+					<Rule type="string" offset="0">!&lt;arch&gt;</Rule>
+					<Rule type="string" offset="8">debian</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -214,14 +242,16 @@
 			<ID>ARCH_RPM</ID>
 			<Description>Red Hat Package Manager</Description>
 			<Category>Archive</Category>
-			<MIMEType>application/x-rpm</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-rpm</MIMEType>
+			</MIMETypes>
 			<Wikipedia>RPM_Package_Manager</Wikipedia>
 			<Extensions>
 				<Extension>rpm</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0xEDABEEDB</Pattern>
+					<Rule type="bytes" offset="0">0xEDABEEDB</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>

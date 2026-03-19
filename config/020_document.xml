@@ -5,23 +5,23 @@
 			<ID>DOCS_CHM</ID>
 			<Description>Compiled HTML Help File</Description>
 			<Category>Document</Category>
-			<MIMEType/>
 			<Wikipedia>Microsoft_Compressed_HTML_Help</Wikipedia>
 			<Extensions>
 				<Extension>chm</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x49545346</Pattern>
+					<Rule type="bytes" offset="0">0x49545346</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
 			<ID>DOCS_MSPPT</ID>
 			<Description>Microsoft PowerPoint Document</Description>
-			<Category/>
-			<MIMEType>application/vnd.ms-powerpoint</MIMEType>
-			<Wikipedia/>
+			<Category>Document</Category>
+			<MIMETypes>
+				<MIMEType>application/vnd.ms-powerpoint</MIMEType>
+			</MIMETypes>
 			<Extensions>
 				<Extension>ppt</Extension>
 			</Extensions>
@@ -30,8 +30,10 @@
 			<ID>DOCS_MSWORD</ID>
 			<Description>Microsoft Word Document</Description>
 			<Category>Document</Category>
-			<MIMEType>application/msword</MIMEType>
-			<Wikipedia/>
+			<MIMETypes>
+				<MIMEType>application/msword</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Microsoft_Word</Wikipedia>
 			<Extensions>
 				<Extension>doc</Extension>
 			</Extensions>
@@ -40,8 +42,7 @@
 			<ID>DOCS_MSWORDTMP</ID>
 			<Description>Microsoft Word Template</Description>
 			<Category>Document</Category>
-			<MIMEType/>
-			<Wikipedia/>
+			<Wikipedia>Microsoft_Word</Wikipedia>
 			<Extensions>
 				<Extension>dot</Extension>
 			</Extensions>
@@ -49,9 +50,10 @@
 		<FileType>
 			<ID>DOCS_MSXLS</ID>
 			<Description>Microsoft Excel Document</Description>
-			<Category>Spreadsheet</Category>
-			<MIMEType>application/vnd.ms-excel</MIMEType>
-			<Wikipedia/>
+			<Category>Document</Category>
+			<MIMETypes>
+				<MIMEType>application/vnd.ms-excel</MIMEType>
+			</MIMETypes>
 			<Extensions>
 				<Extension>xls</Extension>
 			</Extensions>
@@ -60,14 +62,16 @@
 			<ID>DOCS_PORTDOCFORM</ID>
 			<Description>Portable Document Format</Description>
 			<Category>Document</Category>
-			<MIMEType>application/pdf</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/pdf</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Pdf</Wikipedia>
 			<Extensions>
 				<Extension>pdf</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x25504446</Pattern>
+					<Rule type="bytes" offset="0">0x25504446</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -75,7 +79,9 @@
 			<ID>DOCS_POSTSCRIPT</ID>
 			<Description>PostScript</Description>
 			<Category>Document</Category>
-			<MIMEType>application/postscript</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/postscript</MIMEType>
+			</MIMETypes>
 			<Wikipedia>PostScript</Wikipedia>
 			<Extensions>
 				<Extension>ps</Extension>
@@ -85,24 +91,28 @@
 			<ID>DOCS_VISIO</ID>
 			<Description>Microsoft Visio Drawing</Description>
 			<Category>Document</Category>
-			<MIMEType/>
-			<Wikipedia/>
+			<MIMETypes>
+				<MIMEType>application/vnd.visio</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Microsoft_Visio</Wikipedia>
 			<Extensions>
-				<Extension/>
+				<Extension>vsd</Extension>
 			</Extensions>
 		</FileType>
 		<FileType>
 			<ID>DOCS_WINHELP</ID>
 			<Description>Windows Help File</Description>
 			<Category>Document</Category>
-			<MIMEType/>
-			<Wikipedia/>
+			<MIMETypes>
+				<MIMEType>application/vnd.ms-htmlhelp</MIMEType>
+			</MIMETypes>
+			<Wikipedia>WinHelp</Wikipedia>
 			<Extensions>
 				<Extension>hlp</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x3F5F0300</Pattern>
+					<Rule type="bytes" offset="0">0x3F5F0300</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -110,14 +120,16 @@
 			<ID>TEXT_RTF</ID>
 			<Description>Rich Text File</Description>
 			<Category>Text</Category>
-			<MIMEType>text/rtf</MIMEType>
+			<MIMETypes>
+				<MIMEType>text/rtf</MIMEType>
+			</MIMETypes>
 			<Wikipedia>RTF</Wikipedia>
 			<Extensions>
 				<Extension>rtf</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">{\rtf</Pattern>
+					<Rule type="string" offset="0">{\rtf</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>

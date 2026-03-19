@@ -30,14 +30,6 @@ namespace Ufex.FileType
 			lib3.libId = 3;
 			lib3.assemblyPath = "Ufex.FileType.dll";
 			lib3.fullTypeName = "Ufex.FileType.Classifiers.ExtensionClassifier";
-			//ID_LIB lib1 = new ID_LIB();
-			//lib1.libId = 0;
-			//lib1.assemblyPath = "UFEIDFileType.dll";
-			//lib1.fullTypeName = "UniversalFileExplorer.IDFileType";
-			//ID_LIB lib2 = new ID_LIB();
-			//lib2.libId = 1;
-			//lib2.assemblyPath = "UFEIDFileType.dll";
-			//lib2.fullTypeName = "UniversalFileExplorer.ExtensionID";
 
 			return new ID_LIB[2]
 			{

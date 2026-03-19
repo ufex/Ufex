@@ -3,24 +3,28 @@
 	<FileTypes>
 		<FileType>
 			<ID>TEXT_XML</ID>
-			<Description>XML File</Description>
+			<Description>XML</Description>
 			<Category>Text</Category>
-			<MIMEType>application/xml</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/xml</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Xml</Wikipedia>
 			<Extensions>
 				<Extension>xml</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0" range="8">&lt;?xml </Pattern>
+					<SearchRule type="string" offset="0" maxLength="8">&lt;?xml </SearchRule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
 			<ID>TEXT_JSON</ID>
-			<Description>JSON File</Description>
+			<Description>JSON</Description>
 			<Category>Text</Category>
-			<MIMEType>application/json</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/json</MIMEType>
+			</MIMETypes>
 			<Wikipedia>JSON</Wikipedia>
 			<Extensions>
 				<Extension>json</Extension>
@@ -28,9 +32,11 @@
 		</FileType>
 		<FileType>
 			<ID>TEXT_INI</ID>
-			<Description>INI Configuration File</Description>
+			<Description>INI Configuration</Description>
 			<Category>Text</Category>
-			<MIMEType>text/plain</MIMEType>
+			<MIMETypes>
+				<MIMEType>text/plain</MIMEType>
+			</MIMETypes>
 			<Wikipedia>INI_file</Wikipedia>
 			<Extensions>
 				<Extension>ini</Extension>

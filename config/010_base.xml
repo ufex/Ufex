@@ -11,7 +11,7 @@
 			<Wikipedia>Resource_Interchange_File_Format</Wikipedia>
 			<Signatures>
 				<Signature minSize="12">
-					<Pattern xsi:type="string" offset="0">RIFF</Pattern>
+					<Rule type="string" offset="0">RIFF</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -25,7 +25,7 @@
 			<Wikipedia>Compound_File_Binary_Format</Wikipedia>
 			<Signatures>
 				<Signature minSize="512">
-					<Pattern xsi:type="bytes" offset="0">0xD0CF11E0A1B11AE1</Pattern>
+					<Rule type="bytes" offset="0">0xD0CF11E0A1B11AE1</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>

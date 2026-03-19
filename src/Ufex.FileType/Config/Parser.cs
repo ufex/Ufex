@@ -5,12 +5,28 @@ namespace Ufex.FileType.Config
 {
 	class Parser
 	{
+		private static string NormalizeNumber(string value, out NumberStyles style)
+		{
+			if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+			{
+				style = NumberStyles.HexNumber;
+				return value.Substring(2);
+			}
+
+			style = NumberStyles.Integer;
+			return value;
+		}
+
 		// TODO: Convert.FromHexString
 		public static byte[] ByteArray(string input)
 		{
 			byte[] output;
-			if (input.StartsWith("0x"))
+			if (input.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
 			{
+				if (input.StartsWith("0X", StringComparison.Ordinal))
+				{
+					input = "0x" + input.Substring(2);
+				}
 				input = input.Replace("0x", "").Replace(" ", "");
 				int outputLength = input.Length / 2;
 				output = new byte[outputLength];
@@ -35,17 +51,44 @@ namespace Ufex.FileType.Config
 
 		public static Byte Byte(string value)
 		{
-			return byte.Parse(value.Replace("0x", ""), value.StartsWith("0x") ? NumberStyles.HexNumber : NumberStyles.Integer);
+			string normalized = NormalizeNumber(value, out NumberStyles style);
+			return byte.Parse(normalized, style);
+		}
+
+		public static Int16 Int16(string value)
+		{
+			string normalized = NormalizeNumber(value, out NumberStyles style);
+			return System.Int16.Parse(normalized, style);
+		}
+
+		public static UInt16 UInt16(string value)
+		{
+			string normalized = NormalizeNumber(value, out NumberStyles style);
+			return System.UInt16.Parse(normalized, style);
+		}
+
+		public static Int32 Int32(string value)
+		{
+			string normalized = NormalizeNumber(value, out NumberStyles style);
+			return System.Int32.Parse(normalized, style);
 		}
 
 		public static UInt32 UInt32(string value)
 		{
-			return System.UInt32.Parse(value.Replace("0x", ""), value.StartsWith("0x") ? NumberStyles.HexNumber : NumberStyles.Integer);
+			string normalized = NormalizeNumber(value, out NumberStyles style);
+			return System.UInt32.Parse(normalized, style);
+		}
+
+		public static Int64 Int64(string value)
+		{
+			string normalized = NormalizeNumber(value, out NumberStyles style);
+			return System.Int64.Parse(normalized, style);
 		}
 
 		public static UInt64 UInt64(string value)
 		{
-			return System.UInt64.Parse(value.Replace("0x", ""), value.StartsWith("0x") ? NumberStyles.HexNumber : NumberStyles.Integer);
+			string normalized = NormalizeNumber(value, out NumberStyles style);
+			return System.UInt64.Parse(normalized, style);
 		}
 	}
 }

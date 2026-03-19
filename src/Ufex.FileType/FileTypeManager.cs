@@ -83,7 +83,7 @@ public class FileTypeManager
 	{
 		Logger = new Logger("FileType.log");
 
-		ApplicationPath = string.Copy(applicationPath);
+		ApplicationPath = applicationPath;
 		ConfigDirectories = (string[])configDirectories.Clone();
 
 		assemblyCache = new ArrayList();

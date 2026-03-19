@@ -108,9 +108,13 @@
                         <!-- Signatures (Future) -->
                         <StackPanel Spacing="4">
                             <TextBlock Text="Signatures:" FontWeight="SemiBold" />
-                            <TextBlock Text="(Future feature)" 
-                                       Foreground="Gray" 
-                                       FontStyle="Italic" />
+                            <TextBox x:Name="SignaturesTextBox"
+                                     IsReadOnly="True"
+                                     AcceptsReturn="True"
+                                     TextWrapping="Wrap"
+                                     MinHeight="140"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     Background="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>

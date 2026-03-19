@@ -2,20 +2,20 @@
 <Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<FileTypes>
 		<FileType>
-			<ID>AUDI_AIFF</ID>
+			<ID>AUDIO_AIFF</ID>
 			<Description>Audio Interchange File Format</Description>
 			<Category>Audio</Category>
-			<MIMEType/>
-			<Wikipedia/>
 			<Extensions>
 				<Extension>aiff</Extension>
 			</Extensions>
 		</FileType>
 		<FileType>
-			<ID>AUDI_MP3</ID>
+			<ID>AUDIO_MP3</ID>
 			<Description>MPEG Layer-3 Audio File</Description>
 			<Category>Audio</Category>
-			<MIMEType>audio/mpeg</MIMEType>
+			<MIMETypes>
+				<MIMEType>audio/mpeg</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Mp3</Wikipedia>
 			<Extensions>
 				<Extension>mp3</Extension>
@@ -34,8 +34,8 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="4">ftyp</Pattern>
-					<Pattern xsi:type="string" offset="8">M4A </Pattern>
+					<Rule type="string" offset="4">ftyp</Rule>
+					<Rule type="string" offset="8">M4A </Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -52,58 +52,66 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="4">ftyp</Pattern>
-					<Pattern xsi:type="string" offset="8">M4B </Pattern>
+					<Rule type="string" offset="4">ftyp</Rule>
+					<Rule type="string" offset="8">M4B </Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>AUDI_WAVE</ID>
+			<ID>AUDIO_WAVE</ID>
 			<ParentID>BASE_RIFF</ParentID>
 			<Description>Waveform Audio File</Description>
 			<Category>Audio</Category>
-			<MIMEType>audio/x-wav</MIMEType>
+			<MIMETypes>
+				<MIMEType>audio/x-wav</MIMEType>
+			</MIMETypes>
 			<Wikipedia/>
 			<Extensions>
 				<Extension>wav</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">RIFF</Pattern>
-					<Pattern xsi:type="string" offset="8">WAVE</Pattern>
+					<Rule type="string" offset="0">RIFF</Rule>
+					<Rule type="string" offset="8">WAVE</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>AUDI_WMA</ID>
+			<ID>AUDIO_WMA</ID>
 			<Description>Windows Media Audio</Description>
 			<Category>Audio</Category>
-			<MIMEType/>
+			<MIMETypes>
+				<MIMEType>audio/x-ms-wma</MIMEType>
+			</MIMETypes>
 			<Wikipedia/>
 			<Extensions>
 				<Extension>wma</Extension>
 			</Extensions>
 		</FileType>
 		<FileType>
-			<ID>AUDI_OGGVORB</ID>
+			<ID>AUDIO_OGGVORB</ID>
 			<Description>OGG Vorbis Audio File</Description>
 			<Category>Audio</Category>
-			<MIMEType>application/ogg</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/ogg</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Ogg</Wikipedia>
 			<Extensions>
 				<Extension>ogg</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">Ogg</Pattern>
+					<Rule type="string" offset="0">Ogg</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>AUDI_MIDI</ID>
+			<ID>AUDIO_MIDI</ID>
 			<Description>MIDI Audio File</Description>
 			<Category>Audio</Category>
-			<MIMEType>audio/midi</MIMEType>
+			<MIMETypes>
+				<MIMEType>audio/midi</MIMEType>
+			</MIMETypes>
 			<Wikipedia/>
 			<Extensions>
 				<Extension>mid</Extension>
@@ -111,85 +119,97 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x4D546864</Pattern>
+					<Rule type="bytes" offset="0">0x4D546864</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>AUDI_FLAC</ID>
+			<ID>AUDIO_FLAC</ID>
 			<Description>Free Lossless Audio Codec</Description>
 			<Category>Audio</Category>
-			<MIMEType>audio/flac</MIMEType>
+			<MIMETypes>
+				<MIMEType>audio/flac</MIMEType>
+			</MIMETypes>
 			<Wikipedia>FLAC</Wikipedia>
 			<Extensions>
 				<Extension>flac</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">fLaC</Pattern>
+					<Rule type="string" offset="0">fLaC</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>AUDI_AAC</ID>
+			<ID>AUDIO_AAC</ID>
 			<Description>Advanced Audio Coding</Description>
 			<Category>Audio</Category>
-			<MIMEType>audio/aac</MIMEType>
+			<MIMETypes>
+				<MIMEType>audio/aac</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Advanced_Audio_Coding</Wikipedia>
 			<Extensions>
 				<Extension>aac</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">ADIF</Pattern>
+					<Rule type="string" offset="0">ADIF</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>AUDI_AC3</ID>
+			<ID>AUDIO_AC3</ID>
 			<Description>Dolby Digital AC-3 Audio</Description>
 			<Category>Audio</Category>
-			<MIMEType>audio/ac3</MIMEType>
+			<MIMETypes>
+				<MIMEType>audio/ac3</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Dolby_Digital</Wikipedia>
 			<Extensions>
 				<Extension>ac3</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x0B77</Pattern>
+					<Rule type="bytes" offset="0">0x0B77</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>AUDI_DTS</ID>
+			<ID>AUDIO_DTS</ID>
 			<Description>DTS Digital Surround Audio</Description>
 			<Category>Audio</Category>
-			<MIMEType>audio/vnd.dts</MIMEType>
+			<MIMETypes>
+				<MIMEType>audio/vnd.dts</MIMEType>
+			</MIMETypes>
 			<Wikipedia>DTS_(company)</Wikipedia>
 			<Extensions>
 				<Extension>dts</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x7FFE8001</Pattern>
+					<Rule type="bytes" offset="0">0x7FFE8001</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>AUDI_MP2</ID>
+			<ID>AUDIO_MP2</ID>
 			<Description>MPEG Layer-2 Audio File</Description>
 			<Category>Audio</Category>
-			<MIMEType>audio/mpeg</MIMEType>
+			<MIMETypes>
+				<MIMEType>audio/mpeg</MIMEType>
+			</MIMETypes>
 			<Wikipedia>MPEG-1_Audio_Layer_II</Wikipedia>
 			<Extensions>
 				<Extension>mp2</Extension>
 			</Extensions>
 		</FileType>
 		<FileType>
-			<ID>AUDI_3GP</ID>
+			<ID>AUDIO_3GP</ID>
 			<Description>3GPP Multimedia Audio</Description>
 			<Category>Audio</Category>
-			<MIMEType>audio/3gpp</MIMEType>
+			<MIMETypes>
+				<MIMEType>audio/3gpp</MIMEType>
+			</MIMETypes>
 			<Wikipedia>3GP_and_3G2</Wikipedia>
 			<Extensions>
 				<Extension>3gp</Extension>
@@ -197,7 +217,7 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="4">ftyp3gp</Pattern>
+					<Rule type="string" offset="4">ftyp3gp</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>

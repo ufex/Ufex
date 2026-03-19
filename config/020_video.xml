@@ -6,15 +6,17 @@
 			<ParentID>BASE_RIFF</ParentID>
 			<Description>Audio Video Interleave</Description>
 			<Category>Video</Category>
-			<MIMEType>video/x-msvideo</MIMEType>
+			<MIMETypes>
+				<MIMEType>video/x-msvideo</MIMEType>
+			</MIMETypes>
 			<Wikipedia/>
 			<Extensions>
 				<Extension>avi</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">RIFF</Pattern>
-					<Pattern xsi:type="string" offset="8">AVI </Pattern>
+					<Rule type="string" offset="0">RIFF</Rule>
+					<Rule type="string" offset="8">AVI </Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -22,23 +24,25 @@
 			<ID>VIDEO_QUICKTIME</ID>
 			<Description>Quicktime Video</Description>
 			<Category>Video</Category>
-			<MIMEType>video/quicktime</MIMEType>
+			<MIMETypes>
+				<MIMEType>video/quicktime</MIMEType>
+			</MIMETypes>
 			<Wikipedia/>
 			<Extensions>
 				<Extension>mov</Extension>
 			</Extensions>
 		</FileType>
+		<FileType>
+			<ID>VIDEO_M2TS</ID>
+			<Description>BDAV MPEG-2 Transport Stream</Description>
+			<Category>Video</Category>
+			<MIMETypes>
+				<MIMEType>video/MP2T</MIMEType>
+			</MIMETypes>
+			<Wikipedia>.m2ts</Wikipedia>
+			<Extensions>
+				<Extension>m2ts</Extension>
+			</Extensions>
+		</FileType>
 	</FileTypes>
-	<FileType>
-		<ID>VIDEO_M2TS</ID>
-		<Description>BDAV MPEG-2 Transport Stream</Description>
-		<Category>Video</Category>
-		<MIMETypes>
-			<MIMEType>video/MP2T</MIMEType>
-		</MIMETypes>
-		<Wikipedia>.m2ts</Wikipedia>
-		<Extensions>
-			<Extension>m2ts</Extension>
-		</Extensions>
-	</FileType>
 </Ufex>

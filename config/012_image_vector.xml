@@ -4,75 +4,82 @@
 		<FileType>
 			<ID>GRPH_SVG</ID>
 			<Description>Scalable Vector Graphics</Description>
-			<Category>Graphic</Category>
-			<MIMEType>image/svg+xml</MIMEType>
+			<Category>Image</Category>
+			<MIMETypes>
+				<MIMEType>image/svg+xml</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Scalable_Vector_Graphics</Wikipedia>
 			<Extensions>
 				<Extension>svg</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">&lt;?xml</Pattern>
-					<Pattern xsi:type="string" offset="19" range="4096">&lt;svg </Pattern>
+					<Rule type="string" offset="0">&lt;?xml</Rule>
+					<SearchRule type="string" offset="19" maxLength="4096">&lt;svg </SearchRule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>APPS_AI</ID>
+			<ID>GRPH_AI</ID>
 			<Description>Adobe Illustrator File</Description>
-			<Category>Graphic</Category>
-			<MIMEType>application/illustrator</MIMEType>
-			<Wikipedia/>
+			<Category>Image</Category>
+			<MIMETypes>
+				<MIMEType>application/illustrator</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Adobe_Illustrator</Wikipedia>
 			<Extensions>
-				<Extension>AI</Extension>
+				<Extension>ai</Extension>
 			</Extensions>
 		</FileType>
 		<FileType>
 			<ID>GRPH_WMF</ID>
 			<Description>Windows Metafile</Description>
-			<Category>Graphic</Category>
-			<MIMEType>image/x-wmf</MIMEType>
-			<Wikipedia/>
+			<Category>Image</Category>
+			<MIMETypes>
+				<MIMEType>image/x-wmf</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Windows_Metafile</Wikipedia>
 			<Extensions>
 				<Extension>wmf</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature minSize="25">
-					<Pattern xsi:type="bytes" offset="0">0xD7CDC69A</Pattern>
+					<Rule type="bytes" offset="0">0xD7CDC69A</Rule>
 				</Signature>
 				<Signature minSize="25">
-					<Pattern xsi:type="bytes" offset="0">0x0100009</Pattern>
-					<Pattern xsi:type="bytes" offset="16">0x0000</Pattern>
+					<Rule type="bytes" offset="0">0x0100009</Rule>
+					<Rule type="bytes" offset="16">0x0000</Rule>
 				</Signature>
 				<Signature minSize="25">
-					<Pattern xsi:type="bytes" offset="0">0x0200009</Pattern>
-					<Pattern xsi:type="bytes" offset="16">0x0000</Pattern>
+					<Rule type="bytes" offset="0">0x0200009</Rule>
+					<Rule type="bytes" offset="16">0x0000</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
 			<ID>GRPH_CGM</ID>
 			<Description>Computer Graphics Metafile</Description>
-			<Category>Graphic</Category>
-			<MIMEType>image/cgm</MIMEType>
+			<Category>Image</Category>
+			<MIMETypes>
+				<MIMEType>image/cgm</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Computer_Graphics_Metafile</Wikipedia>
 			<Extensions>
-				<Extension>CGM</Extension>
+				<Extension>cgm</Extension>
 			</Extensions>
 		</FileType>
 		<FileType>
 			<ID>GRPH_EMF</ID>
 			<Description>Microsoft Enhanced Metafile</Description>
-			<Category>Graphic</Category>
-			<MIMEType/>
+			<Category>Image</Category>
 			<Wikipedia>Enhanced_Metafile</Wikipedia>
 			<Extensions>
-				<Extension>EMF</Extension>
+				<Extension>emf</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature minSize="44">
-					<Pattern xsi:type="bytes" offset="0">0x01000000</Pattern>
-					<Pattern xsi:type="bytes" offset="40">0x20454D46</Pattern>
+					<Rule type="bytes" offset="0">0x01000000</Rule>
+					<Rule type="bytes" offset="40">0x20454D46</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
