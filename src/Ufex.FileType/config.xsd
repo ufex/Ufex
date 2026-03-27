@@ -124,7 +124,7 @@
   <!-- File type ID must be uppercase with a known category prefix -->
   <xs:simpleType name="FileTypeIDType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="(ARCH|AUDIO|DB|DOCS|EXEC|GRPH|TEXT|VIDEO|BASE)_[A-Z0-9_]+" />
+      <xs:pattern value="(APP|ARCH|AUDIO|DB|DOCS|EXEC|GRPH|TEXT|VIDEO|BASE)_[A-Z0-9_]+" />
     </xs:restriction>
   </xs:simpleType>
 
@@ -137,13 +137,15 @@
 
   <xs:simpleType name="CategoryType">
     <xs:restriction base="xs:string">
+      <xs:enumeration value="Application" />
       <xs:enumeration value="Archive" />
       <xs:enumeration value="Audio" />
       <xs:enumeration value="Database" />
       <xs:enumeration value="Document" />
       <xs:enumeration value="Executable" />
-      <xs:enumeration value="Graphic" />
+      <xs:enumeration value="Image" />
       <xs:enumeration value="Text" />
+      <xs:enumeration value="Source Code" />
       <xs:enumeration value="Video" />
       <xs:enumeration value="Container" />
       <xs:enumeration value="Other" />
@@ -191,7 +193,7 @@
   <xs:complexType name="SearchRuleType">
     <xs:simpleContent>
       <xs:extension base="xs:string">
-        <xs:attribute name="type"      type="RuleValueType"        use="required" />
+        <xs:attribute name="type"      type="SearchRuleValueType"  use="required" />
         <xs:attribute name="offset"    type="OffsetType"           use="optional" default="0" />
         <xs:attribute name="maxLength" type="xs:nonNegativeInteger" use="optional" />
         <xs:attribute name="operator"  type="OperatorType"         use="optional" default="eq" />
@@ -261,6 +263,20 @@
       <xs:simpleType>
         <xs:restriction base="xs:string">
           <xs:pattern value="string:[a-zA-Z0-9\-]+" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <!--
+    SearchRuleValueType extends RuleValueType with the regex type,
+    which is only valid on SearchRule elements.
+  -->
+  <xs:simpleType name="SearchRuleValueType">
+    <xs:union memberTypes="RuleValueType">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="regex" />
         </xs:restriction>
       </xs:simpleType>
     </xs:union>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Ufex.API;
 using Ufex.FileType.Config;
 
@@ -50,24 +51,81 @@ class SignatureClassifier : FileType.BaseClassifier
 		fileStream.ReadExactly(buffer, 0, bufferSize);
 		MatchContext ctx = new MatchContext(buffer, fileStream, 0, FileTypes.RuleDefinitions);
 
+		// Evaluate own-signature matches for all file types that have signatures
+		Dictionary<string, bool> signatureResults = new Dictionary<string, bool>();
 		foreach(FileTypeRecord fileType in FileTypes.FileTypes)
 		{
 			try
 			{
 				if(fileType.Signatures != null && fileType.Signatures.Count > 0)
 				{
-					if(MatchesAnySignature(fileType.Signatures, ctx))
-					{
-						matches.Add(fileType.ID);
-					}
+					signatureResults[fileType.ID] = MatchesAnySignature(fileType.Signatures, ctx);
 				}
 			}
 			catch(Exception ex)
 			{
 				Log.Error(ex, "SignatureClassifier.DetectFileType: Failed to match signatures for {FileType}", fileType.ID);
+				signatureResults[fileType.ID] = false;
 			}
 		}
+
+		// Determine final matches: own signatures must match AND all ancestor signatures must match
+		foreach(FileTypeRecord fileType in FileTypes.FileTypes)
+		{
+			try
+			{
+				if(!signatureResults.TryGetValue(fileType.ID, out bool ownMatch) || !ownMatch)
+				{
+					continue;
+				}
+
+				if(!String.IsNullOrEmpty(fileType.ParentID) && !ParentChainMatches(fileType.ParentID, signatureResults))
+				{
+					continue;
+				}
+
+				matches.Add(fileType.ID);
+			}
+			catch(Exception ex)
+			{
+				Log.Error(ex, "SignatureClassifier.DetectFileType: Failed to evaluate file type {FileType}", fileType.ID);
+			}
+		}
+
 		return matches.ToArray();
+	}
+
+	private bool ParentChainMatches(string parentID, Dictionary<string, bool> signatureResults)
+	{
+		HashSet<string> visited = new HashSet<string>();
+		string currentParentID = parentID;
+
+		while(!String.IsNullOrEmpty(currentParentID))
+		{
+			if(!visited.Add(currentParentID))
+			{
+				return false;
+			}
+
+			if(!FileTypes.FileTypesByID.TryGetValue(currentParentID, out FileTypeRecord parentRecord))
+			{
+				Log.Warning("SignatureClassifier.ParentChainMatches: Parent not found: {ParentID}", currentParentID);
+				return false;
+			}
+
+			bool parentHasSignatures = parentRecord.Signatures != null && parentRecord.Signatures.Count > 0;
+			if(parentHasSignatures)
+			{
+				if(!signatureResults.TryGetValue(currentParentID, out bool parentMatch) || !parentMatch)
+				{
+					return false;
+				}
+			}
+
+			currentParentID = parentRecord.ParentID;
+		}
+
+		return true;
 	}
 
 	private bool MatchesAnySignature(List<Signature> signatures, MatchContext ctx)
@@ -165,6 +223,12 @@ class SignatureClassifier : FileType.BaseClassifier
 			lastOffset = ctx.FileStream.Length;
 		}
 
+		string normalizedType = searchRule.Type.Trim().ToLowerInvariant();
+		if(normalizedType == "regex")
+		{
+			return MatchRegexSearchRule(searchRule.Operator, searchRule.Value, startOffset, lastOffset, ctx);
+		}
+
 		for(long currentOffset = startOffset; currentOffset < lastOffset; currentOffset++)
 		{
 			if(MatchRuleAtOffset(searchRule.Type, searchRule.Operator, searchRule.Value, currentOffset, ctx))
@@ -174,6 +238,45 @@ class SignatureClassifier : FileType.BaseClassifier
 		}
 
 		return false;
+	}
+
+	private bool MatchRegexSearchRule(RuleOperator op, string pattern, long startOffset, long endOffset, MatchContext ctx)
+	{
+		if(String.IsNullOrWhiteSpace(pattern))
+		{
+			return false;
+		}
+
+		if(op != RuleOperator.Equal && op != RuleOperator.NotEqual)
+		{
+			return false;
+		}
+
+		int length = (int)Math.Min(endOffset - startOffset, Int32.MaxValue);
+		if(!TryReadBytes(startOffset, length, ctx, out byte[] window))
+		{
+			return false;
+		}
+
+		// Convert the byte window to a Latin-1 string so that each byte maps to
+		// exactly one char, preserving binary content for regex matching.
+		string windowText = Encoding.Latin1.GetString(window);
+
+		try
+		{
+			bool isMatch = Regex.IsMatch(windowText, pattern.Trim(), RegexOptions.Singleline, TimeSpan.FromSeconds(5));
+			return op == RuleOperator.Equal ? isMatch : !isMatch;
+		}
+		catch(RegexMatchTimeoutException)
+		{
+			Log.Warning("SignatureClassifier.MatchRegexSearchRule: Regex timed out for pattern: {Pattern}", pattern);
+			return false;
+		}
+		catch(ArgumentException ex)
+		{
+			Log.Warning("SignatureClassifier.MatchRegexSearchRule: Invalid regex pattern: {Pattern} | {Error}", pattern, ex.Message);
+			return false;
+		}
 	}
 
 	private bool MatchRuleGroup(RuleGroup ruleGroup, MatchContext ctx)
