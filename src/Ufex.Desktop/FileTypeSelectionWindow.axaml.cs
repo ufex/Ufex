@@ -1,37 +1,43 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using FluentIcons.Common;
+using System.Linq;
 using Ufex.FileType;
 
 namespace Ufex.Desktop;
 
 public partial class FileTypeSelectionWindow : Window
 {
-	private readonly FileTypeRecord[] _fileTypes;
+	private readonly DetectionMatch[] _matches;
+	private FileTypeSelectionItem[] _items;
 
-	public FileTypeSelectionWindow(FileTypeRecord[] fileTypes, FileTypeManager fileTypeManager)
+	public FileTypeSelectionWindow(DetectionResult result, FileTypeManager fileTypeManager)
 	{
 		InitializeComponent();
 
-		_fileTypes = fileTypes;
+		_matches = result.Matches.ToArray();
+		_items = new FileTypeSelectionItem[_matches.Length];
 
-		var items = new FileTypeSelectionItem[fileTypes.Length];
-		for (int i = 0; i < fileTypes.Length; i++)
+		for (int i = 0; i < _matches.Length; i++)
 		{
-			var ft = fileTypes[i];
+			var match = _matches[i];
+			var ft = match.FileType;
 			var classes = fileTypeManager.GetFileTypeClassesByFileType(ft.ID);
 			bool hasPlugin = classes != null && classes.Length > 0;
-			items[i] = new FileTypeSelectionItem
+
+			_items[i] = new FileTypeSelectionItem
 			{
 				Index = i,
 				DisplayText = hasPlugin ? $"{ft.Description} (plugin available)" : ft.Description,
 				Icon = hasPlugin ? Symbol.PlugConnected : Symbol.Document,
+				MatchMethodText = DetectionResultFormatter.FormatMatchMethodLabel(match.Method),
+				MatchDetails = DetectionResultFormatter.FormatMatchDetails(match),
 			};
 		}
 
-		FileTypeListBox.ItemsSource = items;
+		FileTypeListBox.ItemsSource = _items;
 
-		if (items.Length > 0)
+		if (_items.Length > 0)
 		{
 			FileTypeListBox.SelectedIndex = 0;
 		}
@@ -61,7 +67,17 @@ public partial class FileTypeSelectionWindow : Window
 	{
 		if (FileTypeListBox.SelectedItem is FileTypeSelectionItem item)
 		{
-			Close(_fileTypes[item.Index]);
+			Close(_matches[item.Index]);
+		}
+	}
+
+	private async void OnShowMatchDetails(object? sender, RoutedEventArgs e)
+	{
+		if (sender is Button button && button.Tag is int index)
+		{
+			var item = _items[index];
+			var detailsWindow = new MatchDetailsWindow(item.DisplayText, item.MatchDetails);
+			await detailsWindow.ShowDialog(this);
 		}
 	}
 }
@@ -71,4 +87,6 @@ public class FileTypeSelectionItem
 	public int Index { get; set; }
 	public string DisplayText { get; set; } = "";
 	public Symbol Icon { get; set; } = Symbol.Document;
+	public string MatchMethodText { get; set; } = "";
+	public string MatchDetails { get; set; } = "";
 }

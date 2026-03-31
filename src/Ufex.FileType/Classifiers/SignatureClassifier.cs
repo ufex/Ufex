@@ -95,6 +95,140 @@ class SignatureClassifier : FileType.BaseClassifier
 		return matches.ToArray();
 	}
 
+	public override DetectionMatch[] DetectFileTypeDetailed(string filePath, FileStream fileStream)
+	{
+		List<DetectionMatch> matches = new();
+		int bufferSize = (int)Math.Min(BUFFER_SIZE, fileStream.Length);
+		byte[] buffer = new byte[bufferSize];
+		fileStream.ReadExactly(buffer, 0, bufferSize);
+		MatchContext ctx = new MatchContext(buffer, fileStream, 0, FileTypes.RuleDefinitions);
+
+		// Phase 1: Evaluate signatures with details for all file types that have signatures
+		Dictionary<string, List<SignatureMatchDetail>> sigDetails = new();
+		foreach (FileTypeRecord fileType in FileTypes.FileTypes)
+		{
+			try
+			{
+				if (fileType.Signatures != null && fileType.Signatures.Count > 0)
+				{
+					var details = MatchSignaturesDetailed(fileType.Signatures, ctx);
+					sigDetails[fileType.ID] = details;
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex, "SignatureClassifier.DetectFileTypeDetailed: Failed to match signatures for {FileType}", fileType.ID);
+				sigDetails[fileType.ID] = new List<SignatureMatchDetail>();
+			}
+		}
+
+		// Build signatureResults dict for parent chain validation
+		Dictionary<string, bool> signatureResults = new();
+		foreach (var kvp in sigDetails)
+		{
+			signatureResults[kvp.Key] = kvp.Value.Count > 0;
+		}
+
+		// Phase 2: Parent chain validation + build matches
+		foreach (var kvp in sigDetails)
+		{
+			string fileTypeId = kvp.Key;
+			List<SignatureMatchDetail> details = kvp.Value;
+
+			if (details.Count == 0)
+				continue;
+
+			if (!FileTypes.FileTypesByID.TryGetValue(fileTypeId, out FileTypeRecord fileType))
+				continue;
+
+			if (!String.IsNullOrEmpty(fileType.ParentID))
+			{
+				if (!ParentChainMatches(fileType.ParentID, signatureResults))
+					continue;
+			}
+
+			matches.Add(new DetectionMatch
+			{
+				FileType = fileType,
+				Method = MatchMethod.Signature,
+				SignatureDetails = details,
+			});
+		}
+
+		return matches.ToArray();
+	}
+
+	private List<SignatureMatchDetail> MatchSignaturesDetailed(List<Signature> signatures, MatchContext ctx)
+	{
+		var details = new List<SignatureMatchDetail>();
+
+		for (int i = 0; i < signatures.Count; i++)
+		{
+			var sig = signatures[i];
+			if (MatchesSignature(sig, ctx))
+			{
+				details.Add(new SignatureMatchDetail
+				{
+					SignatureIndex = i,
+					MatchedRules = DescribeSignatureNodes(sig.Items, ctx),
+				});
+			}
+		}
+
+		return details;
+	}
+
+	private List<string> DescribeSignatureNodes(List<SignatureNode> nodes, MatchContext ctx)
+	{
+		var descriptions = new List<string>();
+
+		foreach (var node in nodes)
+		{
+			descriptions.Add(DescribeNode(node, ctx));
+		}
+
+		return descriptions;
+	}
+
+	private string DescribeNode(SignatureNode node, MatchContext ctx)
+	{
+		return node switch
+		{
+			Rule rule => DescribeRule(rule),
+			SearchRule sr => DescribeSearchRule(sr),
+			RuleRef rr => $"RuleRef(name={rr.Name})",
+			RuleGroup rg => DescribeRuleGroup(rg),
+			_ => node.GetType().Name,
+		};
+	}
+
+	private string DescribeRule(Rule rule)
+	{
+		string operatorStr = rule.Operator != Config.RuleOperator.Equal 
+			? $", operator={rule.Operator.ToString().ToLower()}" 
+			: "";
+		return $"Rule(type={rule.Type}, offset={rule.RawOffset}{operatorStr}) {rule.Value}";
+	}
+
+	private string DescribeSearchRule(SearchRule sr)
+	{
+		string maxLengthStr = sr.MaxLengthSpecified ? $", maxLength={sr.MaxLength}" : "";
+		string operatorStr = sr.Operator != Config.RuleOperator.Equal 
+			? $", operator={sr.Operator.ToString().ToLower()}" 
+			: "";
+		// Trim the value and truncate if too long
+		string value = sr.Value?.Trim() ?? "";
+		if (value.Length > 60)
+			value = value.Substring(0, 60) + "...";
+		return $"SearchRule(type={sr.Type}, offset={sr.RawOffset}{maxLengthStr}{operatorStr}) {value}";
+	}
+
+	private string DescribeRuleGroup(RuleGroup rg)
+	{
+		string baseStr = rg.BaseOffset != null ? $", base={rg.RawBase}" : "";
+		return $"RuleGroup(match={rg.Match.ToString().ToLower()}{baseStr})";
+	}
+
 	private bool ParentChainMatches(string parentID, Dictionary<string, bool> signatureResults)
 	{
 		HashSet<string> visited = new HashSet<string>();

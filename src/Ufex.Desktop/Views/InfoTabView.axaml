@@ -1,5 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fi="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
+             xmlns:local="clr-namespace:Ufex.Desktop.Views"
              x:Class="Ufex.Desktop.Views.InfoTabView">
     
     <UserControl.Styles>
@@ -13,9 +15,29 @@
         <StackPanel Margin="12" Spacing="8">
             
             <!-- File Type -->
-            <Grid ColumnDefinitions="100,*">
+            <Grid ColumnDefinitions="100,*,Auto">
                 <TextBlock Grid.Column="0" Text="Type:" FontWeight="SemiBold" VerticalAlignment="Center" />
-                <TextBox Grid.Column="1" x:Name="TextFileType" IsReadOnly="True" />
+                <ComboBox Grid.Column="1" x:Name="ComboFileType"
+                          HorizontalAlignment="Stretch"
+                          SelectionChanged="OnFileTypeSelectionChanged">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="local:FileTypeDropdownItem">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock Text="{Binding Description}" />
+                                <TextBlock Text="{Binding MatchMethodLabel}"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                           FontStyle="Italic" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Grid.Column="2" x:Name="BtnMatchInfo"
+                        Click="OnMatchInfoClick"
+                        Padding="4" Margin="4,0,0,0"
+                        Background="Transparent"
+                        ToolTip.Tip="View match details">
+                    <fi:SymbolIcon Symbol="Info" FontSize="14" />
+                </Button>
             </Grid>
             
             <!-- File Path -->

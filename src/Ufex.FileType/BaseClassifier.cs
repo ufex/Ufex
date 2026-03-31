@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Ufex.API;
 
 namespace Ufex.FileType;
@@ -35,4 +36,24 @@ public abstract class BaseClassifier
 	/// <param name="fileStream">A read only FileStream</param>
 	/// <returns>An array of file type ID's</returns>
 	public abstract string[] DetectFileType(string filePath, FileStream fileStream);
+
+	/// <summary>
+	/// Get all matching file types with match details.
+	/// Default implementation delegates to DetectFileType() and returns matches with no details.
+	/// </summary>
+	/// <param name="filePath">The absolute path to the file</param>
+	/// <param name="fileStream">A read only FileStream</param>
+	/// <returns>An array of detection matches with metadata</returns>
+	public virtual DetectionMatch[] DetectFileTypeDetailed(string filePath, FileStream fileStream)
+	{
+		string[] ids = DetectFileType(filePath, fileStream);
+		if (ids == null || ids.Length == 0)
+			return Array.Empty<DetectionMatch>();
+
+		return ids.Select(id => new DetectionMatch
+		{
+			FileType = FileTypes.FileTypesByID.TryGetValue(id, out var ft) ? ft : null,
+			Method = MatchMethod.None, // unknown from legacy path
+		}).Where(m => m.FileType != null).ToArray();
+	}
 }

@@ -37,4 +37,28 @@ class ExtensionClassifier : Ufex.FileType.BaseClassifier
 		}
 		return matches.ToArray();
 	}
+
+	public override DetectionMatch[] DetectFileTypeDetailed(string filePath, FileStream fileStream)
+	{
+		if (!filePath.Contains("."))
+			return Array.Empty<DetectionMatch>();
+
+		string extension = filePath.Split('.').Last().ToLower();
+		List<DetectionMatch> matches = new();
+
+		foreach (FileTypeRecord fileType in FileTypes.FileTypes)
+		{
+			if (fileType.Extensions != null && fileType.Extensions.Contains(extension))
+			{
+				matches.Add(new DetectionMatch
+				{
+					FileType = fileType,
+					Method = MatchMethod.Extension,
+					MatchedExtension = extension,
+				});
+			}
+		}
+
+		return matches.ToArray();
+	}
 }

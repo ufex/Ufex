@@ -1,10 +1,12 @@
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using Ufex.API;
 using Ufex.API.Tables;
 using Ufex.API.Format;
+using Ufex.FileType;
 using UfexFileInfo = Ufex.API.FileInfo;
 
 namespace Ufex.Desktop.Views;
@@ -18,9 +20,25 @@ public class QuickInfoRow
 	public string Value { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// Represents an item in the file type dropdown.
+/// <summary>
+/// Represents an item in the file type dropdown.
+/// </summary>
+public class FileTypeDropdownItem
+{
+	public DetectionMatch Match { get; set; }
+	public string Description { get; set; } = "";
+	public string MatchMethodLabel { get; set; } = "";
+	public string MatchDetailsText { get; set; } = "";
+}
+
 public partial class InfoTabView : UserControl
 {
 	private DataGrid? _dataGridInfo;
+	private bool _suppressFileTypeChanged;
+
+	public event EventHandler<DetectionMatch?>? FileTypeChanged;
 
 	public InfoTabView()
 	{
@@ -33,7 +51,11 @@ public partial class InfoTabView : UserControl
 	/// </summary>
 	public void Clear()
 	{
-		TextFileType.Text = string.Empty;
+		_suppressFileTypeChanged = true;
+		ComboFileType.ItemsSource = null;
+		ComboFileType.SelectedIndex = -1;
+		_suppressFileTypeChanged = false;
+		BtnMatchInfo.IsVisible = false;
 		TextFilePath.Text = string.Empty;
 		TextFileName.Text = string.Empty;
 		TextFileExtension.Text = string.Empty;
@@ -61,11 +83,88 @@ public partial class InfoTabView : UserControl
 	}
 
 	/// <summary>
-	/// Sets the file type description.
+	/// Sets the file type description (fallback for when no detection result is available).
 	/// </summary>
 	public void SetFileType(string? fileType)
 	{
-		TextFileType.Text = fileType ?? "Unknown File Type";
+		_suppressFileTypeChanged = true;
+		try
+		{
+			var items = new List<FileTypeDropdownItem>
+			{
+				new FileTypeDropdownItem
+				{
+					Description = fileType ?? "Unknown File Type",
+					MatchMethodLabel = "",
+					MatchDetailsText = "",
+				}
+			};
+			ComboFileType.ItemsSource = items;
+			ComboFileType.SelectedIndex = 0;
+			ComboFileType.IsEnabled = false;
+			BtnMatchInfo.IsVisible = false;
+		}
+		finally
+		{
+			_suppressFileTypeChanged = false;
+		}
+	}
+
+	/// <summary>
+	/// Sets the detection result with all detected file types.
+	/// </summary>
+	public void SetDetectionResult(DetectionResult result, int selectedIndex = 0)
+	{
+		if (result == null || result.Count == 0)
+		{
+			SetFileType(null);
+			return;
+		}
+
+		_suppressFileTypeChanged = true;
+		try
+		{
+			var items = new List<FileTypeDropdownItem>();
+			foreach (var match in result.Matches)
+			{
+				items.Add(new FileTypeDropdownItem
+				{
+					Match = match,
+					Description = match.FileType.Description,
+					MatchMethodLabel = DetectionResultFormatter.FormatMatchMethodLabel(match.Method),
+					MatchDetailsText = DetectionResultFormatter.FormatMatchDetails(match),
+				});
+			}
+
+			ComboFileType.ItemsSource = items;
+			ComboFileType.SelectedIndex = Math.Min(selectedIndex, items.Count - 1);
+			ComboFileType.IsEnabled = items.Count > 1;
+			BtnMatchInfo.IsVisible = true;
+		}
+		finally
+		{
+			_suppressFileTypeChanged = false;
+		}
+	}
+
+	private void OnFileTypeSelectionChanged(object? sender, SelectionChangedEventArgs e)
+	{
+		if (_suppressFileTypeChanged)
+			return;
+
+		if (ComboFileType.SelectedItem is FileTypeDropdownItem item)
+		{
+			FileTypeChanged?.Invoke(this, item.Match);
+		}
+	}
+
+	private async void OnMatchInfoClick(object? sender, RoutedEventArgs e)
+	{
+		if (ComboFileType.SelectedItem is FileTypeDropdownItem item)
+		{
+			var detailsWindow = new MatchDetailsWindow(item.Description, item.MatchDetailsText);
+			await detailsWindow.ShowDialog(this.VisualRoot as Window);
+		}
 	}
 
 	/// <summary>
@@ -112,7 +211,7 @@ public partial class InfoTabView : UserControl
 		var sysFileInfo = new System.IO.FileInfo(filePath);
 
 		// Basic file info
-		TextFileType.Text = fileType ?? "Unknown File Type";
+		SetFileType(fileType);
 		TextFilePath.Text = filePath;
 		TextFileName.Text = sysFileInfo.Name;
 		TextFileExtension.Text = sysFileInfo.Extension;
