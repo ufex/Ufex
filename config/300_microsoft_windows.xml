@@ -2,17 +2,19 @@
 <Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<FileTypes>
 		<FileType>
-			<ID>SYSTEM_WINDOWS_SHORTCUT</ID>
+			<ID>APP_WINDOWS_SHORTCUT</ID>
 			<Description>Windows Shortcut File</Description>
 			<Category>System</Category>
-			<MIMEType>application/x-ms-shortcut</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-ms-shortcut</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Windows Shortcut</Wikipedia>
 			<Extensions>
 				<Extension>lnk</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x4C0000000114</Pattern>
+					<Rule type="bytes" offset="0">0x4C0000000114</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>

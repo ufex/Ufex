@@ -21,7 +21,7 @@ public partial class ImageViewerControl : UserControl
 	private TextBlock? _zoomLevelText;
 	private Panel? _imageContainer;
 
-	private Bitmap? _currentBitmap;
+	private global::Avalonia.Media.Imaging.Bitmap? _currentBitmap;
 	private Size _originalImageSize;
 	private bool _isRasterImage;
 
@@ -82,7 +82,11 @@ public partial class ImageViewerControl : UserControl
 
 		if (image is RasterImage rasterImage)
 		{
-			LoadRasterImage(rasterImage);
+			LoadRasterImage(rasterImage.ImageStream);
+		}
+		else if (image is RasterImageVisual rasterImageVisual)
+		{
+			LoadRasterImage(rasterImageVisual.ImageStream);
 		}
 		else if (image is VectorImage vectorImage)
 		{
@@ -92,14 +96,13 @@ public partial class ImageViewerControl : UserControl
 		UpdateZoomDisplay();
 	}
 
-	private void LoadRasterImage(RasterImage rasterImage)
+	private void LoadRasterImage(Stream stream)
 	{
 		if (_rasterImageDisplay == null)
 			return;
 
 		try
 		{
-			var stream = rasterImage.ImageStream;
 			if (stream.CanSeek)
 				stream.Position = 0;
 

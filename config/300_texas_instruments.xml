@@ -5,7 +5,9 @@
 			<ID>APP_TI82</ID>
 			<Description>TI-82 Calculator File</Description>
 			<Category>Application</Category>
-			<MIMEType>application/x-ti82</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-ti82</MIMEType>
+			</MIMETypes>
 			<Wikipedia>TI-82</Wikipedia>
 			<Extensions>
 				<Extension>82b</Extension>
@@ -23,7 +25,7 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x2A2A544938322A2A</Pattern>
+					<Rule type="bytes" offset="0">0x2A2A544938322A2A</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -31,7 +33,9 @@
 			<ID>APP_TI83</ID>
 			<Description>TI-83/83+/84/84+ Calculator File</Description>
 			<Category>Application</Category>
-			<MIMEType>application/x-ti83</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-ti83</MIMEType>
+			</MIMETypes>
 			<Wikipedia>TI-83_series</Wikipedia>
 			<Extensions>
 				<Extension>8xc</Extension>
@@ -68,7 +72,7 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x2A2A54493833462A</Pattern>
+					<Rule type="bytes" offset="0">0x2A2A54493833462A</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -76,7 +80,9 @@
 			<ID>APP_TI85</ID>
 			<Description>TI-85 Calculator File</Description>
 			<Category>Application</Category>
-			<MIMEType>application/x-ti85</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-ti85</MIMEType>
+			</MIMETypes>
 			<Wikipedia>TI-85</Wikipedia>
 			<Extensions>
 				<Extension>85b</Extension>
@@ -96,7 +102,7 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x2A2A544938352A2A</Pattern>
+					<Rule type="bytes" offset="0">0x2A2A544938352A2A</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -104,7 +110,9 @@
 			<ID>APP_TI86</ID>
 			<Description>TI-86 Calculator File</Description>
 			<Category>Application</Category>
-			<MIMEType>application/x-ti86</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-ti86</MIMEType>
+			</MIMETypes>
 			<Wikipedia>TI-86</Wikipedia>
 			<Extensions>
 				<Extension>86c</Extension>
@@ -123,7 +131,7 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x2A2A544938362A2A</Pattern>
+					<Rule type="bytes" offset="0">0x2A2A544938362A2A</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -131,7 +139,9 @@
 			<ID>APP_TI89</ID>
 			<Description>TI-89/89 Titanium Calculator File</Description>
 			<Category>Application</Category>
-			<MIMEType>application/x-ti89</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-ti89</MIMEType>
+			</MIMETypes>
 			<Wikipedia>TI-89_series</Wikipedia>
 			<Extensions>
 				<Extension>89a</Extension>
@@ -156,7 +166,7 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x2A2A544938392A2A</Pattern>
+					<Rule type="bytes" offset="0">0x2A2A544938392A2A</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -164,7 +174,9 @@
 			<ID>APP_TI92</ID>
 			<Description>TI-92/92+/Voyage 200 Calculator File</Description>
 			<Category>Application</Category>
-			<MIMEType>application/x-ti92</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-ti92</MIMEType>
+			</MIMETypes>
 			<Wikipedia>TI-92_series</Wikipedia>
 			<Extensions>
 				<Extension>92a</Extension>
@@ -188,7 +200,7 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x2A2A544939322A2A</Pattern>
+					<Rule type="bytes" offset="0">0x2A2A544939322A2A</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>

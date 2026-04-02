@@ -83,7 +83,7 @@ public class FileTypeManager
 	{
 		Logger = new Logger("FileType.log");
 
-		ApplicationPath = string.Copy(applicationPath);
+		ApplicationPath = applicationPath;
 		ConfigDirectories = (string[])configDirectories.Clone();
 
 		assemblyCache = new ArrayList();
@@ -122,6 +122,68 @@ public class FileTypeManager
 		}
 		fs.Close();
 		return null;
+	}
+
+	public DetectionResult DetectFileTypeDetailed(string filePath)
+	{
+		var result = new DetectionResult();
+
+		// Collect matches from all classifiers
+		Dictionary<string, DetectionMatch> matchMap = new();
+
+		FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+		Logger.Info("DetectFileTypeDetailed: idLibsCache.Count = " + idLibsCache.Count.ToString());
+
+		foreach (BaseClassifier classifier in idLibsCache)
+		{
+			try
+			{
+				fs.Position = 0;
+				DetectionMatch[] classifierMatches = classifier.DetectFileTypeDetailed(filePath, fs);
+
+				foreach (var match in classifierMatches)
+				{
+					if (match.FileType == null)
+						continue;
+
+					if (matchMap.TryGetValue(match.FileType.ID, out var existing))
+					{
+						// Merge: combine MatchMethod flags and details
+						existing.Method |= match.Method;
+						if (match.MatchedExtension != null)
+							existing.MatchedExtension = match.MatchedExtension;
+						existing.SignatureDetails.AddRange(match.SignatureDetails);
+					}
+					else
+					{
+						matchMap[match.FileType.ID] = match;
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				Logger.Error(e, "FileTypeManager.DetectFileTypeDetailed: classifier failed: {Classifier}",
+					classifier.ToString());
+			}
+		}
+
+		fs.Close();
+
+		// Convert to array, look up FileTypeRecords, sort by specificity
+		var records = matchMap.Values
+			.Where(m => m.FileType != null)
+			.ToList();
+
+		// Sort by specificity (reuse existing logic)
+		var recordArray = records.Select(m => m.FileType).ToArray();
+		SortBySpecificity(recordArray);
+
+		// Rebuild list in sorted order
+		result.Matches = recordArray
+			.Select(ft => matchMap[ft.ID])
+			.ToList();
+
+		return result;
 	}
 
 	/// <summary>

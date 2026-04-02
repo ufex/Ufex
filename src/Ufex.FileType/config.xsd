@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+  <!-- ============================================================
+       Root Element
+  ============================================================ -->
+  <xs:element name="Ufex">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="FileTypeClasses" type="FileTypeClassesType" minOccurs="0" />
+        <xs:element name="RuleDefinitions"  type="RuleDefinitionsType"  minOccurs="0" />
+        <xs:element name="FileTypes"        type="FileTypesType"        minOccurs="0" />
+      </xs:all>
+    </xs:complexType>
+
+    <!-- RuleDefinition names must be unique across the document -->
+    <xs:unique name="UniqueRuleDefinitionName">
+      <xs:selector xpath="RuleDefinitions/RuleDefinition" />
+      <xs:field    xpath="@name" />
+    </xs:unique>
+
+    <!-- FileType IDs must be unique across the document -->
+    <xs:unique name="UniqueFileTypeID">
+      <xs:selector xpath="FileTypes/FileType" />
+      <xs:field    xpath="ID" />
+    </xs:unique>
+
+    <!-- FileTypeClass IDs must be unique across the document -->
+    <xs:unique name="UniqueFileTypeClassID">
+      <xs:selector xpath="FileTypeClasses/FileTypeClass" />
+      <xs:field    xpath="ID" />
+    </xs:unique>
+  </xs:element>
+
+  <!-- ============================================================
+       FileTypeClasses
+  ============================================================ -->
+  <xs:complexType name="FileTypeClassesType">
+    <xs:sequence>
+      <xs:element name="FileTypeClass" type="FileTypeClassType"
+                  minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="FileTypeClassType">
+    <xs:all>
+      <xs:element name="ID"           type="xs:string" />
+      <xs:element name="AssemblyPath" type="xs:string" />
+      <xs:element name="FullTypeName" type="xs:string" />
+      <xs:element name="FileTypes"    minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ID" type="xs:string"
+                        minOccurs="0" maxOccurs="unbounded" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+
+  <!-- ============================================================
+       RuleDefinitions
+  ============================================================ -->
+  <xs:complexType name="RuleDefinitionsType">
+    <xs:sequence>
+      <xs:element name="RuleDefinition" type="RuleDefinitionType"
+                  minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RuleDefinitionType">
+    <xs:sequence>
+      <!-- A RuleDefinition body is the same mix of children as a Signature,
+           minus the minSize attribute and minus top-level RuleRef
+           (a def may itself reference other defs via RuleRef).       -->
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:element name="Rule"       type="RuleType"       />
+        <xs:element name="SearchRule" type="SearchRuleType" />
+        <xs:element name="RuleGroup"  type="RuleGroupType"  />
+        <xs:element name="RuleRef"    type="RuleRefType"    />
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <!-- ============================================================
+       FileTypes
+  ============================================================ -->
+  <xs:complexType name="FileTypesType">
+    <xs:sequence>
+      <xs:element name="FileType" type="FileTypeType"
+                  minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="FileTypeType">
+    <xs:all>
+      <xs:element name="ID"          type="FileTypeIDType" />
+      <xs:element name="ParentID"    type="FileTypeIDType" minOccurs="0" />
+      <xs:element name="Description" type="xs:string" />
+      <xs:element name="Category"    type="CategoryType" />
+      <xs:element name="MIMETypes"   minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="MIMEType" type="xs:string"
+                        minOccurs="1" maxOccurs="unbounded" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Wikipedia"  type="xs:string"     minOccurs="0" />
+      <xs:element name="Extensions" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Extension" type="ExtensionType"
+                        minOccurs="1" maxOccurs="unbounded" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Signatures" type="SignaturesType" minOccurs="0" />
+    </xs:all>
+  </xs:complexType>
+
+  <!-- File type ID must be uppercase with a known category prefix -->
+  <xs:simpleType name="FileTypeIDType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(APP|ARCH|AUDIO|DB|DOCS|EXEC|GRPH|TEXT|VIDEO|BASE)_[A-Z0-9_]+" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Extension must be lowercase, no dot, no whitespace -->
+  <xs:simpleType name="ExtensionType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[a-z0-9]+" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="CategoryType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Application" />
+      <xs:enumeration value="Archive" />
+      <xs:enumeration value="Audio" />
+      <xs:enumeration value="Database" />
+      <xs:enumeration value="Document" />
+      <xs:enumeration value="Executable" />
+      <xs:enumeration value="Image" />
+      <xs:enumeration value="Text" />
+      <xs:enumeration value="Source Code" />
+      <xs:enumeration value="Video" />
+      <xs:enumeration value="Container" />
+      <xs:enumeration value="Other" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- ============================================================
+       Signatures
+  ============================================================ -->
+  <xs:complexType name="SignaturesType">
+    <xs:sequence>
+      <xs:element name="Signature" type="SignatureType"
+                  minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SignatureType">
+    <xs:sequence>
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:element name="Rule"       type="RuleType"       />
+        <xs:element name="SearchRule" type="SearchRuleType" />
+        <xs:element name="RuleGroup"  type="RuleGroupType"  />
+        <xs:element name="RuleRef"    type="RuleRefType"    />
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="minSize" type="xs:nonNegativeInteger" use="optional" />
+  </xs:complexType>
+
+  <!-- ============================================================
+       Rule
+  ============================================================ -->
+  <xs:complexType name="RuleType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="type"     type="RuleValueType" use="required" />
+        <xs:attribute name="offset"   type="OffsetType"    use="required" />
+        <xs:attribute name="operator" type="OperatorType"  use="optional" default="eq" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- ============================================================
+       SearchRule
+  ============================================================ -->
+  <xs:complexType name="SearchRuleType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="type"      type="SearchRuleValueType"  use="required" />
+        <xs:attribute name="offset"    type="OffsetType"           use="optional" default="0" />
+        <xs:attribute name="maxLength" type="xs:nonNegativeInteger" use="optional" />
+        <xs:attribute name="operator"  type="OperatorType"         use="optional" default="eq" />
+        <!-- Future: capture="name" to expose the found position to subsequent expressions -->
+        <xs:attribute name="capture"   type="xs:string"            use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- ============================================================
+       RuleGroup
+  ============================================================ -->
+  <xs:complexType name="RuleGroupType">
+    <xs:sequence>
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:element name="Rule"       type="RuleType"       />
+        <xs:element name="SearchRule" type="SearchRuleType" />
+        <xs:element name="RuleGroup"  type="RuleGroupType"  />
+        <xs:element name="RuleRef"    type="RuleRefType"    />
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="match" type="MatchType"  use="required" />
+    <xs:attribute name="base"  type="OffsetType" use="optional" />
+  </xs:complexType>
+
+  <!-- ============================================================
+       RuleRef
+  ============================================================ -->
+  <xs:complexType name="RuleRefType">
+    <xs:attribute name="name" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <!-- ============================================================
+       Shared Simple Types
+  ============================================================ -->
+
+  <!--
+    RuleValueType covers all type= values on Rule and SearchRule.
+    The string:{encoding} variants cannot be fully enumerated in XSD
+    without a pattern restriction; we use a union of the fixed names
+    plus a pattern for the string:{encoding} form.
+  -->
+  <xs:simpleType name="RuleValueType">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="byte" />
+          <xs:enumeration value="bytes" />
+          <xs:enumeration value="string" />
+          <xs:enumeration value="uint8" />
+          <xs:enumeration value="int8" />
+          <xs:enumeration value="uint16le" />
+          <xs:enumeration value="uint32le" />
+          <xs:enumeration value="uint64le" />
+          <xs:enumeration value="int16le" />
+          <xs:enumeration value="int32le" />
+          <xs:enumeration value="int64le" />
+          <xs:enumeration value="uint16be" />
+          <xs:enumeration value="uint32be" />
+          <xs:enumeration value="uint64be" />
+          <xs:enumeration value="int16be" />
+          <xs:enumeration value="int32be" />
+          <xs:enumeration value="int64be" />
+        </xs:restriction>
+      </xs:simpleType>
+      <!-- string:{encoding} — e.g. string:utf-16le, string:ascii -->
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:pattern value="string:[a-zA-Z0-9\-]+" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <!--
+    SearchRuleValueType extends RuleValueType with the regex type,
+    which is only valid on SearchRule elements.
+  -->
+  <xs:simpleType name="SearchRuleValueType">
+    <xs:union memberTypes="RuleValueType">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="regex" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <!--
+    OffsetType accepts:
+      - a non-negative decimal integer           e.g.  0  48  512
+      - a hex integer                            e.g.  0x3C  0x1A
+      - an expression string (anything else)     e.g.  (@48:uint32le + 1) * 512
+    XSD cannot validate the expression grammar itself; that is left
+    to the engine's load-time parser per the spec.
+  -->
+  <xs:simpleType name="OffsetType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="OperatorType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="eq" />
+      <xs:enumeration value="neq" />
+      <xs:enumeration value="gt" />
+      <xs:enumeration value="lt" />
+      <xs:enumeration value="gte" />
+      <xs:enumeration value="lte" />
+      <xs:enumeration value="and" />
+      <xs:enumeration value="or" />
+      <xs:enumeration value="xor" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="MatchType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="all" />
+      <xs:enumeration value="any" />
+      <xs:enumeration value="none" />
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

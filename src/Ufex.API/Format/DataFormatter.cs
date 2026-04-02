@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Ufex.API.Types;
 
 namespace Ufex.API.Format;
 
@@ -236,6 +237,22 @@ public sealed class DataFormatter
 			return Base10(x);
 		else if (_numFormat == NumberFormat.Binary)
 			return _binaryNumberFormatter.UInt16(x);
+		else if (_numFormat == NumberFormat.Ascii)
+			return "\"" + Convert.ToChar(ByteUtil.GetHighWord(x)).ToString() + Convert.ToChar(ByteUtil.GetLowWord(x)).ToString() + "\"";
+		else
+			return x.ToString();
+	}
+
+	public string UInt24(UInt24 x)
+	{
+		if (_numFormat == NumberFormat.Default)
+			return _hexNumberFormatter.UInt24(x);
+		else if (_numFormat == NumberFormat.Hexadecimal)
+			return _hexNumberFormatter.UInt24(x);
+		else if (_numFormat == NumberFormat.Decimal)
+			return Base10((UInt32)x); // TODO: Implement IFormattable Interface?
+		else if (_numFormat == NumberFormat.Binary)
+			return _binaryNumberFormatter.UInt24(x);
 		else if (_numFormat == NumberFormat.Ascii)
 			return "\"" + Convert.ToChar(ByteUtil.GetHighWord(x)).ToString() + Convert.ToChar(ByteUtil.GetLowWord(x)).ToString() + "\"";
 		else
@@ -530,30 +547,5 @@ public sealed class DataFormatter
 		}
 		return result.ToString().TrimEnd();
 	}
-/*
-static array<String^>^ decChars  = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-
-static String ^SINGLE_QUOTE = "\'";
-static String ^DOUBLE_QUOTE = "\"";
-
-static array<String^> ^ASCIICHARS = {
-"\\0", "\\x01", "\\x02", "\\x03", "\\x04", "\\x05", "", "\\a", "", "\\t", "\\n", "\\v", "\\f", "", "", "", 
-									"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
-									" ", "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "", 
-									"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", 
-									"@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", 
-									"P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_",  
-									"'", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", 
-									"p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "", "", 
-									"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
-									"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
-									"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
-									"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
-									"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
-									"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
-									"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 
-									"", "", "", "", "", "", "", "", "", "", "", "", "", "ý", "þ", "ÿ" };
-
-	*/
 
 }

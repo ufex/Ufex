@@ -30,7 +30,7 @@ public class FileTypeRecord
 
 	[XmlArray]
 	[XmlArrayItem(ElementName = "Signature")]
-	public List<Ufex.FileType.Config.SignaturePattern[]> Signatures { get; set; }
+	public List<Ufex.FileType.Config.Signature> Signatures { get; set; }
 }
 
 
@@ -40,6 +40,7 @@ public class FileTypeRecord
 public class FileTypeDb : FileType.Database
 {
 	private Dictionary<string, FileTypeRecord> fileTypes;
+	private Dictionary<string, RuleDefinition> ruleDefinitions;
 
 	public int Count
 	{
@@ -64,19 +65,81 @@ public class FileTypeDb : FileType.Database
 		}
 	}
 
+	public Dictionary<string, RuleDefinition> RuleDefinitions
+	{
+		get
+		{
+			if (fileTypes == null || fileTypes.Count == 0)
+				Load();
+			return ruleDefinitions;
+		}
+	}
+
 	public FileTypeDb(System.IO.FileInfo[] configFiles) : base(configFiles)
 	{
 		fileTypes = new Dictionary<string, FileTypeRecord>();
+		ruleDefinitions = new Dictionary<string, RuleDefinition>();
 		Debug = new Logger("FileTypeDb");
 	}
 
 	private void Load()
 	{
-		XmlSerializer xmlSerializer = new XmlSerializer(typeof(Document));
+		fileTypes = new Dictionary<string, FileTypeRecord>();
+		ruleDefinitions = new Dictionary<string, RuleDefinition>();
+
+		XmlSerializer xmlSerializer;
+		try
+		{
+			xmlSerializer = new XmlSerializer(typeof(Document));
+		}
+		catch (Exception ex)
+		{
+			Debug.Warning("FileTypeDb.Load: Default XmlSerializer failed, retrying with explicit known types. {Error}", GetExceptionChain(ex));
+			xmlSerializer = new XmlSerializer(typeof(Document), new Type[]
+			{
+				typeof(Signature),
+				typeof(Rule),
+				typeof(SearchRule),
+				typeof(RuleGroup),
+				typeof(RuleRef),
+				typeof(RuleDefinition),
+			});
+		}
+
 		foreach (System.IO.FileInfo filePath in configFiles)
 		{
-			StreamReader reader = new StreamReader(filePath.FullName);
-			Document doc = (Document)xmlSerializer.Deserialize(reader);
+			using StreamReader reader = new StreamReader(filePath.FullName);
+			Document doc;
+			try
+			{
+				doc = (Document)xmlSerializer.Deserialize(reader);
+			}
+			catch (Exception ex)
+			{
+				Debug.Error(ex, "FileTypeDb.Load: Failed to deserialize config file: {ConfigFilePath} | {Error}", filePath.FullName, GetExceptionChain(ex));
+				continue;
+			}
+
+			if (doc.RuleDefinitions != null)
+			{
+				foreach (RuleDefinition ruleDefinition in doc.RuleDefinitions)
+				{
+					if (String.IsNullOrWhiteSpace(ruleDefinition.Name))
+					{
+						Debug.Warning("FileTypeDb.Load: RuleDefinition with empty name in config file: {ConfigFilePath}", filePath.FullName);
+						continue;
+					}
+
+					if (ruleDefinitions.ContainsKey(ruleDefinition.Name))
+					{
+						Debug.Warning("FileTypeDb.Load: Duplicate RuleDefinition '{RuleDefinitionName}' in config file: {ConfigFilePath}", ruleDefinition.Name, filePath.FullName);
+						continue;
+					}
+
+					ruleDefinitions[ruleDefinition.Name] = ruleDefinition;
+				}
+			}
+
 			if (doc.FileTypes != null)
 			{
 				foreach (FileTypeRecord fileType in doc.FileTypes)
@@ -85,8 +148,19 @@ public class FileTypeDb : FileType.Database
 					fileTypes[fileType.ID] = fileType;
 				}
 			}
-			reader.Close();
 		}
+	}
+
+	private static string GetExceptionChain(Exception ex)
+	{
+		List<string> messages = new List<string>();
+		Exception current = ex;
+		while (current != null)
+		{
+			messages.Add(current.Message);
+			current = current.InnerException;
+		}
+		return string.Join(" => ", messages);
 	}
 
 	public FileTypeRecord GetFileType(string fileTypeId)

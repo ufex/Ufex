@@ -2,9 +2,9 @@
 <Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<FileTypes>
 		<FileType>
-			<ID>GRPH_JFIF</ID>
+			<ID>IMAGE_JFIF</ID>
 			<Description>JPEG File Interchange Format</Description>
-			<Category>Graphic</Category>
+			<Category>Image</Category>
 			<MIMETypes>
 				<MIMEType>image/jpeg</MIMEType>
 			</MIMETypes>
@@ -15,23 +15,23 @@
 			</Extensions>
 			<Signatures>
 				<Signature minSize="10">
-					<Pattern xsi:type="bytes" offset="0">0xFF</Pattern>
-					<Pattern xsi:type="string" offset="6">JFIF</Pattern>
+					<Rule type="bytes" offset="0">0xFF</Rule>
+					<Rule type="string" offset="6">JFIF</Rule>
 				</Signature>
 				<Signature minSize="10">
-					<Pattern xsi:type="bytes" offset="0">0xFF</Pattern>
-					<Pattern xsi:type="string" offset="6">JFXX</Pattern>
+					<Rule type="bytes" offset="0">0xFF</Rule>
+					<Rule type="string" offset="6">JFXX</Rule>
 				</Signature>
 				<Signature minSize="10">
-					<Pattern xsi:type="bytes" offset="0">0xFF</Pattern>
-					<Pattern xsi:type="string" offset="6">Exif</Pattern>
+					<Rule type="bytes" offset="0">0xFF</Rule>
+					<Rule type="string" offset="6">Exif</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_PNG</ID>
+			<ID>IMAGE_PNG</ID>
 			<Description>Portable Network Graphic</Description>
-			<Category>Graphic</Category>
+			<Category>Image</Category>
 			<MIMETypes>
 				<MIMEType>image/png</MIMEType>
 			</MIMETypes>
@@ -41,47 +41,51 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x89504E470D0A1A0A</Pattern>
+					<Rule type="bytes" offset="0">0x89504E470D0A1A0A</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_GIF</ID>
+			<ID>IMAGE_GIF</ID>
 			<Description>Graphic Interchange Format</Description>
-			<Category>Graphic</Category>
-			<MIMEType>image/gif</MIMEType>
+			<Category>Image</Category>
+			<MIMETypes>
+				<MIMEType>image/gif</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Gif</Wikipedia>
 			<Extensions>
 				<Extension>gif</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature minSize="14">
-					<Pattern xsi:type="string" offset="0">GIF87a</Pattern>
+					<Rule type="string" offset="0">GIF87a</Rule>
 				</Signature>
 				<Signature minSize="14">
-					<Pattern xsi:type="string" offset="0">GIF89a</Pattern>
+					<Rule type="string" offset="0">GIF89a</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_JPEG2000</ID>
+			<ID>IMAGE_JPEG2000</ID>
 			<Description>JPEG 2000</Description>
-			<Category>Graphic</Category>
-			<MIMEType>image/jpeg2000</MIMEType>
+			<Category>Image</Category>
+			<MIMETypes>
+				<MIMEType>image/jpeg2000</MIMEType>
+			</MIMETypes>
 			<Wikipedia>JPEG_2000</Wikipedia>
 			<Extensions>
 				<Extension>jpg2</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x0000000C6A5020200D0A870A</Pattern>
+					<Rule type="bytes" offset="0">0x0000000C6A5020200D0A870A</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_WINBMP</ID>
+			<ID>IMAGE_WINBMP</ID>
 			<Description>Windows Bitmap</Description>
-			<Category>Graphic</Category>
+			<Category>Image</Category>
 			<MIMETypes>
 				<MIMEType>image/bmp</MIMEType>
 			</MIMETypes>
@@ -91,28 +95,28 @@
 			</Extensions>
 			<Signatures>
 				<Signature minSize="54">
-					<Pattern xsi:type="bytes" offset="0">0x424D</Pattern>
+					<Rule type="bytes" offset="0">0x424D</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_WINCUR</ID>
+			<ID>IMAGE_WINCUR</ID>
 			<Description>Windows Cursor File</Description>
-			<Category>Graphic</Category>
+			<Category>Image</Category>
 			<Wikipedia/>
 			<Extensions>
 				<Extension>cur</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature minSize="16">
-					<Pattern xsi:type="bytes" offset="0">0x00000200</Pattern>
+					<Rule type="bytes" offset="0">0x00000200</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_WINICON</ID>
+			<ID>IMAGE_WINICON</ID>
 			<Description>Windows Icon File</Description>
-			<Category>Graphic</Category>
+			<Category>Image</Category>
 			<MIMETypes>
 				<MIMEType>image/x-icon</MIMEType>
 			</MIMETypes>
@@ -122,38 +126,38 @@
 			</Extensions>
 			<Signatures>
 				<Signature minSize="16">
-					<Pattern xsi:type="bytes" offset="0">0x00000100</Pattern>
+					<Rule type="bytes" offset="0">0x00000100</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_ANICUR</ID>
+			<ID>IMAGE_ANICUR</ID>
 			<Description>Animated Cursor</Description>
-			<Category>Graphic</Category>
+			<Category>Image</Category>
 			<Wikipedia/>
 			<Extensions>
 				<Extension>ani</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">RIFF</Pattern>
-					<Pattern xsi:type="string" offset="8">ACON</Pattern>
+					<Rule type="string" offset="0">RIFF</Rule>
+					<Rule type="string" offset="8">ACON</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_TARGA</ID>
+			<ID>IMAGE_TARGA</ID>
 			<Description>Truevision TARGA</Description>
-			<Category>Graphic</Category>
+			<Category>Image</Category>
 			<Wikipedia>Truevision_TGA</Wikipedia>
 			<Extensions>
 				<Extension>tga</Extension>
 			</Extensions>
 		</FileType>
 		<FileType>
-			<ID>GRPH_TIFF</ID>
+			<ID>IMAGE_TIFF</ID>
 			<Description>Tagged Image File Format</Description>
-			<Category>Graphic</Category>
+			<Category>Image</Category>
 			<MIMETypes>
 				<MIMEType>image/tiff</MIMEType>
 			</MIMETypes>
@@ -164,10 +168,10 @@
 			</Extensions>
 		</FileType>
 		<FileType>
-			<ID>GRPH_WEBP</ID>
+			<ID>IMAGE_WEBP</ID>
 			<ParentID>BASE_RIFF</ParentID>
 			<Description>WebP Image Format</Description>
-			<Category>Graphic</Category>
+			<Category>Image</Category>
 			<MIMETypes>
 				<MIMEType>image/webp</MIMEType>
 			</MIMETypes>
@@ -177,8 +181,8 @@
 			</Extensions>
 			<Signatures>
 				<Signature minSize="12">
-					<Pattern xsi:type="string" offset="0">RIFF</Pattern>
-					<Pattern xsi:type="string" offset="8">WEBP</Pattern>
+					<Rule type="string" offset="0">RIFF</Rule>
+					<Rule type="string" offset="8">WEBP</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>

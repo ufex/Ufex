@@ -5,7 +5,6 @@
 			<ID>DB_MS_ACCESS</ID>
 			<Description>Microsoft Access Database</Description>
 			<Category>Database</Category>
-			<MIMEType/>
 			<Wikipedia>Microsoft_Access</Wikipedia>
 			<Extensions>
 				<Extension>mdb</Extension>
@@ -13,8 +12,8 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x00010000</Pattern>
-					<Pattern xsi:type="string" offset="4">Standard Jet</Pattern>
+					<Rule type="bytes" offset="0">0x00010000</Rule>
+					<Rule type="string" offset="4">Standard Jet</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -22,7 +21,9 @@
 			<ID>DB_SQLITE3</ID>
 			<Description>SQLite Database</Description>
 			<Category>Database</Category>
-			<MIMEType>application/x-sqlite3</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-sqlite3</MIMEType>
+			</MIMETypes>
 			<Wikipedia>SQLite</Wikipedia>
 			<Extensions>
 				<Extension>sqlite</Extension>
@@ -31,8 +32,8 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">SQLite format 3</Pattern>
-					<Pattern xsi:type="byte" offset="15">0x00</Pattern>
+					<Rule type="string" offset="0">SQLite format 3</Rule>
+					<Rule type="byte" offset="15">0x00</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -40,7 +41,9 @@
 			<ID>DB_POSTGRESQL_DUMP</ID>
 			<Description>PostgreSQL Custom Dump</Description>
 			<Category>Database</Category>
-			<MIMEType/>
+			<MIMETypes>
+				<MIMEType>application/x-pgsql-dump</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Pg_dump</Wikipedia>
 			<Extensions>
 				<Extension>dump</Extension>
@@ -49,8 +52,8 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">PGDMP</Pattern>
-					<Pattern xsi:type="byte" offset="5">0x01</Pattern>
+					<Rule type="string" offset="0">PGDMP</Rule>
+					<Rule type="byte" offset="5">0x01</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>

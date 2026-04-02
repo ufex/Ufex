@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Ufex.Controls.Avalonia.ByteLevelFileMapControl">
+
+	<Grid RowDefinitions="Auto,Auto,*">
+		<!-- Toolbar -->
+		<StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="16" Margin="4">
+			<StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+				<TextBlock Text="Row Width:" VerticalAlignment="Center" FontSize="12" />
+				<ComboBox x:Name="RowWidthCombo" SelectedIndex="1" MinWidth="80" FontSize="12">
+					<ComboBoxItem Content="64" />
+					<ComboBoxItem Content="128" />
+					<ComboBoxItem Content="256" />
+					<ComboBoxItem Content="512" />
+					<ComboBoxItem Content="1024" />
+					<ComboBoxItem Content="2048" />
+				</ComboBox>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+				<TextBlock Text="Zoom:" VerticalAlignment="Center" FontSize="12" />
+				<ComboBox x:Name="ZoomCombo" SelectedIndex="2" MinWidth="80" FontSize="12">
+					<ComboBoxItem Content="50%" />
+					<ComboBoxItem Content="75%" />
+					<ComboBoxItem Content="100%" />
+					<ComboBoxItem Content="150%" />
+					<ComboBoxItem Content="200%" />
+					<ComboBoxItem Content="250%" />
+					<ComboBoxItem Content="300%" />
+					<ComboBoxItem Content="400%" />
+					<ComboBoxItem Content="500%" />
+				</ComboBox>
+			</StackPanel>
+		</StackPanel>
+
+		<!-- Legend -->
+		<Border Grid.Row="1" Padding="8" Margin="4"
+				BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+				BorderThickness="1" CornerRadius="4">
+			<StackPanel>
+				<TextBlock Text="Legend" FontWeight="Bold" FontSize="12" Margin="0,0,0,4" />
+				<WrapPanel x:Name="LegendPanel" Orientation="Horizontal" />
+			</StackPanel>
+		</Border>
+
+		<!-- Main content area -->
+		<ScrollViewer Grid.Row="2" x:Name="MapScrollViewer" Margin="4"
+					  HorizontalScrollBarVisibility="Auto"
+					  VerticalScrollBarVisibility="Auto">
+			<Grid x:Name="MapGrid" ColumnDefinitions="Auto,Auto">
+				<!-- Column 0: Offset axis (added programmatically) -->
+				<!-- Column 1: Bitmap image -->
+				<Image x:Name="BitmapImage" Grid.Column="1"
+					   Stretch="None"
+					   VerticalAlignment="Top" />
+			</Grid>
+		</ScrollViewer>
+	</Grid>
+</UserControl>

@@ -100,19 +100,37 @@ public abstract class FileType : IFileType
 	public string Description { get; protected set; }
 
 	/// <summary>
-	/// Determines whether the Structure View Tab is displayed
+	/// Determines whether the Visual Tab is displayed
 	/// </summary>
-	public Boolean ShowTechnical { get; protected set; }
+	public bool EnableVisual { get; protected set; }
 
 	/// <summary>
-	/// Determines whether the Preview View Tab is displayed
+	/// Determines whether the Structure Tab is displayed
 	/// </summary>
-	public Boolean ShowGraphic { get; protected set; }
+	public bool EnableStructure { get; protected set; }
 
 	/// <summary>
 	/// Determines whether the Validation View Tab is displayed
 	/// </summary>
-	public Boolean ShowFileCheck { get; protected set; }
+	public bool EnableValidation { get; protected set; }
+
+	/// <summary>
+	/// Determines whether the Structure View Tab is displayed
+	/// </summary>
+	[Obsolete("Use EnableStructure instead")]
+	public Boolean ShowTechnical { get => EnableStructure; protected set { EnableStructure = value; } }
+
+	/// <summary>
+	/// Determines whether the Preview View Tab is displayed
+	/// </summary>
+	[Obsolete("Use EnableVisual instead")]
+	public Boolean ShowGraphic { get => EnableVisual; protected set { EnableVisual = value; } }
+
+	/// <summary>
+	/// Determines whether the Validation View Tab is displayed
+	/// </summary>
+	[Obsolete("Use EnableValidation instead")]
+	public Boolean ShowFileCheck { get => EnableValidation; protected set { EnableValidation = value; } }
 
 	/// <summary>
 	/// Logger instance for the FileType. Defaults to NullLogger.Instance.
@@ -138,9 +156,9 @@ public abstract class FileType : IFileType
 		_logger = NullLogger.Instance;
 		
 		// By default these tabs are hidden
-		ShowTechnical = false;
-		ShowGraphic = false;
-		ShowFileCheck = false;
+		EnableStructure = false;
+		EnableVisual = false;
+		EnableValidation = false;
 
 		// Initialize the QuickInfoTableData
 		_quickInfoTableData = new Ufex.API.Tables.QuickInfoTableData();

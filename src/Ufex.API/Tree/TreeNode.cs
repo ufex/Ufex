@@ -24,6 +24,40 @@ public class TreeNode
 	/// </summary>
 	public virtual Ufex.API.Visual.Visual[] Visuals => [];
 
+	/// <summary>
+	/// Gets the array of visuals to display when the tree node is selected,
+	/// with access to the file context for on-the-fly data reading.
+	/// The default implementation returns the value of the <see cref="Visuals"/> property
+	/// for backwards compatibility with existing tree node subclasses.
+	/// </summary>
+	/// <param name="context">The file context providing access to the file stream and reader.</param>
+	/// <returns>An array of visuals to display for this node.</returns>
+	public virtual Ufex.API.Visual.Visual[] GetVisuals(IFileContext context) => Visuals;
+
+	/// <summary>
+	/// Indicates this node has children that will be generated on demand
+	/// via <see cref="LoadChildren"/>. When true and <see cref="Nodes"/> is empty,
+	/// the UI will show an expand arrow and call <see cref="LoadChildren"/> when expanded.
+	/// </summary>
+	public virtual bool HasDeferredChildren => false;
+
+	/// <summary>
+	/// Gets whether <see cref="LoadChildren"/> has already been called.
+	/// </summary>
+	public bool ChildrenLoaded { get; private set; }
+
+	/// <summary>
+	/// Called by the UI when the user expands this node for the first time.
+	/// Override to populate <see cref="Nodes"/> with child TreeNodes.
+	/// The default implementation is a no-op. Always call <c>base.LoadChildren(context)</c>
+	/// at the end of your override to mark children as loaded.
+	/// </summary>
+	/// <param name="context">The file context providing access to the file stream and reader.</param>
+	public virtual void LoadChildren(IFileContext context)
+	{
+		ChildrenLoaded = true;
+	}
+
 	public TreeNode()
 	{
 		Text = string.Empty;

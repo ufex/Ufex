@@ -8,6 +8,10 @@ namespace Ufex.FileType.Config
 	public class Document
 	{
 		[XmlArray]
+		[XmlArrayItem(ElementName = "RuleDefinition")]
+		public RuleDefinition[] RuleDefinitions { get; set; }
+
+		[XmlArray]
 		[XmlArrayItem(ElementName = "FileType")]
 		public FileTypeRecord[] FileTypes { get; set; }
 

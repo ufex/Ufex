@@ -2,17 +2,16 @@
 <Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<FileTypes>
 		<FileType>
-			<ID>ROM_NES</ID>
+			<ID>EXEC_NES</ID>
 			<Description>iNES ROM Image</Description>
 			<Category>ROM</Category>
-			<MIMEType/>
 			<Wikipedia>Nintendo_Entertainment_System</Wikipedia>
 			<Extensions>
 				<Extension>nes</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x4E45531A</Pattern>
+					<Rule type="bytes" offset="0">0x4E45531A</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -20,7 +19,6 @@
 			<ID>ROM_GB</ID>
 			<Description>Game Boy ROM Image</Description>
 			<Category>ROM</Category>
-			<MIMEType/>
 			<Wikipedia>Game_Boy</Wikipedia>
 			<Extensions>
 				<Extension>gb</Extension>
@@ -28,7 +26,7 @@
 			<Signatures>
 				<Signature>
 					<!-- Nintendo logo at 0x104 -->
-					<Pattern xsi:type="bytes" offset="0x104">0xCEED6666CC0D000B</Pattern>
+					<Rule type="bytes" offset="0x104">0xCEED6666CC0D000B</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -36,7 +34,6 @@
 			<ID>ROM_GBC</ID>
 			<Description>Game Boy Color ROM Image</Description>
 			<Category>ROM</Category>
-			<MIMEType/>
 			<Wikipedia>Game_Boy_Color</Wikipedia>
 			<Extensions>
 				<Extension>gbc</Extension>
@@ -44,7 +41,7 @@
 			<Signatures>
 				<Signature>
 					<!-- Nintendo logo at 0x104 -->
-					<Pattern xsi:type="bytes" offset="0x104">0xCEED6666CC0D000B</Pattern>
+					<Rule type="bytes" offset="0x104">0xCEED6666CC0D000B</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -52,7 +49,6 @@
 			<ID>ROM_SNES</ID>
 			<Description>Super Nintendo ROM Image</Description>
 			<Category>ROM</Category>
-			<MIMEType/>
 			<Wikipedia>Super_Nintendo_Entertainment_System</Wikipedia>
 			<Extensions>
 				<Extension>sfc</Extension>
@@ -63,7 +59,6 @@
 			<ID>ROM_GENESIS</ID>
 			<Description>Sega Genesis/Mega Drive ROM Image</Description>
 			<Category>ROM</Category>
-			<MIMEType/>
 			<Wikipedia>Sega_Genesis</Wikipedia>
 			<Extensions>
 				<Extension>md</Extension>
@@ -73,7 +68,7 @@
 			<Signatures>
 				<Signature>
 					<!-- "SEGA" at offset 0x100 -->
-					<Pattern xsi:type="bytes" offset="0x100">0x53454741</Pattern>
+					<Rule type="bytes" offset="0x100">0x53454741</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -81,14 +76,13 @@
 			<ID>ROM_N64_Z64</ID>
 			<Description>Nintendo 64 ROM Image (Big-Endian)</Description>
 			<Category>ROM</Category>
-			<MIMEType/>
 			<Wikipedia>Nintendo_64</Wikipedia>
 			<Extensions>
 				<Extension>z64</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x80371240</Pattern>
+					<Rule type="bytes" offset="0">0x80371240</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -96,14 +90,13 @@
 			<ID>ROM_N64_N64</ID>
 			<Description>Nintendo 64 ROM Image (Little-Endian)</Description>
 			<Category>ROM</Category>
-			<MIMEType/>
 			<Wikipedia>Nintendo_64</Wikipedia>
 			<Extensions>
 				<Extension>n64</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x40123780</Pattern>
+					<Rule type="bytes" offset="0">0x40123780</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -111,14 +104,13 @@
 			<ID>ROM_N64_V64</ID>
 			<Description>Nintendo 64 ROM Image (Byte-Swapped)</Description>
 			<Category>ROM</Category>
-			<MIMEType/>
 			<Wikipedia>Nintendo_64</Wikipedia>
 			<Extensions>
 				<Extension>v64</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0x37804012</Pattern>
+					<Rule type="bytes" offset="0">0x37804012</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -126,7 +118,6 @@
 			<ID>ROM_PSX</ID>
 			<Description>PlayStation Executable</Description>
 			<Category>ROM</Category>
-			<MIMEType/>
 			<Wikipedia>PlayStation_(console)</Wikipedia>
 			<Extensions>
 				<Extension>exe</Extension>
@@ -135,29 +126,35 @@
 			<Signatures>
 				<Signature>
 					<!-- PS-X EXE header -->
-					<Pattern xsi:type="bytes" offset="0">0x50532D58204558</Pattern>
+					<Rule type="bytes" offset="0">0x50532D58204558</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>BIZHAWK_CDL</ID>
+			<ID>ROM_BIZHAWK_CDL</ID>
 			<Description>BizHawk Code/Data Logger File</Description>
 			<Category>Game</Category>
-			<MIMEType/>
 			<Extensions>
 				<Extension>cdl</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">BIZHAWK-CDL-2</Pattern>
+					<Rule type="string" offset="0">BIZHAWK-CDL-2</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
+			<ID>GRPH_2BPP</ID>
+			<Description>2BPP Image</Description>
+			<Category>Image</Category>
+			<Extensions>
+				<Extension>2bpp</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
 			<ID>GAME_UNREAL_PKG</ID>
 			<Description>Unreal Engine Package</Description>
-			<Category>Game</Category>
-			<MIMEType/>
+			<Category>Other</Category>
 			<Wikipedia>Unreal_Engine</Wikipedia>
 			<Extensions>
 				<Extension>upk</Extension>
@@ -170,7 +167,7 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0xC1832A9E</Pattern>
+					<Rule type="bytes" offset="0">0xC1832A9E</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>

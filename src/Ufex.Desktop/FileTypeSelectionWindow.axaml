@@ -1,0 +1,59 @@
+<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:fi="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
+		xmlns:local="clr-namespace:Ufex.Desktop"
+		x:Class="Ufex.Desktop.FileTypeSelectionWindow"
+		Title="Select File Type"
+		Icon="/assets/app-icon-256.png"
+		Width="460"
+		Height="340"
+		WindowStartupLocation="CenterOwner"
+		CanResize="False">
+	<DockPanel Margin="16">
+		<TextBlock DockPanel.Dock="Top"
+				   Text="Multiple file types were detected for this file. Please select one:"
+				   TextWrapping="Wrap"
+				   Margin="0,0,0,12" />
+
+		<StackPanel DockPanel.Dock="Bottom"
+					Orientation="Horizontal"
+					HorizontalAlignment="Right"
+					Spacing="8"
+					Margin="0,12,0,0">
+			<Button x:Name="OkButton"
+					Content="OK"
+					Width="80"
+					IsEnabled="False"
+					Click="OnOkClick" />
+			<Button Content="Cancel"
+					Width="80"
+					Click="OnCancelClick" />
+		</StackPanel>
+
+		<ListBox x:Name="FileTypeListBox"
+				 SelectionChanged="OnSelectionChanged"
+				 DoubleTapped="OnListBoxDoubleTapped">
+			<ListBox.ItemTemplate>
+				<DataTemplate x:DataType="local:FileTypeSelectionItem">
+					<Grid ColumnDefinitions="Auto,*,Auto,Auto">
+						<fi:SymbolIcon Grid.Column="0" Symbol="{Binding Icon}" FontSize="16" Margin="0,0,8,0" />
+						<TextBlock Grid.Column="1" Text="{Binding DisplayText}" VerticalAlignment="Center" />
+						<TextBlock Grid.Column="2" Text="{Binding MatchMethodText}"
+								   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+								   FontStyle="Italic"
+								   VerticalAlignment="Center"
+								   Margin="8,0,8,0" />
+						<Button Grid.Column="3" 
+								Click="OnShowMatchDetails"
+								Tag="{Binding Index}"
+								Padding="4"
+								Background="Transparent"
+								ToolTip.Tip="View match details">
+							<fi:SymbolIcon Symbol="Info" FontSize="12" />
+						</Button>
+					</Grid>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+	</DockPanel>
+</Window>

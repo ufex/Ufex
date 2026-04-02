@@ -5,15 +5,11 @@
 			<ID>EXEC_ELF</ID>
 			<Description>Executable Linking Format</Description>
 			<Category>Executable</Category>
-			<MIMEType/>
 			<Wikipedia>Executable_and_Linkable_Format</Wikipedia>
-			<Extensions>
-				<Extension/>
-			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="byte" offset="0">0x7F</Pattern>
-					<Pattern xsi:type="string" offset="1">ELF</Pattern>
+					<Rule type="byte" offset="0">0x7F</Rule>
+					<Rule type="string" offset="1">ELF</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -21,14 +17,13 @@
 			<ID>EXEC_JAVACLASS</ID>
 			<Description>Java Class</Description>
 			<Category>Executable</Category>
-			<MIMEType/>
 			<Wikipedia/>
 			<Extensions>
 				<Extension>class</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="bytes" offset="0">0xCAFEBABE</Pattern>
+					<Rule type="bytes" offset="0">0xCAFEBABE</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -36,25 +31,26 @@
 			<ID>EXEC_MSI</ID>
 			<Description>Windows Installer Package</Description>
 			<Category>Executable</Category>
-			<MIMEType/>
 			<Wikipedia/>
 			<Extensions>
-				<Extension>MSI</Extension>
+				<Extension>msi</Extension>
 			</Extensions>
 		</FileType>
 		<FileType>
 			<ID>EXEC_MZ</ID>
 			<Description>MS DOS Executable</Description>
 			<Category>Executable</Category>
-			<MIMEType>application/octet-stream</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/octet-stream</MIMEType>
+			</MIMETypes>
 			<Wikipedia/>
 			<Extensions>
 				<Extension>exe</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">MZ</Pattern>
-					<Pattern xsi:type="byte" offset="24" operator="lt">0x40</Pattern>
+					<Rule type="string" offset="0">MZ</Rule>
+					<Rule type="byte" offset="24" operator="lt">0x40</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -62,16 +58,17 @@
 			<ID>EXEC_NE</ID>
 			<Description>New Executable (EXE)</Description>
 			<Category>Executable</Category>
-			<MIMEType>application/octet-stream</MIMEType>
-			<Wikipedia/>
+			<MIMETypes>
+				<MIMEType>application/octet-stream</MIMEType>
+			</MIMETypes>
 			<Extensions>
 				<Extension>exe</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">MZ</Pattern>
-					<Pattern xsi:type="byte" offset="24" operator="gt">0x3F</Pattern>
-					<Pattern xsi:type="bytes" offset="0x3c" offsetType="readUInt32Le">0x4E4500</Pattern>
+					<Rule type="string" offset="0">MZ</Rule>
+					<Rule type="byte" offset="24" operator="gt">0x3F</Rule>
+					<Rule type="bytes" offset="@0x3c:uint32le">0x4E4500</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -79,16 +76,18 @@
 			<ID>EXEC_PE</ID>
 			<Description>Portable Executable (EXE)</Description>
 			<Category>Executable</Category>
-			<MIMEType>application/octet-stream</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/octet-stream</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Portable_Executable</Wikipedia>
 			<Extensions>
 				<Extension>exe</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">MZ</Pattern>
-					<Pattern xsi:type="byte" offset="24" operator="gt">0x3F</Pattern>
-					<Pattern xsi:type="bytes" offset="0x3c" offsetType="readUInt32Le">0x504500</Pattern>
+					<Rule type="string" offset="0">MZ</Rule>
+					<Rule type="byte" offset="24" operator="gt">0x3F</Rule>
+					<Rule type="bytes" offset="@0x3c:uint32le">0x504500</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -96,17 +95,18 @@
 			<ID>EXEC_SHOCKWAVE</ID>
 			<Description>Macromedia Flash File Format</Description>
 			<Category>Executable</Category>
-			<MIMEType>application/x-shockwave-flash</MIMEType>
+			<MIMETypes>
+				<MIMEType>application/x-shockwave-flash</MIMEType>
+			</MIMETypes>
 			<Wikipedia>Macromedia_Shockwave</Wikipedia>
 			<Extensions>
 				<Extension>swf</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Pattern xsi:type="string" offset="0">FWS</Pattern>
+					<Rule type="string" offset="0">FWS</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>
-
 	</FileTypes>
 </Ufex>

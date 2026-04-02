@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+
+		<IsPackable>false</IsPackable>
+
+		<PlatformTarget>AnyCPU</PlatformTarget>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.9.0" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.9.0" />
+		<PackageReference Include="coverlet.collector" Version="6.0.4" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Ufex.FileType\Ufex.FileType.csproj" />
+	</ItemGroup>
+
+</Project>

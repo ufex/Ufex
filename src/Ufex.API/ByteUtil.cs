@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Ufex.API.Types;
 
 namespace Ufex.API;
@@ -35,8 +36,41 @@ public class ByteUtil
 			ulong[] arr => arr.Length * sizeof(ulong),
 			float[] arr => arr.Length * sizeof(float),
 			double[] arr => arr.Length * sizeof(double),
+			Leb128UInt v => v.Size,
+			_ when value.GetType().IsValueType => GetCompositeValueTypeSize(value),
 			_ => 0 // TODO throw exception?
 		};
+	}
+
+	private static long GetCompositeValueTypeSize(object value)
+	{
+		Type valueType = value.GetType();
+		long size = 0;
+
+		PropertyInfo[] properties = valueType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+		foreach (PropertyInfo property in properties)
+		{
+			if (!property.CanRead || property.GetIndexParameters().Length > 0)
+				continue;
+
+			object? propertyValue = property.GetValue(value);
+			if (propertyValue is null)
+				continue;
+
+			size += GetObjectSize(propertyValue);
+		}
+
+		FieldInfo[] fields = valueType.GetFields(BindingFlags.Instance | BindingFlags.Public);
+		foreach (FieldInfo field in fields)
+		{
+			object? fieldValue = field.GetValue(value);
+			if (fieldValue is null)
+				continue;
+
+			size += GetObjectSize(fieldValue);
+		}
+
+		return size;
 	}
 
 	/// <summary>
@@ -49,6 +83,7 @@ public class ByteUtil
 	{ 
 		return ((v & (Byte)(1 << p)) != 0); 
 	}
+
 	/// <summary>
 	/// Get a bit from a UInt16
 	/// </summary>
@@ -112,7 +147,7 @@ public class ByteUtil
 	/// <returns>The byte at the specified position.</returns>
 	public static Byte GetByte(UInt64 value, int position) 
 	{ 
-		return (Byte)((value & (UInt64)(0xFF << (position * 8))) >> (position * 8)); 
+		return (Byte)((value & (0xFFUL << (position * 8))) >> (position * 8)); 
 	}
 
 	/// <summary>
@@ -173,6 +208,19 @@ public class ByteUtil
 	public static UInt16 SwapEndian(UInt16 x)
 	{
 		return (UInt16)((x >> 8) + (0xFF00 & (x << 8)));
+	}
+
+	/// <summary>
+	/// Swap the endianness of a UInt24
+	/// </summary>
+	/// <param name="x">The UInt24 to swap the endianness of.</param>
+	/// <returns>The UInt24 with the endianness swapped.</returns>
+	public static UInt24 SwapEndian(UInt24 x)
+	{
+		uint v = x;
+		return (UInt24)((0x0000FFu & (v >> 16)) |
+			(0x00FF00u & v) |
+			(0xFF0000u & (v << 16)));
 	}
 
 	/// <summary>
@@ -241,7 +289,7 @@ public class ByteUtil
 	/// <param name="data">The byte array to convert.</param>
 	/// <param name="endian">The endianness of the byte array.</param>
 	/// <param name="offset">The offset to start from.</param>
-	/// <returns>The UInt16.</returns>
+	/// <returns>The UInt16 value.</returns>
 	public static UInt16 BytesToUInt16(Byte[] data, Endian endian, int offset = 0)
 	{
 		if (endian == Endian.Little)
@@ -252,6 +300,13 @@ public class ByteUtil
 		return (ushort)BadEndian();
 	}
 
+	/// <summary>
+	/// Convert a byte array to a UInt32
+	/// </summary>
+	/// <param name="data">The byte array to convert.</param>
+	/// <param name="endian">The endianness of the byte array.</param>
+	/// <param name="offset">The offset to start from.</param>
+	/// <returns>The UInt32 value</returns>
 	public static UInt32 BytesToUInt32(Byte[] data, Endian endian, int offset = 0)
 	{
 		if (endian == Endian.Little)
@@ -271,6 +326,13 @@ public class ByteUtil
 		return (uint)BadEndian();
 	}
 
+	/// <summary>
+	/// Convert a byte array to a UInt64
+	/// </summary>
+	/// <param name="data">The byte array to convert.</param>
+	/// <param name="endian">The endianness of the byte array.</param>
+	/// <param name="off">The offset to start from.</param>
+	/// <returns>The UInt64 value.</returns>
 	public static UInt64 BytesToUInt64(Byte[] data, Endian endian, int off = 0)
 	{
 		UInt32 a = 0, b = 0;
@@ -291,6 +353,13 @@ public class ByteUtil
 		return (((UInt64)(b)) << 32) | ((UInt64)(a));
 	}
 
+	/// <summary>
+	/// Converts a byte array to a signed 16-bit integer considering the specified endianness.
+	/// </summary>
+	/// <param name="data">The byte array to convert.</param>
+	/// <param name="endian">The endianness of the byte array.</param>
+	/// <param name="offset">The offset to start from.</param>
+	/// <returns>The Int16 value.</returns>
 	public static Int16 BytesToInt16(Byte[] data, Endian endian, int offset = 0)
 	{
 		if (endian == Endian.Little)

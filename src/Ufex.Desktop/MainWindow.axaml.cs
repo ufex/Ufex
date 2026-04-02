@@ -57,6 +57,9 @@ public partial class MainWindow : Window
 		// Wire up drag-and-drop on the drop panel
 		AddHandler(DragDrop.DragOverEvent, OnDragOver);
 		AddHandler(DragDrop.DropEvent, OnDrop);
+
+		// Subscribe to InfoTab file type changed event
+		InfoTab.FileTypeChanged += OnInfoTabFileTypeChanged;
 	}
 
 	private void InitializeSettings()
@@ -273,7 +276,8 @@ public partial class MainWindow : Window
 	/// Heavy processing runs on a background thread to keep the UI responsive.
 	/// </summary>
 	/// <param name="filePath">The full path to the file to open.</param>
-	private async Task OpenFileAsync(string filePath)
+	/// <param name="overrideFileType">If set, skip auto-resolution and use this file type directly.</param>
+	private async Task OpenFileAsync(string filePath, FileTypeRecord? overrideFileType = null)
 	{
 		try
 		{
@@ -330,47 +334,82 @@ public partial class MainWindow : Window
 			if (_fileTypeManager != null)
 			{
 				var fileTypeManager = _fileTypeManager;
-				var result = await Task.Run(() =>
+				DetectionResult? detectionResult = await Task.Run(() =>
 				{
 					try
 					{
-						var detectedTypes = fileTypeManager.DetectFileType(filePath);
-						if(detectedTypes.Length == 1)
-						{
-							var detected = detectedTypes[0];
-							Logger.Info($"Detected file type: {detected.ID} - {detected.Description}");
-							return (detected, detected.Description);
-						}
-						else if(detectedTypes.Length > 1)
-						{
-							Logger.Info($"Multiple file types detected ({detectedTypes.Length}):");
-							foreach(var dt in detectedTypes)
-							{
-								Logger.Info($" - {dt.ID} - {dt.Description}");
-							}
-							// TODO: display a dialog box to let the user choose
-							// Just return the first one for now
-							var detected = detectedTypes[0];
-							return (detected, detected.Description);
-						}
-						else
-						{
-							Logger.Info("File type detection returned null");
-							return ((FileTypeRecord?)null, "Unknown File Type");
-						}
+						return fileTypeManager.DetectFileTypeDetailed(filePath);
 					}
 					catch (Exception ex)
 					{
 						Logger.Error(ex, $"File type detection failed: {ex.Message}");
-						return ((FileTypeRecord?)null, "Unknown File Type");
+						return null;
 					}
 				});
-				detectedFileType = result.Item1;
-				fileTypeDescription = result.Item2;
-			}
 
-			// Step 6: Display the file type on the Info tab (UI thread)
-			InfoTab.SetFileType(fileTypeDescription);
+				DetectionMatch? selectedMatch = null;
+
+				if (overrideFileType != null && detectionResult != null)
+				{
+					// User explicitly selected a type — find it in the detection result
+					selectedMatch = detectionResult.Matches
+						.FirstOrDefault(m => m.FileType.ID == overrideFileType.ID);
+					detectedFileType = overrideFileType;
+					Logger.Info($"Using override file type: {overrideFileType.ID} - {overrideFileType.Description}");
+				}
+				else if (detectionResult != null && detectionResult.Count == 1)
+				{
+					selectedMatch = detectionResult.Best;
+					detectedFileType = selectedMatch.FileType;
+					Logger.Info($"Detected file type: {detectedFileType.ID} - {detectedFileType.Description}");
+				}
+				else if (detectionResult != null && detectionResult.Count > 1)
+				{
+					Logger.Info($"Multiple file types detected ({detectionResult.Count}):");
+					foreach (var match in detectionResult.Matches)
+					{
+						Logger.Info($" - {match.FileType.ID} - {match.FileType.Description}");
+					}
+
+					selectedMatch = ResolveMultipleFileTypes(detectionResult);
+
+					// If hierarchy/no-plugin checks didn't resolve it, show selection dialog
+					if (selectedMatch == null)
+					{
+						var selectionWindow = new FileTypeSelectionWindow(detectionResult, fileTypeManager);
+						selectedMatch = await selectionWindow.ShowDialog<DetectionMatch?>(this);
+					}
+
+					if (selectedMatch != null)
+					{
+						detectedFileType = selectedMatch.FileType;
+					}
+				}
+				else
+				{
+					Logger.Info("File type detection returned null");
+				}
+
+				// Update Info tab with full detection result
+				if (detectionResult != null && detectionResult.Count > 0)
+				{
+					int selectedIndex = selectedMatch != null 
+						? detectionResult.Matches.IndexOf(selectedMatch) 
+						: 0;
+					InfoTab.SetDetectionResult(detectionResult, selectedIndex);
+				}
+				else
+				{
+					fileTypeDescription = "Unknown File Type";
+					InfoTab.SetFileType(fileTypeDescription);
+				}
+
+				fileTypeDescription = detectedFileType?.Description ?? "Unknown File Type";
+			}
+			else
+			{
+				InfoTab.SetFileType("Unknown File Type");
+			}
 
 			// Step 7: Open a read-only file stream for the file
 			SetStatus("Opening file stream...");
@@ -388,120 +427,20 @@ public partial class MainWindow : Window
 			// Step 8: Initialize the hex viewer with the file stream (UI thread)
 			HexTab.LoadStream(_openFileStream);
 
-			// Step 9: If file type is known, check for associated plugin
+			// Step 9: If file type is known, check for associated plugin and load handler
 			if (detectedFileType != null && _fileTypeManager != null)
 			{
-				SetStatus("Loading file type handler...");
 				try
 				{
-					// Get the file type classes for this file type
-					var fileTypeClasses = _fileTypeManager.GetFileTypeClassesByFileType(detectedFileType.ID);
-					Logger.Info($"Found {fileTypeClasses.Length} file type classes for {detectedFileType.ID}");
-					if (fileTypeClasses != null && fileTypeClasses.Length > 0)
-					{
-						// Use the first one for now
-						var fileTypeClass = fileTypeClasses[0];
-						Logger.Info($"Using file type class: {fileTypeClass.ID} - {fileTypeClass.FullTypeName}");
-
-						// Get the file type instance
-						_currentFileType = _fileTypeManager.GetNewClassInstance(fileTypeClass.ID);
-						if (_currentFileType != null)
-						{
-							// Set up logger for the file type with memory logging enabled
-							var assemblyName = _currentFileType.GetType().Assembly.GetName().Name ?? "FileType";
-							_currentFileType.Logger = new Logger($"{assemblyName}.log", enableMemoryLog: true);
-
-							Logger.Info($"Created instance of file type class: {_currentFileType.GetType().FullName}");
-
-							// Set the file stream on the file type instance
-							_openFileStream.Seek(0, SeekOrigin.Begin);
-							_currentFileType.FileInStream = _openFileStream;
-							_currentFileType.FilePath = filePath;
-
-							// Step 10: Run the ProcessFile function on background thread
-							SetStatus("Processing file...");
-							var fileType = _currentFileType;
-							bool processResult = await Task.Run(() => fileType.ProcessFile());
-
-							if (!processResult)
-							{
-								Logger.Error("ProcessFile returned false");
-							}
-
-							// Step 11: Toggle visible tabs based on file type settings (UI thread)
-							SetTabVisibility(
-								_currentFileType.ShowGraphic,      // Visual tab
-								_currentFileType.ShowTechnical,    // Structure tab
-								_currentFileType.ShowFileCheck     // Validation tab
-							);
-
-							// Step 12: Set number format on the file type instance
-							_currentFileType.NumFormat = _currentNumberFormat;
-
-							// Step 13: Call QuickInfoTable property to populate the data grid on the Info tab
-							try
-							{
-								var quickInfo = _currentFileType.QuickInfoTable;
-								if (quickInfo != null)
-								{
-									InfoTab.LoadQuickInfo(quickInfo);
-								}
-							}
-							catch (Exception ex)
-							{
-								Logger.Error($"Failed to get QuickInfoTable: {ex.Message}");
-							}
-
-							// Step 14: Populate the structure tab with TreeNodes if ShowTechnical is true
-							if (_currentFileType.ShowTechnical)
-							{
-								try
-								{
-									var formatter = new DataFormatter();
-									formatter.NumFormat = _currentNumberFormat;
-									StructureTab.SetFileType(_currentFileType, formatter);
-									StructureTab.LoadTreeNodes(_currentFileType.TreeNodes);
-								}
-								catch (Exception ex)
-								{
-									Logger.Error($"Failed to load structure: {ex.Message}");
-								}
-							}
-
-							// Step 15: Retrieve the ValidationReport and display on Validation tab
-							if (_currentFileType.ShowFileCheck)
-							{
-								try
-								{
-									var validationReport = _currentFileType.ValidationReport;
-									ValidationTab.LoadValidationReport(validationReport);
-								}
-								catch (Exception ex)
-								{
-									Logger.Error($"Failed to load validation report: {ex.Message}");
-								}
-							}
-
-							// Step 16: If ShowGraphic is true, build the Visual tab based on the Visuals property
-							if (_currentFileType.ShowGraphic)
-							{
-								try
-								{
-									var visuals = _currentFileType.Visuals;
-									long fileSize = _openFileStream?.Length ?? 0;
-									VisualTab.LoadVisuals(visuals, fileSize);
-								}
-								catch (Exception ex)
-								{
-									Logger.Error($"Failed to load visuals: {ex.Message}");
-								}
-							}
-						}
-					}
+					await LoadFileTypeHandler(detectedFileType, filePath);
 				}
 				catch (Exception ex)
 				{
 					Logger.Error(ex, "MainWindow.OpenFileAsync: Failed to load file type handler");
+					ShowError("File Type Handler Error", 
+						$"Failed to load file type handler for {detectedFileType.Description}.\n\n" +
+						$"Error: {ex.Message}\n\n" +
+						"Basic file information is still available.");
 					// Continue without the plugin - basic file info is still shown
 				}
 			}
@@ -525,6 +464,183 @@ public partial class MainWindow : Window
 	{
 		// Fire and forget - for backwards compatibility
 		_ = OpenFileAsync(filePath);
+	}
+
+	/// <summary>
+	/// Resolves multiple detected file types without user interaction when possible.
+	/// Returns the resolved match, or null if a user selection dialog is needed.
+	/// </summary>
+	private DetectionMatch? ResolveMultipleFileTypes(DetectionResult result)
+	{
+		if (result == null || result.Count == 0)
+			return null;
+
+		var matches = result.Matches;
+
+		// Rule 1: If the types form a parent/child hierarchy (2-3 types), pick the most specific (first).
+		if (matches.Count <= 3 && IsParentChildHierarchy(matches))
+		{
+			Logger.Info($"File types form a parent/child hierarchy, selecting most specific: {matches[0].FileType.ID}");
+			return matches[0];
+		}
+
+		// Rule 2: If none of the types have a plugin handler, pick the first (most specific).
+		if (_fileTypeManager != null && !matches.Any(m => _fileTypeManager.GetFileTypeClassesByFileType(m.FileType.ID).Length > 0))
+		{
+			Logger.Info($"No file types have plugin handlers, selecting first: {matches[0].FileType.ID}");
+			return matches[0];
+		}
+
+		// Rule 3: Need user selection
+		return null;
+	}
+
+	/// <summary>
+	/// Checks whether the detected file types form a single parent/child chain.
+	/// The list is expected to be sorted by specificity (most specific first).
+	/// </summary>
+	private static bool IsParentChildHierarchy(System.Collections.Generic.List<DetectionMatch> matches)
+	{
+		if (matches.Count < 2)
+			return false;
+
+		// Walk the chain: each type (except the last) should have its ParentID
+		// equal to the next type's ID.
+		for (int i = 0; i < matches.Count - 1; i++)
+		{
+			var current = matches[i].FileType;
+			var next = matches[i + 1].FileType;
+			if (string.IsNullOrEmpty(current.ParentID) || current.ParentID != next.ID)
+				return false;
+		}
+
+		return true;
+	}
+
+	/// <summary>
+	/// Handles the file type changed event from the InfoTab dropdown.
+	/// </summary>
+	private async void OnInfoTabFileTypeChanged(object? sender, DetectionMatch? match)
+	{
+		if (match == null || match.FileType == null || _openFileStream == null)
+			return;
+
+		// Get the file path before we close everything
+		string filePath = _openFileStream.Name;
+
+		Logger.Info($"User changed file type to: {match.FileType.ID} - {match.FileType.Description}");
+
+		// Re-open the file from scratch with the selected type
+		await OpenFileAsync(filePath, match.FileType);
+	}
+
+	/// <summary>
+	/// Loads and processes a file type handler for the given file type.
+	/// </summary>
+	private async Task LoadFileTypeHandler(Ufex.FileType.FileTypeRecord fileType, string filePath)
+	{
+		if (_fileTypeManager == null || _openFileStream == null)
+			return;
+
+		SetStatus("Loading file type handler...");
+
+		// Get the file type classes for this file type
+		var fileTypeClasses = _fileTypeManager.GetFileTypeClassesByFileType(fileType.ID);
+		Logger.Info($"Found {fileTypeClasses.Length} file type classes for {fileType.ID}");
+
+		if (fileTypeClasses == null || fileTypeClasses.Length == 0)
+		{
+			Logger.Info($"No file type classes found for {fileType.ID}");
+			SetStatus($"No plugin available for {fileType.Description}");
+			return;
+		}
+
+		// Use the first one for now
+		var fileTypeClass = fileTypeClasses[0];
+		Logger.Info($"Using file type class: {fileTypeClass.ID} - {fileTypeClass.FullTypeName}");
+
+		// Get the file type instance
+		_currentFileType = _fileTypeManager.GetNewClassInstance(fileTypeClass.ID);
+		if (_currentFileType == null)
+		{
+			Logger.Error("Failed to create file type handler instance");
+			SetStatus("Error loading handler");
+			return;
+		}
+
+		// Set up logger for the file type with memory logging enabled
+		var assemblyName = _currentFileType.GetType().Assembly.GetName().Name ?? "FileType";
+		_currentFileType.Logger = new Logger($"{assemblyName}.log", enableMemoryLog: true);
+		Logger.Info($"Created instance of file type class: {_currentFileType.GetType().FullName}");
+
+		// Set the file stream on the file type instance
+		_currentFileType.FileInStream = _openFileStream;
+		_currentFileType.FilePath = filePath;
+
+		// Process the file
+		SetStatus("Processing file...");
+		_openFileStream.Position = 0;
+		await Task.Run(() =>
+		{
+			try
+			{
+				_currentFileType.ProcessFile();
+			}
+			catch (Exception ex)
+			{
+				Logger.Error(ex, "Error processing file with handler");
+				throw;
+			}
+		});
+
+		// Toggle the visible tabs based on what the file type supports
+		bool showStructure = _currentFileType.EnableStructure;
+		bool showValidation = _currentFileType.EnableValidation;
+		bool showVisual = _currentFileType.EnableVisual;
+		SetTabVisibility(showVisual, showStructure, showValidation);
+
+		// Set the number format on the file type instance
+		_currentFileType.NumFormat = _currentNumberFormat;
+
+		// Load the QuickInfo table
+		if (_currentFileType.QuickInfoTable != null)
+		{
+			InfoTab.LoadQuickInfo(_currentFileType.QuickInfoTable);
+		}
+
+		// Load the structure tab if enabled
+		if (showStructure && _currentFileType.TreeNodes != null)
+		{
+			var formatter = new DataFormatter();
+			formatter.NumFormat = _currentNumberFormat;
+			StructureTab.SetFileType(_currentFileType, formatter);
+			StructureTab.LoadTreeNodes(_currentFileType.TreeNodes);
+		}
+
+		// Load the validation tab if enabled
+		if (showValidation && _currentFileType.ValidationReport != null)
+		{
+			ValidationTab.LoadValidationReport(_currentFileType.ValidationReport);
+		}
+
+		// Load the visual tab if enabled
+		if (showVisual && _currentFileType.Visuals != null)
+		{
+			long fileSize = _openFileStream?.Length ?? 0;
+			VisualTab.LoadVisuals(_currentFileType.Visuals, fileSize);
+		}
+
+		// Display the plugin's changelog if it has one
+		if (_currentFileType.Logger is Logger logger)
+		{
+			var changelog = logger.Text;
+			if (!string.IsNullOrEmpty(changelog))
+			{
+				Logger.Info($"Plugin log:\n{changelog}");
+			}
+		}
+
+		SetStatus($"Loaded: {Path.GetFileName(filePath)}");
 	}
 
 	/// <summary>

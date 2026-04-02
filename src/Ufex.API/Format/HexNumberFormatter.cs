@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
+using Ufex.API.Types;
 
 namespace Ufex.API.Format;
 
 public class HexNumberFormatter
 {
-	private static string[] hexCharsLowercase = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
-	private static string[] hexCharsUppercase = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
+	private static string[] HexCharsLowercase = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
+	private static string[] HexCharsUppercase = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
 
 	private bool caps = true;
 	private bool lead0X = true;
@@ -67,7 +68,7 @@ public class HexNumberFormatter
 		Byte n1 = (byte)(x / 16);
 		Byte n2 = (byte)(x % 16);
 
-		string[] chars = caps ? hexCharsUppercase : hexCharsLowercase;
+		string[] chars = caps ? HexCharsUppercase : HexCharsLowercase;
 
 		if(x < 16 && !leadZeros)
 			return String.Concat(prefix, chars[n2]);
@@ -94,17 +95,17 @@ public class HexNumberFormatter
 			if(!leadZeros)
 			{
 				if(x < 16)
-					return String.Concat(prefix, hexCharsUppercase[n1]); 
+					return String.Concat(prefix, HexCharsUppercase[n1]); 
 				else if(x < 256)
-					return String.Concat(prefix, hexCharsUppercase[n2], hexCharsUppercase[n1]); 
+					return String.Concat(prefix, HexCharsUppercase[n2], HexCharsUppercase[n1]); 
 				else if(x < 4096)
-					return String.Concat(String.Concat(prefix, hexCharsUppercase[n3]), String.Concat(hexCharsUppercase[n2], hexCharsUppercase[n1]));
+					return String.Concat(String.Concat(prefix, HexCharsUppercase[n3]), String.Concat(HexCharsUppercase[n2], HexCharsUppercase[n1]));
 				else
-					return String.Concat(String.Concat(prefix, hexCharsUppercase[n4]), String.Concat(hexCharsUppercase[n3], hexCharsUppercase[n2], hexCharsUppercase[n1])); 
+					return String.Concat(String.Concat(prefix, HexCharsUppercase[n4]), String.Concat(HexCharsUppercase[n3], HexCharsUppercase[n2], HexCharsUppercase[n1])); 
 			}
 			else
 			{
-				return String.Concat(String.Concat(prefix, hexCharsUppercase[n4]), String.Concat(hexCharsUppercase[n3], hexCharsUppercase[n2], hexCharsUppercase[n1]));
+				return String.Concat(String.Concat(prefix, HexCharsUppercase[n4]), String.Concat(HexCharsUppercase[n3], HexCharsUppercase[n2], HexCharsUppercase[n1]));
 			}
 		}
 		else
@@ -112,17 +113,17 @@ public class HexNumberFormatter
 			if (!leadZeros)
 			{
 				if (x < 16)
-					return String.Concat(prefix, hexCharsLowercase[n1]);
+					return String.Concat(prefix, HexCharsLowercase[n1]);
 				else if (x < 256)
-					return String.Concat(prefix, hexCharsLowercase[n2], hexCharsLowercase[n1]);
+					return String.Concat(prefix, HexCharsLowercase[n2], HexCharsLowercase[n1]);
 				else if (x < 4096)
-					return String.Concat(String.Concat(prefix, hexCharsLowercase[n3]), String.Concat(hexCharsLowercase[n2], hexCharsLowercase[n1]));
+					return String.Concat(String.Concat(prefix, HexCharsLowercase[n3]), String.Concat(HexCharsLowercase[n2], HexCharsLowercase[n1]));
 				else
-					return String.Concat(String.Concat(prefix, hexCharsLowercase[n4]), String.Concat(hexCharsLowercase[n3], hexCharsLowercase[n2], hexCharsLowercase[n1]));
+					return String.Concat(String.Concat(prefix, HexCharsLowercase[n4]), String.Concat(HexCharsLowercase[n3], HexCharsLowercase[n2], HexCharsLowercase[n1]));
 			}
 			else
 			{
-				return String.Concat(prefix, hexCharsLowercase[n4]) + String.Concat(hexCharsLowercase[n3], hexCharsLowercase[n2], hexCharsLowercase[n1]);
+				return String.Concat(prefix, HexCharsLowercase[n4]) + String.Concat(HexCharsLowercase[n3], HexCharsLowercase[n2], HexCharsLowercase[n1]);
 			}
 		}
 	}
@@ -153,6 +154,17 @@ public class HexNumberFormatter
 		}
 
 		return prefix + padding + x.ToString(toStringFormat, numberFormatInfo);
+	}
+
+	public string UInt24(UInt24 x)
+	{
+		if (endian == Endian.Little)
+		{
+			x = ByteUtil.SwapEndian(x);
+		}
+
+		UInt32 value = (UInt32)x;
+		return prefix + value.ToString(toStringFormat + (leadZeros ? "6" : ""), numberFormatInfo);
 	}
 
 	public string UInt64(UInt64 x)

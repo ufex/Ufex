@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<RuleDefinitions>
+		<RuleDefinition name="ole2compound">
+			<Rule type="bytes" offset="0">0xD0CF11E0A1B11AE1</Rule>
+			<Rule type="bytes" offset="0x1A" operator="neq">0xABAB</Rule>
+			<Rule type="bytes" offset="0x1C">0xfeff</Rule>
+		</RuleDefinition>
+		<RuleDefinition name="signature_xls_97_2003">
+			<Rule type="byte" offset="66">0x05</Rule>
+			<Rule type="bytes" offset="88">0xc000000000000046</Rule>
+			<Rule type="bytes" offset="80">0x2008020000000000</Rule>
+		</RuleDefinition>
+		<RuleDefinition name="signature_doc_97_2003">
+			<Rule type="byte" offset="66">0x05</Rule>
+			<Rule type="bytes" offset="88">0xc000000000000046</Rule>
+			<Rule type="bytes" offset="80">0x0609020000000000</Rule>
+		</RuleDefinition>
+		<RuleDefinition name="signature_ppt_97_2003">
+			<Rule type="byte" offset="66">0x05</Rule>
+			<Rule type="bytes" offset="88">0x86ea00aa00b929e8</Rule>
+			<Rule type="bytes" offset="80">0x108d81649b4fcf11</Rule>
+		</RuleDefinition>
+	</RuleDefinitions>
+	<FileTypes>
+		<FileType>
+			<ID>DOC_MS_EXCEL_97_2003</ID>
+			<Description>Microsoft Excel 97-2003 Workbook</Description>
+			<Category>Document</Category>
+			<MIMETypes>
+				<MIMEType>application/vnd.ms-excel</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Microsoft_Excel</Wikipedia>
+			<Extensions>
+				<Extension>xls</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<RuleRef name="ole2compound" />
+					<RuleGroup match="any">
+						<RuleGroup match="all">
+							<Rule type="bytes" offset="0x1E">0xC000</Rule>
+							<RuleGroup match="all" base="(@48:uint32le + 1) * 4096">
+								<Rule type="byte" offset="66">0x05</Rule>
+								<RuleRef name="signature_xls_97_2003" />
+							</RuleGroup>
+						</RuleGroup>
+						<RuleGroup match="all">
+							<Rule type="bytes" offset="0x1E">0x0900</Rule>
+							<RuleGroup match="all" base="(@48:uint32le + 1) * 512">
+								<RuleRef name="signature_xls_97_2003" />
+							</RuleGroup>
+						</RuleGroup>
+					</RuleGroup>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>DOC_MS_WORD_97_2003</ID>
+			<Description>Microsoft Word 97-2003 Document</Description>
+			<Category>Document</Category>
+			<MIMETypes>
+				<MIMEType>application/msword</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Microsoft_Word</Wikipedia>
+			<Extensions>
+				<Extension>doc</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<RuleRef name="ole2compound" />
+					<RuleGroup match="any">
+						<RuleGroup match="all">
+							<Rule type="bytes" offset="0x1E">0xC000</Rule>
+							<RuleGroup match="all" base="(@48:uint32le + 1) * 4096">
+								<Rule type="byte" offset="66">0x05</Rule>
+								<RuleRef name="signature_doc_97_2003" />
+							</RuleGroup>
+						</RuleGroup>
+						<RuleGroup match="all">
+							<Rule type="bytes" offset="0x1E">0x0900</Rule>
+							<RuleGroup match="all" base="(@48:uint32le + 1) * 512">
+								<RuleRef name="signature_doc_97_2003" />
+							</RuleGroup>
+						</RuleGroup>
+					</RuleGroup>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>DOCS_MS_POWERPOINT_97_2003</ID>
+			<Description>Microsoft PowerPoint 97-2003 Presentation</Description>
+			<Category>Document</Category>
+			<MIMETypes>
+				<MIMEType>application/vnd.ms-powerpoint</MIMEType>
+			</MIMETypes>
+			<Extensions>
+				<Extension>ppt</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<RuleRef name="ole2compound" />
+					<RuleGroup match="any">
+						<RuleGroup match="all">
+							<Rule type="bytes" offset="0x1E">0xC000</Rule>
+							<RuleGroup match="all" base="(@48:uint32le + 1) * 4096">
+								<Rule type="byte" offset="66">0x05</Rule>
+								<RuleRef name="signature_ppt_97_2003" />
+							</RuleGroup>
+						</RuleGroup>
+						<RuleGroup match="all">
+							<Rule type="bytes" offset="0x1E">0x0900</Rule>
+							<RuleGroup match="all" base="(@48:uint32le + 1) * 512">
+								<RuleRef name="signature_ppt_97_2003" />
+							</RuleGroup>
+						</RuleGroup>
+					</RuleGroup>
+				</Signature>
+			</Signatures>
+		</FileType>
+	</FileTypes>
+</Ufex>

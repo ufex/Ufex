@@ -30,7 +30,7 @@
                       Background="#1E1E1E">
             <Panel Name="ImageContainer" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Image Name="RasterImageDisplay" 
-                       Stretch="None"
+                      Stretch="Fill"
                        IsVisible="False" />
                 <svg:Svg Name="SvgImageDisplay"
                          IsVisible="False" />

@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using Ufex.API;
 
 namespace Ufex.API.Tests
 {

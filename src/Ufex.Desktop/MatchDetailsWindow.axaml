@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		x:Class="Ufex.Desktop.MatchDetailsWindow"
+		Title="Match Details"
+		Icon="/assets/app-icon-256.png"
+		Width="520"
+		Height="400"
+		WindowStartupLocation="CenterOwner"
+		CanResize="True">
+	<DockPanel Margin="16">
+		<TextBlock DockPanel.Dock="Top"
+				   x:Name="TitleText"
+				   FontSize="16"
+				   FontWeight="SemiBold"
+				   Margin="0,0,0,12" />
+		
+		<Button DockPanel.Dock="Bottom"
+				Content="Close"
+				Width="80"
+				HorizontalAlignment="Right"
+				Margin="0,12,0,0"
+				Click="OnCloseClick" />
+		
+		<ScrollViewer VerticalScrollBarVisibility="Auto">
+			<TextBlock x:Name="DetailsText"
+					   TextWrapping="Wrap"
+					   FontFamily="Consolas,Courier New,monospace" />
+		</ScrollViewer>
+	</DockPanel>
+</Window>

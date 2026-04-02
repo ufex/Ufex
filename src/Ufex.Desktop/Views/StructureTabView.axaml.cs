@@ -1,6 +1,8 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using AvaloniaEdit;
@@ -9,7 +11,10 @@ using FluentIcons.Common;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using Avalonia.Threading;
 using Ufex.API;
 using Ufex.API.Tables;
 using Ufex.API.Tree;
@@ -29,6 +34,11 @@ public class StructureTreeNode
 	public TreeNode SourceNode { get; set; } = null!;
 	public Symbol Icon { get; set; } = Symbol.Document;
 	public ObservableCollection<StructureTreeNode> Children { get; } = new();
+
+	/// <summary>
+	/// True if this node's children are deferred and not yet loaded.
+	/// </summary>
+	public bool IsDeferred { get; set; }
 }
 
 /// <summary>
@@ -76,6 +86,7 @@ public partial class StructureTabView : UserControl
 		if (_treeView != null)
 		{
 			_treeView.SelectionChanged += OnTreeSelectionChanged;
+			_treeView.AddHandler(TreeViewItem.ExpandedEvent, OnTreeViewItemExpanded);
 
 			// Set up the item template for the tree view
 			_treeView.ItemTemplate = new FuncTreeDataTemplate<StructureTreeNode>(
@@ -218,13 +229,97 @@ public partial class StructureTabView : UserControl
 			Icon = MapTreeViewIcon(node.Icon)
 		};
 
-		// Recursively add children
-		foreach (var child in node.Nodes)
+		if (node.HasDeferredChildren && !node.ChildrenLoaded && node.Nodes.Count == 0)
 		{
-			viewNode.Children.Add(ConvertToViewNode(child));
+			// Add a placeholder so Avalonia shows the expand arrow
+			viewNode.IsDeferred = true;
+			viewNode.Children.Add(new StructureTreeNode
+			{
+				Text = "Loading...",
+				Icon = Symbol.MoreHorizontal
+			});
+		}
+		else
+		{
+			// Recursively add children
+			foreach (var child in node.Nodes)
+			{
+				viewNode.Children.Add(ConvertToViewNode(child));
+			}
 		}
 
 		return viewNode;
+	}
+
+	/// <summary>
+	/// Handles TreeViewItem expansion to load deferred children on demand.
+	/// </summary>
+	private void OnTreeViewItemExpanded(object? sender, RoutedEventArgs e)
+	{
+		if (e.Source is not TreeViewItem item)
+			return;
+
+		if (item.DataContext is not StructureTreeNode viewNode || !viewNode.IsDeferred)
+			return;
+
+		_ = LoadDeferredChildrenAsync(viewNode);
+	}
+
+	/// <summary>
+	/// Loads deferred children for a tree node on a background thread,
+	/// showing a loading indicator while the work is in progress.
+	/// </summary>
+	private async Task LoadDeferredChildrenAsync(StructureTreeNode viewNode)
+	{
+		if (_fileType == null)
+			return;
+
+		// Mark as no longer deferred so repeated expansion doesn't retrigger
+		viewNode.IsDeferred = false;
+
+		// Show loading indicator
+		viewNode.Children.Clear();
+		viewNode.Children.Add(new StructureTreeNode
+		{
+			Text = "Loading...",
+			Icon = Symbol.ArrowSyncCircle
+		});
+
+		try
+		{
+			var fileType = _fileType;
+
+			// Run the expensive LoadChildren on a background thread
+			await Task.Run(() =>
+			{
+				var filePath = fileType.FilePath;
+				if (string.IsNullOrWhiteSpace(filePath))
+				{
+					throw new InvalidOperationException("Unable to load deferred children because the file path is not available.");
+				}
+
+				using var backgroundStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+				var context = new FileContext(backgroundStream, fileType.NumFormat);
+				viewNode.SourceNode.LoadChildren(context);
+			});
+
+			// Back on UI thread — replace placeholder with real children
+			viewNode.Children.Clear();
+			foreach (var child in viewNode.SourceNode.Nodes)
+			{
+				viewNode.Children.Add(ConvertToViewNode(child));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Error($"Error loading deferred children for node '{viewNode.Text}': {ex}");
+			viewNode.Children.Clear();
+			viewNode.Children.Add(new StructureTreeNode
+			{
+				Text = $"Error: {ex.Message}",
+				Icon = Symbol.ErrorCircle
+			});
+		}
 	}
 
 	/// <summary>
@@ -277,7 +372,8 @@ public partial class StructureTabView : UserControl
 
 		try
 		{
-			var visuals = selectedItem.SourceNode.Visuals;
+			var context = new FileContext(_fileType.FileInStream, _fileType.NumFormat);
+			var visuals = selectedItem.SourceNode.GetVisuals(context);
 			LoadVisuals(visuals);
 		}
 		catch (Exception ex)
@@ -661,7 +757,8 @@ public partial class StructureTabView : UserControl
 
 		try
 		{
-			var visuals = selectedItem.SourceNode.Visuals;
+			var context = new FileContext(_fileType.FileInStream, _fileType.NumFormat);
+			var visuals = selectedItem.SourceNode.GetVisuals(context);
 			LoadVisuals(visuals);
 		}
 		catch
