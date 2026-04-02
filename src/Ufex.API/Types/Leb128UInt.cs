@@ -44,21 +44,34 @@ public struct Leb128UInt : IEquatable<Leb128UInt>, IComparable<Leb128UInt>, ICom
 
 	public Leb128UInt(byte[] value)
 	{
+		if (value == null) throw new ArgumentNullException(nameof(value));
+
 		BigInteger result = 0;
 		int shift = 0;
+		int consumedBytes = 0;
+		bool terminated = false;
 
 		foreach(byte b in value)
 		{
+			if (consumedBytes >= MaxBytes)
+				throw new InvalidDataException("LEB128 value too large.");
+
+			consumedBytes += 1;
 			result |= (BigInteger)(b & 0x7F) << shift;
 			if ((b & 0x80) == 0)
+			{
+				terminated = true;
 				break;
+			}
+
 			shift += 7;
-			if (shift >= MaxBytes * 7) // Protect against malformed data
-				throw new InvalidDataException("LEB128 value too large.");
 		}
 
+		if (!terminated)
+			throw new InvalidDataException("LEB128 value is missing a terminating byte.");
+
 		_value = result;
-		Size = value.Length;
+		Size = consumedBytes;
 	}
 
 	public Leb128UInt(BigInteger value)

@@ -201,8 +201,12 @@ public class FileReader : BinaryReader
 			if(b == -1)
 				throw new EndOfStreamException();
 			bytes.Add((byte)b);
+			if (bytes.Count > Leb128UInt.MaxBytes)
+				throw new InvalidDataException($"LEB128 value exceeds maximum length of {Leb128UInt.MaxBytes} bytes.");
 			if ((b & 0x80) == 0)
 				break;
+			if (bytes.Count == Leb128UInt.MaxBytes)
+				throw new InvalidDataException($"LEB128 value exceeds maximum length of {Leb128UInt.MaxBytes} bytes.");
 		}
 		return new Leb128UInt(bytes.ToArray());
 	}

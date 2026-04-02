@@ -156,9 +156,9 @@ public abstract class FileType : IFileType
 		_logger = NullLogger.Instance;
 		
 		// By default these tabs are hidden
-		ShowTechnical = false;
-		ShowGraphic = false;
-		ShowFileCheck = false;
+		EnableStructure = false;
+		EnableVisual = false;
+		EnableValidation = false;
 
 		// Initialize the QuickInfoTableData
 		_quickInfoTableData = new Ufex.API.Tables.QuickInfoTableData();

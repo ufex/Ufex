@@ -11,6 +11,7 @@ using FluentIcons.Common;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
@@ -291,7 +292,14 @@ public partial class StructureTabView : UserControl
 			// Run the expensive LoadChildren on a background thread
 			await Task.Run(() =>
 			{
-				var context = new FileContext(fileType.FileInStream, fileType.NumFormat);
+				var filePath = fileType.FilePath;
+				if (string.IsNullOrWhiteSpace(filePath))
+				{
+					throw new InvalidOperationException("Unable to load deferred children because the file path is not available.");
+				}
+
+				using var backgroundStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+				var context = new FileContext(backgroundStream, fileType.NumFormat);
 				viewNode.SourceNode.LoadChildren(context);
 			});
 

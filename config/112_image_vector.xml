@@ -47,11 +47,11 @@
 					<Rule type="bytes" offset="0">0xD7CDC69A</Rule>
 				</Signature>
 				<Signature minSize="25">
-					<Rule type="bytes" offset="0">0x0100009</Rule>
+					<Rule type="bytes" offset="0">0x01000009</Rule>
 					<Rule type="bytes" offset="16">0x0000</Rule>
 				</Signature>
 				<Signature minSize="25">
-					<Rule type="bytes" offset="0">0x0200009</Rule>
+					<Rule type="bytes" offset="0">0x02000009</Rule>
 					<Rule type="bytes" offset="16">0x0000</Rule>
 				</Signature>
 			</Signatures>
