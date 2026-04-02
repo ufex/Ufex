@@ -579,6 +579,7 @@ public partial class MainWindow : Window
 
 		// Process the file
 		SetStatus("Processing file...");
+		_openFileStream.Position = 0;
 		await Task.Run(() =>
 		{
 			try
