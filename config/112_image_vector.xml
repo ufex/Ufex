@@ -2,7 +2,7 @@
 <Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<FileTypes>
 		<FileType>
-			<ID>GRPH_SVG</ID>
+			<ID>IMAGE_SVG</ID>
 			<Description>Scalable Vector Graphics</Description>
 			<Category>Image</Category>
 			<MIMETypes>
@@ -20,7 +20,7 @@
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_AI</ID>
+			<ID>IMAGE_AI</ID>
 			<Description>Adobe Illustrator File</Description>
 			<Category>Image</Category>
 			<MIMETypes>
@@ -32,7 +32,7 @@
 			</Extensions>
 		</FileType>
 		<FileType>
-			<ID>GRPH_WMF</ID>
+			<ID>IMAGE_WMF</ID>
 			<Description>Windows Metafile</Description>
 			<Category>Image</Category>
 			<MIMETypes>
@@ -57,7 +57,7 @@
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_CGM</ID>
+			<ID>IMAGE_CGM</ID>
 			<Description>Computer Graphics Metafile</Description>
 			<Category>Image</Category>
 			<MIMETypes>
@@ -69,7 +69,7 @@
 			</Extensions>
 		</FileType>
 		<FileType>
-			<ID>GRPH_EMF</ID>
+			<ID>IMAGE_EMF</ID>
 			<Description>Microsoft Enhanced Metafile</Description>
 			<Category>Image</Category>
 			<Wikipedia>Enhanced_Metafile</Wikipedia>

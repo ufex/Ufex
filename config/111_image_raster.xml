@@ -2,7 +2,7 @@
 <Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<FileTypes>
 		<FileType>
-			<ID>GRPH_JFIF</ID>
+			<ID>IMAGE_JFIF</ID>
 			<Description>JPEG File Interchange Format</Description>
 			<Category>Image</Category>
 			<MIMETypes>
@@ -29,7 +29,7 @@
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_PNG</ID>
+			<ID>IMAGE_PNG</ID>
 			<Description>Portable Network Graphic</Description>
 			<Category>Image</Category>
 			<MIMETypes>
@@ -46,7 +46,7 @@
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_GIF</ID>
+			<ID>IMAGE_GIF</ID>
 			<Description>Graphic Interchange Format</Description>
 			<Category>Image</Category>
 			<MIMETypes>
@@ -66,7 +66,7 @@
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_JPEG2000</ID>
+			<ID>IMAGE_JPEG2000</ID>
 			<Description>JPEG 2000</Description>
 			<Category>Image</Category>
 			<MIMETypes>
@@ -83,7 +83,7 @@
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_WINBMP</ID>
+			<ID>IMAGE_WINBMP</ID>
 			<Description>Windows Bitmap</Description>
 			<Category>Image</Category>
 			<MIMETypes>
@@ -100,7 +100,7 @@
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_WINCUR</ID>
+			<ID>IMAGE_WINCUR</ID>
 			<Description>Windows Cursor File</Description>
 			<Category>Image</Category>
 			<Wikipedia/>
@@ -114,7 +114,7 @@
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_WINICON</ID>
+			<ID>IMAGE_WINICON</ID>
 			<Description>Windows Icon File</Description>
 			<Category>Image</Category>
 			<MIMETypes>
@@ -131,7 +131,7 @@
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_ANICUR</ID>
+			<ID>IMAGE_ANICUR</ID>
 			<Description>Animated Cursor</Description>
 			<Category>Image</Category>
 			<Wikipedia/>
@@ -146,7 +146,7 @@
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>GRPH_TARGA</ID>
+			<ID>IMAGE_TARGA</ID>
 			<Description>Truevision TARGA</Description>
 			<Category>Image</Category>
 			<Wikipedia>Truevision_TGA</Wikipedia>
@@ -155,7 +155,7 @@
 			</Extensions>
 		</FileType>
 		<FileType>
-			<ID>GRPH_TIFF</ID>
+			<ID>IMAGE_TIFF</ID>
 			<Description>Tagged Image File Format</Description>
 			<Category>Image</Category>
 			<MIMETypes>
@@ -168,7 +168,7 @@
 			</Extensions>
 		</FileType>
 		<FileType>
-			<ID>GRPH_WEBP</ID>
+			<ID>IMAGE_WEBP</ID>
 			<ParentID>BASE_RIFF</ParentID>
 			<Description>WebP Image Format</Description>
 			<Category>Image</Category>

@@ -113,6 +113,24 @@
 				<Signature>
 					<Rule type="bytes" offset="0">0x504B0304</Rule>
 				</Signature>
+				<!-- Empty Archive -->
+				<Signature>
+					<Rule type="bytes" offset="0">0x504B0506</Rule>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>BASE_OPC</ID>
+			<ParentID>ARCH_ZIP</ParentID>
+			<Description>Microsoft Open Packaging Conventions (OPC)</Description>
+			<Category>Container</Category>
+			<Wikipedia>Open_Packaging_Conventions</Wikipedia>
+			<Signatures>
+				<Signature>
+					<SearchRule type="regex" offset="0" maxLength="512">
+						\x50\x4B\x03\x04[\s\S]{26}\[Content_Types\]\.xml
+					</SearchRule>
+				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>

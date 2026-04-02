@@ -16,18 +16,8 @@
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>DOCS_MSPPT</ID>
-			<Description>Microsoft PowerPoint Document</Description>
-			<Category>Document</Category>
-			<MIMETypes>
-				<MIMEType>application/vnd.ms-powerpoint</MIMEType>
-			</MIMETypes>
-			<Extensions>
-				<Extension>ppt</Extension>
-			</Extensions>
-		</FileType>
-		<FileType>
-			<ID>DOCS_MSWORD</ID>
+			<ID>DOCS_MS_DOCX</ID>
+			<ParentID>BASE_OPC</ParentID>
 			<Description>Microsoft Word Document</Description>
 			<Category>Document</Category>
 			<MIMETypes>
@@ -35,28 +25,53 @@
 			</MIMETypes>
 			<Wikipedia>Microsoft_Word</Wikipedia>
 			<Extensions>
-				<Extension>doc</Extension>
+				<Extension>docx</Extension>
 			</Extensions>
+			<Signatures>
+				<Signature>
+					<SearchRule type="regex" offset="0" maxLength="51200">
+						\x50\x4B\x03\x04[\s\S]{26}word/
+					</SearchRule>
+				</Signature>
+			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>DOCS_MSWORDTMP</ID>
-			<Description>Microsoft Word Template</Description>
-			<Category>Document</Category>
-			<Wikipedia>Microsoft_Word</Wikipedia>
-			<Extensions>
-				<Extension>dot</Extension>
-			</Extensions>
-		</FileType>
-		<FileType>
-			<ID>DOCS_MSXLS</ID>
-			<Description>Microsoft Excel Document</Description>
+			<ID>DOCS_MS_XLSX</ID>
+			<ParentID>BASE_OPC</ParentID>
+			<Description>Microsoft Excel Workbook</Description>
 			<Category>Document</Category>
 			<MIMETypes>
 				<MIMEType>application/vnd.ms-excel</MIMEType>
 			</MIMETypes>
 			<Extensions>
-				<Extension>xls</Extension>
+				<Extension>xlsx</Extension>
 			</Extensions>
+			<Signatures>
+				<Signature>
+					<SearchRule type="regex" offset="0" maxLength="51200">
+						\x50\x4B\x03\x04[\s\S]{26}xl/
+					</SearchRule>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>DOCS_MS_PPTX</ID>
+			<ParentID>BASE_OPC</ParentID>
+			<Description>Microsoft PowerPoint Presentation</Description>
+			<Category>Document</Category>
+			<MIMETypes>
+				<MIMEType>application/vnd.openxmlformats-officedocument.presentationml.presentation</MIMEType>
+			</MIMETypes>
+			<Extensions>
+				<Extension>pptx</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<SearchRule type="regex" offset="0" maxLength="51200">
+						\x50\x4B\x03\x04[\s\S]{26}ppt/
+					</SearchRule>
+				</Signature>
+			</Signatures>
 		</FileType>
 		<FileType>
 			<ID>DOCS_PORTDOCFORM</ID>

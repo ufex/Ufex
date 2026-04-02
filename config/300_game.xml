@@ -2,7 +2,7 @@
 <Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<FileTypes>
 		<FileType>
-			<ID>ROM_NES</ID>
+			<ID>EXEC_NES</ID>
 			<Description>iNES ROM Image</Description>
 			<Category>ROM</Category>
 			<Wikipedia>Nintendo_Entertainment_System</Wikipedia>

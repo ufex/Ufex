@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FileTypes>
+		<FileType>
+			<ID>VIDEO_3GPP</ID>
+			<Description>3GPP Multimedia</Description>
+			<Category>Video</Category>
+			<MIMETypes>
+				<MIMEType>video/3gpp</MIMEType>
+			</MIMETypes>
+			<Wikipedia>3GP_and_3G2</Wikipedia>
+			<Extensions>
+				<Extension>3gp</Extension>
+				<Extension>3gpp</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="4">ftyp</Rule>
+					<Rule type="string" offset="8">3ge</Rule>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>VIDEO_3GPP2</ID>
+			<Description>3GPP2 Multimedia</Description>
+			<Category>Video</Category>
+			<MIMETypes>
+				<MIMEType>video/3gpp2</MIMEType>
+			</MIMETypes>
+			<Wikipedia>3GP_and_3G2</Wikipedia>
+			<Extensions>
+				<Extension>3g2</Extension>
+				<Extension>3gp2</Extension>
+				<Extension>3gpp2</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="4">ftyp</Rule>
+					<Rule type="string" offset="8">3g2</Rule>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>VIDEO_MJ2</ID>
+			<Description>Motion JPEG 2000</Description>
+			<Category>Video</Category>
+			<MIMETypes>
+				<MIMEType>video/mj2</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Motion_JPEG_2000</Wikipedia>
+			<Extensions>
+				<Extension>mj2</Extension>
+				<Extension>mjp2</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="4">ftyp</Rule>
+					<RuleGroup match="any">
+						<!-- Simple Profile -->
+						<Rule type="string" offset="8">mj2s</Rule>
+						<!-- General Profile -->
+						<Rule type="string" offset="8">mjp2</Rule>
+						<!-- Media File for Samsung video Metadata -->
+						<Rule type="string" offset="8">MFSM</Rule>
+						<!-- Sony Home and Mobile Multimedia Platform -->
+						<Rule type="string" offset="8">MGSV</Rule>
+					</RuleGroup>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>VIDEO_AV1</ID>
+			<Description>AOMedia Video 1 (AV1)</Description>
+			<Category>Video</Category>
+			<MIMETypes>
+				<MIMEType>video/AV1</MIMEType>
+			</MIMETypes>
+			<Wikipedia>AV1</Wikipedia>
+		</FileType>
+		<FileType>
+			<ID>VIDEO_AVI</ID>
+			<ParentID>BASE_RIFF</ParentID>
+			<Description>Audio Video Interleave</Description>
+			<Category>Video</Category>
+			<MIMETypes>
+				<MIMEType>video/x-msvideo</MIMEType>
+			</MIMETypes>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>avi</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="0">RIFF</Rule>
+					<Rule type="string" offset="8">AVI </Rule>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>VIDEO_QUICKTIME</ID>
+			<Description>Quicktime Video</Description>
+			<Category>Video</Category>
+			<MIMETypes>
+				<MIMEType>video/quicktime</MIMEType>
+			</MIMETypes>
+			<Wikipedia/>
+			<Extensions>
+				<Extension>mov</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="4">ftyp</Rule>
+					<Rule type="string" offset="8">qt  </Rule>
+				</Signature>
+				<Signature>
+					<Rule type="string" offset="0">MOVI</Rule>
+					<Rule type="string" offset="4">moov</Rule>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>VIDEO_MP4</ID>
+			<Description>MPEG-4</Description>
+			<Category>Video</Category>
+			<MIMETypes>
+				<MIMEType>video/mp4</MIMEType>
+			</MIMETypes>
+			<Wikipedia>MP4</Wikipedia>
+			<Extensions>
+				<Extension>mp4</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="4">ftyp</Rule>
+					<RuleGroup match="any">
+						<!-- Sony XAVC Codec -->
+						<Rule type="string" offset="8">XAVC</Rule>
+						<!-- ARRI Codec -->
+						<Rule type="string" offset="8">ARRI</Rule>
+						<!-- 3GPP JVT AVC -->
+						<Rule type="string" offset="8">avc1</Rule>
+						<!-- Blinkbox Master File -->
+						<Rule type="string" offset="8">bbxm</Rule>
+						<!-- Canon Digital Camera -->
+						<Rule type="string" offset="8">CAEP</Rule>
+						<!-- Casio Digital Camera -->
+						<Rule type="string" offset="8">caqv</Rule>
+						<!-- Common container file format -->
+						<Rule type="string" offset="8">ccff</Rule>
+					</RuleGroup>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>VIDEO_M2TS</ID>
+			<Description>BDAV MPEG-2 Transport Stream</Description>
+			<Category>Video</Category>
+			<MIMETypes>
+				<MIMEType>video/MP2T</MIMEType>
+			</MIMETypes>
+			<Wikipedia>.m2ts</Wikipedia>
+			<Extensions>
+				<Extension>m2ts</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="byte" offset="4">0x47</Rule>
+					<Rule type="byte" offset="196">0x47</Rule>
+					<Rule type="byte" offset="388">0x47</Rule>
+					<Rule type="byte" offset="580">0x47</Rule>
+					<Rule type="byte" offset="772">0x47</Rule>
+				</Signature>
+			</Signatures>
+		</FileType>
+	</FileTypes>
+</Ufex>

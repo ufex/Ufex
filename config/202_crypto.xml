@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<FileTypes>
+		<FileType>
+			<ID>CRYPTO_PEM_ENCODED_X509_CERTIFICATE</ID>
+			<Description>PEM encoded X.509 certificate</Description>
+			<Category>Cryptography</Category>
+			<MIMETypes>
+				<MIMEType>application/x-pem-file</MIMEType>
+			</MIMETypes>
+			<Extensions>
+				<Extension>crt</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="0">-----BEGIN CERTIFICATE-----</Rule>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>CRYPTO_PEM_ENCODED_X509_CERTIFICATE_REQUEST</ID>
+			<Description>PEM encoded X.509 certificate signing request</Description>
+			<Category>Cryptography</Category>
+			<Extensions>
+				<Extension>csr</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="0">-----BEGIN CERTIFICATE REQUEST-----</Rule>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>CRYPTO_PEM_ENCODED_PRIVATE_KEY</ID>
+			<Description>PEM encoded private key</Description>
+			<Category>Cryptography</Category>
+			<Extensions>
+				<Extension>pem</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="0">-----BEGIN PRIVATE KEY-----</Rule>
+				</Signature>
+			</Signatures>
+		</FileType>
+	</FileTypes>
+</Ufex>
