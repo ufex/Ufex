@@ -20,7 +20,7 @@
 		<Property Id="ARPPRODUCTICON" Value="UfexIcon" />
 
 		<StandardDirectory Id="ProgramFiles64Folder">
-			<Directory Id="INSTALLFOLDER" Name="Ufex">
+			<Directory Id="APPLICATIONFOLDER" Name="Ufex">
 				<Directory Id="ConfigFolder" Name="config" />
 				<Directory Id="PluginsFolder" Name="plugins" />
 			</Directory>
@@ -34,13 +34,13 @@
 			<Directory Id="ApplicationProgramsFolder" Name="Ufex" />
 		</StandardDirectory>
 
-		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+		<ComponentGroup Id="ProductComponents" Directory="APPLICATIONFOLDER">
 			<Component Id="MainExecutable" Guid="7F4B9E2A-3C8D-4E1F-A6B5-9D2C8E7F4A3B">
 				<File Id="UfexExe" Source="$(var.PublishDir)\Ufex.Desktop.exe" KeyPath="yes">
 					<Shortcut Id="StartMenuShortcut"
 					          Directory="ApplicationProgramsFolder"
 					          Name="Ufex"
-					          WorkingDirectory="INSTALLFOLDER"
+					          WorkingDirectory="APPLICATIONFOLDER"
 					          Advertise="yes" />
 				</File>
 			</Component>

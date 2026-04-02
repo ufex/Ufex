@@ -176,6 +176,7 @@ jobs:
           files-folder: publish/win-x64
           files-folder-filter: exe
           files-folder-recurse: false
+          description: Ufex
 
       - name: Install WiX Toolset
         run: |
@@ -214,6 +215,7 @@ jobs:
           files-folder: ${{ github.workspace }}
           files-folder-filter: msi
           files-folder-recurse: false
+          description: Ufex
 
       - name: Upload MSI artifact
         uses: actions/upload-artifact@v4
