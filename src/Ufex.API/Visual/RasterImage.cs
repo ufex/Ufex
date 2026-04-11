@@ -1,7 +1,9 @@
+using System;
 using System.IO;
 
 namespace Ufex.API.Visual;
 
+[Obsolete("RasterImage is deprecated. Use RasterImageVisual instead.", false)]
 public class RasterImage : Ufex.API.Visual.ImageVisual
 {
 	private Stream _stream;

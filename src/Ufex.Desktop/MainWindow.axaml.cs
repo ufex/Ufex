@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
@@ -250,16 +251,16 @@ public partial class MainWindow : Window
 
 	private void OnDragOver(object? sender, DragEventArgs e)
 	{
-		e.DragEffects = e.Data.Contains(DataFormats.Files)
+		e.DragEffects = e.DataTransfer.Contains(DataFormat.File)
 			? DragDropEffects.Copy
 			: DragDropEffects.None;
 	}
 
 	private async void OnDrop(object? sender, DragEventArgs e)
 	{
-		if (!e.Data.Contains(DataFormats.Files)) return;
+		if (!e.DataTransfer.Contains(DataFormat.File)) return;
 
-		var files = e.Data.GetFiles();
+		var files = e.DataTransfer.TryGetFiles();
 		if (files == null) return;
 
 		var file = files.FirstOrDefault();

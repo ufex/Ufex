@@ -2,9 +2,106 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Ufex.Desktop.App"
              RequestedThemeVariant="Default">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="UfexButtonBackgroundBrush" Color="#2D2D2D" />
+                    <SolidColorBrush x:Key="UfexButtonBackgroundPointerOverBrush" Color="#323232" />
+                    <SolidColorBrush x:Key="UfexButtonBorderBrush" Color="#303030" />
+                    <SolidColorBrush x:Key="UfexButtonForegroundBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="UfexCommandBarBackgroundBrush" Color="#202020" />
+                    <SolidColorBrush x:Key="UfexCommandBarBorderBrush" Color="#E2E1DE" />
+
+					<!-- Theme.md: Data Tables (Dark) -->
+					<SolidColorBrush x:Key="DataGridColumnHeaderBackgroundBrush" Color="#202020" />
+					<SolidColorBrush x:Key="DataGridColumnHeaderHoveredBackgroundBrush" Color="#2D2D2D" />
+					<SolidColorBrush x:Key="DataGridColumnHeaderPressedBackgroundBrush" Color="#2D2D2D" />
+					<SolidColorBrush x:Key="DataGridColumnHeaderForegroundBrush" Color="#FFFFFF" />
+					<SolidColorBrush x:Key="DataGridGridLinesBrush" Color="#191919" />
+					<SolidColorBrush x:Key="DataGridRowBackgroundBrush" Color="#2D2D2D" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="UfexButtonBackgroundBrush" Color="#FBFBFB" />
+                    <SolidColorBrush x:Key="UfexButtonBackgroundPointerOverBrush" Color="#F6F6F6" />
+                    <SolidColorBrush x:Key="UfexButtonBorderBrush" Color="#E5E5E5" />
+                    <SolidColorBrush x:Key="UfexButtonForegroundBrush" Color="#1B1B1B" />
+                    <SolidColorBrush x:Key="UfexCommandBarBackgroundBrush" Color="#F3F3F3" />
+                    <SolidColorBrush x:Key="UfexCommandBarBorderBrush" Color="#ECEAE8" />
+
+					<!-- Theme.md: Data Tables (Light) -->
+					<SolidColorBrush x:Key="DataGridColumnHeaderBackgroundBrush" Color="#F3F3F3" />
+					<SolidColorBrush x:Key="DataGridColumnHeaderHoveredBackgroundBrush" Color="#EAEAEA" />
+					<SolidColorBrush x:Key="DataGridColumnHeaderPressedBackgroundBrush" Color="#EAEAEA" />
+					<SolidColorBrush x:Key="DataGridColumnHeaderForegroundBrush" Color="#1A1B1B" />
+					<SolidColorBrush x:Key="DataGridGridLinesBrush" Color="#DEE0E0" />
+					<SolidColorBrush x:Key="DataGridRowBackgroundBrush" Color="#FFFFFF" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+			<x:Double x:Key="TabItemMinHeight">38</x:Double>
+        </ResourceDictionary>
+    </Application.Resources>
     <Application.Styles>
-        <FluentTheme />
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <!-- Global dark background softening without per-control overrides -->
+                <ColorPaletteResources x:Key="Dark"
+                                       RegionColor="#191A1B"
+                                       BaseLow="#191A1B"
+                                       BaseMediumLow="#191A1B"
+                                       ChromeLow="#191A1B"
+                                       ChromeMediumLow="#191A1B"
+                                       ListLow="#191A1B"
+                                       ListMedium="#191A1B" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
 				<StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
+                <StyleInclude Source="avares://Ufex.Desktop/Themes/MenuStyles.axaml" />
+        <Style Selector="Button">
+            <Setter Property="Background" Value="{DynamicResource UfexButtonBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource UfexButtonBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource UfexButtonForegroundBrush}" />
+        </Style>
+        <Style Selector="Button:pointerover">
+            <Setter Property="Background" Value="{DynamicResource UfexButtonBackgroundPointerOverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource UfexButtonBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource UfexButtonForegroundBrush}" />
+        </Style>
+        <Style Selector="TabItem">
+            <Setter Property="FontSize" Value="15" />
+        </Style>
+        <Style Selector="DataGridColumnHeader">
+            <Setter Property="FontSize" Value="15" />
+        </Style>
+        <Style Selector="TabControl">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Background="{TemplateBinding Background}"
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                        <DockPanel>
+                            <Border DockPanel.Dock="{TemplateBinding TabStripPlacement}"
+                                    BorderBrush="#E5E5E5"
+                                    BorderThickness="0,0,0,1">
+                                <ItemsPresenter Name="PART_ItemsPresenter"
+                                                ItemsPanel="{TemplateBinding ItemsPanel}"
+                                                VerticalAlignment="Stretch"
+                                                KeyboardNavigation.TabNavigation="Continue" />
+                            </Border>
+                            <ContentPresenter Name="PART_SelectedContentHost"
+                                              Margin="{TemplateBinding Padding}"
+                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              Content="{TemplateBinding SelectedContent}"
+                                              ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
+                        </DockPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
     </Application.Styles>
 </Application>

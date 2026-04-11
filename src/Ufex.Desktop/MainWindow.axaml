@@ -49,7 +49,8 @@
         </Menu>
         <!-- Toolbar -->
         <Border DockPanel.Dock="Top" 
-                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" 
+            Background="{DynamicResource UfexCommandBarBackgroundBrush}"
+                BorderBrush="{DynamicResource UfexCommandBarBorderBrush}" 
                 BorderThickness="0,0,0,1"
                 Padding="4">
             <DockPanel>
