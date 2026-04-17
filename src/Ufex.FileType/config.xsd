@@ -124,7 +124,7 @@
   <!-- File type ID must be uppercase with a known category prefix -->
   <xs:simpleType name="FileTypeIDType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="(APP|ARCH|AUDIO|DB|DOCS|EXEC|GRPH|TEXT|VIDEO|BASE)_[A-Z0-9_]+" />
+      <xs:pattern value="(APP|ARCH|AUDIO|DB|DOCS|EXEC|HIMG|IMAGE|CRYPTO|TEXT|VIDEO|BASE)_[A-Z0-9_]+" />
     </xs:restriction>
   </xs:simpleType>
 
@@ -137,18 +137,34 @@
 
   <xs:simpleType name="CategoryType">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="Application" />
-      <xs:enumeration value="Archive" />
-      <xs:enumeration value="Audio" />
-      <xs:enumeration value="Database" />
-      <xs:enumeration value="Document" />
-      <xs:enumeration value="Executable" />
-      <xs:enumeration value="Image" />
-      <xs:enumeration value="Text" />
-      <xs:enumeration value="Source Code" />
-      <xs:enumeration value="Video" />
-      <xs:enumeration value="Container" />
-      <xs:enumeration value="Other" />
+			<!-- Application Specific File Formats -->
+      <xs:enumeration value="Application" /> <!-- APP_ -->
+			<!-- Archive File Formats -->
+      <xs:enumeration value="Archive" />     <!-- ARCH_ -->
+			<!-- Audio File Formats -->
+      <xs:enumeration value="Audio" />       <!-- AUDIO_ -->
+			<!-- Cryptographic File Formats -->
+			<xs:enumeration value="Cryptography" /> <!-- CRYPTO_ -->
+			<!-- Database File Formats -->
+      <xs:enumeration value="Database" />    <!-- DB_ -->
+			<!-- Document File Formats -->
+      <xs:enumeration value="Document" />    <!-- DOC_ -->
+			<!-- Executable File Formats -->
+      <xs:enumeration value="Executable" />  <!-- EXEC_ -->
+			<!-- Image File Formats -->
+      <xs:enumeration value="Image" />       <!-- IMAGE_ -->
+			<!-- Text File Formats -->
+      <xs:enumeration value="Text" />        <!-- TEXT_ -->
+			<!-- Source Code File Formats -->
+      <xs:enumeration value="Source Code" /> <!-- CODE_ -->
+			<!-- Video File Formats -->
+      <xs:enumeration value="Video" />       <!-- VIDEO_ -->
+			<!-- Hardware Image (Firmware, ISO, ROM)-->
+      <xs:enumeration value="Hardware Image" /> <!-- HIMG_ -->
+			<!-- Container File Formats -->
+      <xs:enumeration value="Container" />   <!-- BASE_ -->
+			<!-- Other/Unknown File Formats -->
+      <xs:enumeration value="Other" />       <!-- OTHER_ -->
     </xs:restriction>
   </xs:simpleType>
 

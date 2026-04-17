@@ -3,6 +3,7 @@
 	<FileTypes>
 		<FileType>
 			<ID>VIDEO_3GPP</ID>
+			<ParentID>BASE_ISOBMFF</ParentID>
 			<Description>3GPP Multimedia</Description>
 			<Category>Video</Category>
 			<MIMETypes>
@@ -16,12 +17,20 @@
 			<Signatures>
 				<Signature>
 					<Rule type="string" offset="4">ftyp</Rule>
-					<Rule type="string" offset="8">3ge</Rule>
+					<RuleGroup match="any">
+						<Rule type="string" offset="8">3ge</Rule>
+						<Rule type="string" offset="8">3gf</Rule>
+						<Rule type="string" offset="8">3gg</Rule>
+						<Rule type="string" offset="8">3gh</Rule>
+						<Rule type="string" offset="8">3gm</Rule>
+						<Rule type="string" offset="8">3gp</Rule>
+					</RuleGroup>
 				</Signature>
 			</Signatures>
 		</FileType>
 		<FileType>
 			<ID>VIDEO_3GPP2</ID>
+			<ParentID>BASE_ISOBMFF</ParentID>
 			<Description>3GPP2 Multimedia</Description>
 			<Category>Video</Category>
 			<MIMETypes>
@@ -37,6 +46,65 @@
 				<Signature>
 					<Rule type="string" offset="4">ftyp</Rule>
 					<Rule type="string" offset="8">3g2</Rule>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>IMAGE_HEIF</ID>
+			<ParentID>BASE_ISOBMFF</ParentID>
+			<Description>High Efficiency Image Format</Description>
+			<Category>Image</Category>
+			<MIMETypes>
+				<MIMEType>image/heif</MIMEType>
+				<MIMEType>image/heic</MIMEType>
+				<MIMEType>image/heif-sequence</MIMEType>
+				<MIMEType>image/heic-sequence</MIMEType>
+			</MIMETypes>
+			<Wikipedia>High_Efficiency_Image_File_Format</Wikipedia>
+			<Extensions>
+				<Extension>heif</Extension>
+				<Extension>heic</Extension>
+				<Extension>hif</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="4">ftyp</Rule>
+					<RuleGroup match="any">
+						<Rule type="string" offset="8">heic</Rule>
+						<Rule type="string" offset="8">heix</Rule>
+						<Rule type="string" offset="8">heim</Rule>
+						<Rule type="string" offset="8">heio</Rule>
+						<Rule type="string" offset="8">heif</Rule>
+						<Rule type="string" offset="8">heis</Rule>
+						<Rule type="string" offset="8">hevc</Rule>
+						<Rule type="string" offset="8">hevs</Rule>
+						<Rule type="string" offset="8">mif1</Rule>
+						<Rule type="string" offset="8">msf1</Rule>
+						<Rule type="string" offset="8">MiHE</Rule>
+					</RuleGroup>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>IMAGE_AVIF</ID>
+			<ParentID>BASE_ISOBMFF</ParentID>
+			<Description>AV1 Image File Format</Description>
+			<Category>Image</Category>
+			<MIMETypes>
+				<MIMEType>image/avif</MIMEType>
+			</MIMETypes>
+			<Wikipedia>AVIF</Wikipedia>
+			<Extensions>
+				<Extension>avif</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="4">ftyp</Rule>
+					<RuleGroup match="any">
+						<Rule type="string" offset="8">avif</Rule>
+						<Rule type="string" offset="8">avis</Rule>
+						<Rule type="string" offset="8">MiAV</Rule>
+					</RuleGroup>
 				</Signature>
 			</Signatures>
 		</FileType>
@@ -103,9 +171,9 @@
 			<MIMETypes>
 				<MIMEType>video/quicktime</MIMEType>
 			</MIMETypes>
-			<Wikipedia/>
 			<Extensions>
 				<Extension>mov</Extension>
+				<Extension>qt</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
@@ -128,26 +196,88 @@
 			<Wikipedia>MP4</Wikipedia>
 			<Extensions>
 				<Extension>mp4</Extension>
+				<Extension>m4v</Extension>
+				<Extension>m4a</Extension>
+				<Extension>m4b</Extension>
+				<Extension>m4r</Extension>
 			</Extensions>
 			<Signatures>
 				<Signature>
 					<Rule type="string" offset="4">ftyp</Rule>
 					<RuleGroup match="any">
-						<!-- Sony XAVC Codec -->
-						<Rule type="string" offset="8">XAVC</Rule>
-						<!-- ARRI Codec -->
-						<Rule type="string" offset="8">ARRI</Rule>
-						<!-- 3GPP JVT AVC -->
-						<Rule type="string" offset="8">avc1</Rule>
-						<!-- Blinkbox Master File -->
-						<Rule type="string" offset="8">bbxm</Rule>
-						<!-- Canon Digital Camera -->
-						<Rule type="string" offset="8">CAEP</Rule>
-						<!-- Casio Digital Camera -->
-						<Rule type="string" offset="8">caqv</Rule>
-						<!-- Common container file format -->
-						<Rule type="string" offset="8">ccff</Rule>
+						<!-- MPEG-21 [ISO/IEC 21000-9] -->
+						<Rule type="string" offset="8">mp21</Rule>
+						<!-- MP4 v1 [ISO 14496-1:ch13] -->
+						<Rule type="string" offset="8">mp41</Rule>
+						<!-- MP4 v2 [ISO 14496-14] -->
+						<Rule type="string" offset="8">mp42</Rule>
+						<!-- MP4 Base Media v1 [ISO 14496-12:2003] -->
+						<Rule type="string" offset="8">isom</Rule>
 					</RuleGroup>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>VIDEO_FMP4</ID>
+			<Description>Fragmented MPEG-4 (fMP4)</Description>
+			<Category>Video</Category>
+			<MIMETypes>
+				<MIMEType>video/mp4</MIMEType>
+			</MIMETypes>
+			<Wikipedia>MP4</Wikipedia>
+			<Extensions>
+				<Extension>m4s</Extension>
+				<Extension>fmp4</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="4">ftyp</Rule>
+					<RuleGroup match="any">
+						<!-- MP4 Base Media v5 -->
+						<Rule type="string" offset="8">iso5</Rule>
+						<!-- MP4 Base Media v6 -->
+						<Rule type="string" offset="8">iso6</Rule>
+						<!-- MPEG v4 system, Dynamic Adaptive Streaming over HTTP -->
+						<Rule type="string" offset="8">dash</Rule>
+					</RuleGroup>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>VIDEO_CMAF</ID>
+			<Description>Common Media Application Format (CMAF)</Description>
+			<Category>Video</Category>
+			<MIMETypes>
+				<MIMEType>video/mp4</MIMEType>
+			</MIMETypes>
+			<Wikipedia>MP4</Wikipedia>
+			<Extensions>
+				<Extension>cmfv</Extension>
+				<Extension>cmfa</Extension>
+				<Extension>cmft</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="4">ftyp</Rule>
+					<RuleGroup match="any">
+						<!-- CMAF Track Format -->
+						<Rule type="string" offset="8">cmfc</Rule>
+					</RuleGroup>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>VIDEO_SONY_XAVC</ID>
+			<Description>Sony XAVC</Description>
+			<Category>Video</Category>
+			<MIMETypes>
+				<MIMEType>video/mp4</MIMEType>
+			</MIMETypes>
+			<Wikipedia>XAVC</Wikipedia>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="4">ftyp</Rule>
+					<Rule type="string" offset="8">XAVC</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>

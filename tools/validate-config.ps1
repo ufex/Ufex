@@ -4,7 +4,7 @@ param(
 )
 
 $repoRoot = Split-Path -Path $PSScriptRoot -Parent
-$schemaPath = Join-Path $repoRoot "src/Ufex.FileType/config2.xsd"
+$schemaPath = Join-Path $repoRoot "src/Ufex.FileType/config.xsd"
 
 if (-not (Test-Path -LiteralPath $schemaPath -PathType Leaf)) {
     Write-Host "Schema file not found: $schemaPath"
@@ -37,7 +37,13 @@ foreach ($filePath in $targetFiles) {
         continue
     }
 
-    $schema = [System.Xml.Schema.XmlSchema]::Read([System.IO.File]::OpenRead($schemaPath), $null)
+    $schemaStream = [System.IO.File]::OpenRead($schemaPath)
+    try {
+        $schema = [System.Xml.Schema.XmlSchema]::Read($schemaStream, $null)
+    }
+    finally {
+        $schemaStream.Close()
+    }
     $settings = [System.Xml.XmlReaderSettings]::new()
     $settings.Schemas.Add($schema) | Out-Null
     $settings.ValidationType = [System.Xml.ValidationType]::Schema
