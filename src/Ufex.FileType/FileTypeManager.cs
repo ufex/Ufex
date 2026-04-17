@@ -23,11 +23,13 @@ public class PluginLoadContext : AssemblyLoadContext
 {
 	private readonly AssemblyDependencyResolver resolver;
 	private readonly Assembly hostAssembly;
+	private readonly string pluginDirectory;
 
 	public PluginLoadContext(string pluginPath) : base(isCollectible: true)
 	{
 		resolver = new AssemblyDependencyResolver(pluginPath);
 		hostAssembly = typeof(BaseClassifier).Assembly;
+		pluginDirectory = Path.GetDirectoryName(pluginPath)!;
 	}
 
 	protected override Assembly? Load(AssemblyName assemblyName)
@@ -46,11 +48,22 @@ public class PluginLoadContext : AssemblyLoadContext
 			}
 		}
 
-		// Try to resolve from the plugin's directory
+		// Try to resolve from the plugin's deps.json
 		string? assemblyPath = resolver.ResolveAssemblyToPath(assemblyName);
 		if (assemblyPath != null)
 		{
 			return LoadFromAssemblyPath(assemblyPath);
+		}
+
+		// Fallback: look for the assembly in the plugin's directory
+		// This handles project-reference dependencies that the resolver may not resolve
+		if (assemblyName.Name != null)
+		{
+			string localPath = Path.Combine(pluginDirectory, assemblyName.Name + ".dll");
+			if (File.Exists(localPath))
+			{
+				return LoadFromAssemblyPath(localPath);
+			}
 		}
 
 		// Fall back to default context
