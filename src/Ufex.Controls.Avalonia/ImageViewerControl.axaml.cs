@@ -91,6 +91,7 @@ public partial class ImageViewerControl : UserControl
 		else if (image is VectorImage vectorImage)
 		{
 			LoadVectorImage(vectorImage);
+			FitToWindowDeferred();
 		}
 
 		UpdateZoomDisplay();
@@ -221,6 +222,32 @@ public partial class ImageViewerControl : UserControl
 	{
 		_zoomLevel = 1.0;
 		ApplyZoom();
+	}
+
+	/// <summary>
+	/// Schedules a fit-to-window zoom after the control has been laid out,
+	/// so that Bounds are available for the calculation.
+	/// </summary>
+	private void FitToWindowDeferred()
+	{
+		var scrollViewer = this.FindControl<ScrollViewer>("ImageScrollViewer");
+		if (scrollViewer == null)
+			return;
+
+		// If already laid out, fit immediately; otherwise wait for layout
+		if (scrollViewer.Bounds.Width > 0 && scrollViewer.Bounds.Height > 0)
+		{
+			OnZoomFitClick(null, null!);
+		}
+		else
+		{
+			void OnLayoutUpdated(object? s, EventArgs e)
+			{
+				scrollViewer.LayoutUpdated -= OnLayoutUpdated;
+				OnZoomFitClick(null, null!);
+			}
+			scrollViewer.LayoutUpdated += OnLayoutUpdated;
+		}
 	}
 
 	public void Clear()
