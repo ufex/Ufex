@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Media;
-using FluentIcons.Avalonia;
 using FluentIcons.Common;
 using System.Collections.ObjectModel;
 using Ufex.API.Validation;
@@ -12,7 +11,8 @@ namespace Ufex.Desktop.Views;
 /// </summary>
 public class ValidationEntryRow
 {
-	public SymbolIcon Icon { get; set; } = null!;
+	public Symbol IconSymbol { get; set; }
+	public IBrush IconColor { get; set; } = Brushes.Gray;
 	public string TypeText { get; set; } = string.Empty;
 	public string Message { get; set; } = string.Empty;
 }
@@ -63,19 +63,22 @@ public partial class ValidationTabView : UserControl
 			switch (entry.Type)
 			{
 				case ValidationReport.EntryType.Info:
-					row.Icon = CreateIcon(Symbol.Info, Brushes.DodgerBlue);
+					row.IconSymbol = Symbol.Info;
+					row.IconColor = Brushes.DodgerBlue;
 					row.TypeText = "Info";
 					infoCount++;
 					break;
 
 				case ValidationReport.EntryType.Warning:
-					row.Icon = CreateIcon(Symbol.Warning, Brushes.Orange);
+					row.IconSymbol = Symbol.Warning;
+					row.IconColor = Brushes.Orange;
 					row.TypeText = "Warning";
 					warningCount++;
 					break;
 
 				case ValidationReport.EntryType.Error:
-					row.Icon = CreateIcon(Symbol.ErrorCircle, Brushes.Red);
+					row.IconSymbol = Symbol.ErrorCircle;
+					row.IconColor = Brushes.Red;
 					row.TypeText = "Error";
 					errorCount++;
 					break;
@@ -87,18 +90,7 @@ public partial class ValidationTabView : UserControl
 		UpdateSummary(infoCount, warningCount, errorCount);
 	}
 
-	/// <summary>
-	/// Creates an icon with the specified symbol and color.
-	/// </summary>
-	private SymbolIcon CreateIcon(Symbol symbol, IBrush foreground)
-	{
-		return new SymbolIcon
-		{
-			Symbol = symbol,
-			FontSize = 16,
-			Foreground = foreground
-		};
-	}
+
 
 	/// <summary>
 	/// Updates the summary text at the bottom of the view.
