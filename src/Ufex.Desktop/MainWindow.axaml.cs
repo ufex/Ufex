@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using System;
 using System.Collections;
@@ -61,6 +62,8 @@ public partial class MainWindow : Window
 
 		// Subscribe to InfoTab file type changed event
 		InfoTab.FileTypeChanged += OnInfoTabFileTypeChanged;
+
+		UpdateThemeMenuChecks();
 	}
 
 	private void InitializeSettings()
@@ -853,23 +856,31 @@ public partial class MainWindow : Window
 		await aboutWindow.ShowDialog(this);
 	}
 
-	// Theme Toggle Handler
-	private void OnThemeToggleClick(object? sender, RoutedEventArgs e)
+	// Theme Menu Handlers
+	private void OnThemeAutoClick(object? sender, RoutedEventArgs e)
 	{
-		App.Instance?.ToggleTheme();
-		UpdateThemeButtonText();
+		App.Instance?.SetTheme(ThemeVariant.Default);
+		UpdateThemeMenuChecks();
 	}
 
-	private void UpdateThemeButtonText()
+	private void OnThemeLightClick(object? sender, RoutedEventArgs e)
 	{
-		if (App.Instance != null)
-		{
-			ThemeButtonText.Text = App.Instance.IsDarkTheme ? "Light" : "Dark";
-			// Update icon - sun for light mode available, moon for dark mode available
-			ThemeIcon.Symbol = App.Instance.IsDarkTheme
-				? FluentIcons.Common.Symbol.WeatherSunny
-				: FluentIcons.Common.Symbol.WeatherMoon;
-		}
+		App.Instance?.SetTheme(ThemeVariant.Light);
+		UpdateThemeMenuChecks();
+	}
+
+	private void OnThemeDarkClick(object? sender, RoutedEventArgs e)
+	{
+		App.Instance?.SetTheme(ThemeVariant.Dark);
+		UpdateThemeMenuChecks();
+	}
+
+	private void UpdateThemeMenuChecks()
+	{
+		var current = App.Instance?.RequestedThemeVariant;
+		ThemeAutoMenuItem.Icon = current == ThemeVariant.Default ? new CheckBox { IsChecked = true, IsHitTestVisible = false } : null;
+		ThemeLightMenuItem.Icon = current == ThemeVariant.Light ? new CheckBox { IsChecked = true, IsHitTestVisible = false } : null;
+		ThemeDarkMenuItem.Icon = current == ThemeVariant.Dark ? new CheckBox { IsChecked = true, IsHitTestVisible = false } : null;
 	}
 
 	private async Task<bool> TryCopySelectionToClipboardAsync()
