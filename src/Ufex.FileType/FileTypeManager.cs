@@ -25,6 +25,11 @@ public class PluginLoadContext : AssemblyLoadContext
 	private readonly Assembly hostAssembly;
 	private readonly string pluginDirectory;
 
+	// Shared cache for plugin dependency assemblies (e.g. EXIF) that may be
+	// needed by multiple plugins. Loading the same DLL file into separate
+	// collectible ALCs can fail when the first ALC already holds the image.
+	private static readonly Dictionary<string, Assembly> sharedDependencyCache = new(StringComparer.OrdinalIgnoreCase);
+
 	public PluginLoadContext(string pluginPath) : base(isCollectible: true)
 	{
 		resolver = new AssemblyDependencyResolver(pluginPath);
@@ -46,13 +51,22 @@ public class PluginLoadContext : AssemblyLoadContext
 			{
 				return typeof(Logger).Assembly;
 			}
+
+			// Return a previously-loaded shared dependency (e.g. EXIF used by both JPEG and ISOBMFF)
+			if (sharedDependencyCache.TryGetValue(assemblyName.Name, out Assembly? cached))
+			{
+				return cached;
+			}
 		}
 
 		// Try to resolve from the plugin's deps.json
 		string? assemblyPath = resolver.ResolveAssemblyToPath(assemblyName);
 		if (assemblyPath != null)
 		{
-			return LoadFromAssemblyPath(assemblyPath);
+			Assembly asm = LoadFromAssemblyPath(assemblyPath);
+			if (assemblyName.Name != null)
+				sharedDependencyCache.TryAdd(assemblyName.Name, asm);
+			return asm;
 		}
 
 		// Fallback: look for the assembly in the plugin's directory
@@ -62,7 +76,9 @@ public class PluginLoadContext : AssemblyLoadContext
 			string localPath = Path.Combine(pluginDirectory, assemblyName.Name + ".dll");
 			if (File.Exists(localPath))
 			{
-				return LoadFromAssemblyPath(localPath);
+				Assembly asm = LoadFromAssemblyPath(localPath);
+				sharedDependencyCache.TryAdd(assemblyName.Name, asm);
+				return asm;
 			}
 		}
 
