@@ -77,8 +77,6 @@ public partial class StructureTabView : UserControl
 	private DesktopSettings? _settings;
 	private string? _currentTemplateName;
 	private DataGrid? _currentDataGrid;
-	private bool _isMutatingTreeNodes;
-	private bool _isLoadingVisuals;
 
 	public StructureTabView()
 	{
@@ -284,20 +282,12 @@ public partial class StructureTabView : UserControl
 		// Show loading indicator on UI thread.
 		await Dispatcher.UIThread.InvokeAsync(() =>
 		{
-			_isMutatingTreeNodes = true;
-			try
+			viewNode.Children.Clear();
+			viewNode.Children.Add(new StructureTreeNode
 			{
-				viewNode.Children.Clear();
-				viewNode.Children.Add(new StructureTreeNode
-				{
-					Text = "Loading...",
-					Icon = Symbol.ArrowSyncCircle
-				});
-			}
-			finally
-			{
-				_isMutatingTreeNodes = false;
-			}
+				Text = "Loading...",
+				Icon = Symbol.ArrowSyncCircle
+			});
 		});
 
 		try
@@ -325,18 +315,10 @@ public partial class StructureTabView : UserControl
 			// Replace placeholder with real children on UI thread.
 			await Dispatcher.UIThread.InvokeAsync(() =>
 			{
-				_isMutatingTreeNodes = true;
-				try
+				viewNode.Children.Clear();
+				foreach (var child in convertedChildren)
 				{
-					viewNode.Children.Clear();
-					foreach (var child in convertedChildren)
-					{
-						viewNode.Children.Add(child);
-					}
-				}
-				finally
-				{
-					_isMutatingTreeNodes = false;
+					viewNode.Children.Add(child);
 				}
 			});
 		}
@@ -345,20 +327,12 @@ public partial class StructureTabView : UserControl
 			Logger.Error($"Error loading deferred children for node '{viewNode.Text}': {ex}");
 			await Dispatcher.UIThread.InvokeAsync(() =>
 			{
-				_isMutatingTreeNodes = true;
-				try
+				viewNode.Children.Clear();
+				viewNode.Children.Add(new StructureTreeNode
 				{
-					viewNode.Children.Clear();
-					viewNode.Children.Add(new StructureTreeNode
-					{
-						Text = $"Error: {ex.Message}",
-						Icon = Symbol.ErrorCircle
-					});
-				}
-				finally
-				{
-					_isMutatingTreeNodes = false;
-				}
+					Text = $"Error: {ex.Message}",
+					Icon = Symbol.ErrorCircle
+				});
 			});
 		}
 	}
@@ -401,18 +375,16 @@ public partial class StructureTabView : UserControl
 	/// </summary>
 	private void OnTreeSelectionChanged(object? sender, SelectionChangedEventArgs e)
 	{
-		if (_fileType == null || _isMutatingTreeNodes || _isLoadingVisuals || _treeView == null)
+		if (_fileType == null)
 			return;
 
-		var selectedItem = e.AddedItems
-			.OfType<StructureTreeNode>()
-			.FirstOrDefault()
-			?? _treeView.SelectedItem as StructureTreeNode;
-
+		var selectedItem = _treeView?.SelectedItem as StructureTreeNode;
 		if (selectedItem?.SourceNode == null)
+		{
+			ClearVisuals();
 			return;
+		}
 
-		_isLoadingVisuals = true;
 		try
 		{
 			var context = new FileContext(_fileType.FileInStream, _fileType.NumFormat);
@@ -424,10 +396,6 @@ public partial class StructureTabView : UserControl
 			Logger.Error($"Error loading data for node '{selectedItem.Text}': {ex}");
 			try { ClearVisuals(); } catch { }
 			ShowErrorVisual($"Error loading data for node: {ex.Message}");
-		}
-		finally
-		{
-			_isLoadingVisuals = false;
 		}
 	}
 
@@ -601,8 +569,7 @@ public partial class StructureTabView : UserControl
 	{
 		var imageViewer = new ImageViewerControl
 		{
-			SourceImage = visual,
-			Focusable = false
+			SourceImage = visual
 		};
 		return imageViewer;
 	}
@@ -847,9 +814,9 @@ public partial class StructureTabView : UserControl
 	private void RefreshSelectedNode()
 	{
 		// Re-load the currently selected node's data with the current formatter
-		if (_fileType == null || _treeView == null)
+		if (_fileType == null)
 			return;
-		if (_treeView.SelectedItem is not StructureTreeNode selectedItem)
+		if (_treeView?.SelectedItem is not StructureTreeNode selectedItem)
 			return;
 
 		try
