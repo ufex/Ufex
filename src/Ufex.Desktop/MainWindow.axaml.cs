@@ -8,6 +8,7 @@ using Avalonia.Styling;
 using Avalonia.Threading;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +16,7 @@ using System.Threading.Tasks;
 using Ufex.API;
 using Ufex.API.Format;
 using Ufex.FileType;
+using Ufex.Hex;
 using UfexFileInfo = Ufex.API.FileInfo;
 using UfexFileType = Ufex.API.FileType;
 
@@ -44,11 +46,21 @@ public partial class MainWindow : Window
 	// Application settings
 	private DesktopSettings _settings = null!;
 
+	// Color profile manager - loaded async on startup
+	private ColorProfileManager _colorProfileManager = new ColorProfileManager();
+
+	// Currently detected file type ID (for color profile filtering)
+	private string? _currentFileTypeId;
+
+	// File type ID chain: [detected type, parent, grandparent, ...]
+	private List<string> _currentFileTypeChain = new List<string>();
+
 	public MainWindow()
 	{
 		InitializeComponent();
 		InitializeSettings();
 		InitializeFileTypeManager();
+		InitializeColorProfiles();
 
 		// Pass settings to child views that need them
 		StructureTab.SetSettings(_settings);
@@ -127,6 +139,38 @@ public partial class MainWindow : Window
 			// Log error but don't crash - file type detection will be unavailable
 			Console.WriteLine($"Failed to initialize FileTypeManager: {ex.Message}");
 		}
+	}
+
+	private void InitializeColorProfiles()
+	{
+		var appPath = AppContext.BaseDirectory;
+		var colorProfilesDir = Path.Combine(appPath, "config", "color-profiles");
+		_colorProfileManager.LoadAsync(colorProfilesDir);
+	}
+
+	/// <summary>
+	/// Builds a list of file type IDs starting from the detected type
+	/// and walking up the parent chain.
+	/// </summary>
+	private List<string> BuildFileTypeChain(FileTypeRecord? fileType)
+	{
+		var chain = new List<string>();
+		if (fileType == null || _fileTypeManager == null)
+			return chain;
+
+		chain.Add(fileType.ID);
+
+		string? currentParentId = fileType.ParentID;
+		var visited = new HashSet<string> { fileType.ID };
+
+		while (!string.IsNullOrEmpty(currentParentId) && visited.Add(currentParentId))
+		{
+			chain.Add(currentParentId);
+			_fileTypeManager.FileTypes.FileTypesByID.TryGetValue(currentParentId, out var parent);
+			currentParentId = parent?.ParentID;
+		}
+
+		return chain;
 	}
 
 	/// <summary>
@@ -429,7 +473,13 @@ public partial class MainWindow : Window
 			}
 
 			// Step 8: Initialize the hex viewer with the file stream (UI thread)
+			HexTab.SetBufferSize(_settings.Hex.BufferSize);
 			HexTab.LoadStream(_openFileStream);
+
+			// Step 8b: Track file type and apply color profile
+			_currentFileTypeId = detectedFileType?.ID;
+			_currentFileTypeChain = BuildFileTypeChain(detectedFileType);
+			await UpdateColorProfileMenuAsync();
 
 			// Step 9: If file type is known, check for associated plugin and load handler
 			if (detectedFileType != null && _fileTypeManager != null)
@@ -654,8 +704,11 @@ public partial class MainWindow : Window
 	{
 		// Clean up the file type instance
 		_currentFileType = null;
+		_currentFileTypeId = null;
+		_currentFileTypeChain.Clear();
 
 		// Clear the hex viewer before closing the stream
+		HexTab.ActiveColorProfile = null;
 		HexTab.Clear();
 
 		// Clear the validation tab
@@ -873,6 +926,108 @@ public partial class MainWindow : Window
 	{
 		App.Instance?.SetTheme(ThemeVariant.Dark);
 		UpdateThemeMenuChecks();
+	}
+
+	// Color Profile Menu Handlers
+
+	private async Task UpdateColorProfileMenuAsync()
+	{
+		// Ensure profiles are loaded
+		await _colorProfileManager.WaitForLoadAsync();
+
+		// Remove old dynamic menu items (everything after the separator)
+		var items = ColorProfileMenu.Items;
+		while (items.Count > 2) // "None" + separator
+			items.RemoveAt(items.Count - 1);
+
+		string fileTypeId = _currentFileTypeId ?? "";
+		var applicableProfiles = _currentFileTypeChain.Count > 0
+			? _colorProfileManager.GetProfilesForFileType(_currentFileTypeChain)
+			: _colorProfileManager.GetProfilesForFileType(fileTypeId);
+
+		ColorProfileSeparator.IsVisible = applicableProfiles.Count > 0;
+
+		string? preferredProfileId = null;
+		if (!string.IsNullOrEmpty(fileTypeId) &&
+			_settings.Hex.ColorProfilePreferences.TryGetValue(fileTypeId, out var savedId))
+		{
+			preferredProfileId = savedId;
+		}
+
+		ColorProfile? profileToApply = null;
+
+		foreach (var profile in applicableProfiles)
+		{
+			var menuItem = new MenuItem
+			{
+				Header = profile.Name,
+				Tag = profile.ID
+			};
+			menuItem.Click += OnColorProfileItemClick;
+			items.Add(menuItem);
+
+			if (profile.ID == preferredProfileId)
+				profileToApply = profile;
+		}
+
+		// Apply preferred profile or clear
+		HexTab.ActiveColorProfile = profileToApply;
+		UpdateColorProfileMenuChecks();
+	}
+
+	private void OnColorProfileNoneClick(object? sender, RoutedEventArgs e)
+	{
+		HexTab.ActiveColorProfile = null;
+
+		// Save preference
+		if (!string.IsNullOrEmpty(_currentFileTypeId))
+		{
+			_settings.Hex.ColorProfilePreferences.Remove(_currentFileTypeId);
+			_settings.Save();
+		}
+
+		UpdateColorProfileMenuChecks();
+	}
+
+	private void OnColorProfileItemClick(object? sender, RoutedEventArgs e)
+	{
+		if (sender is not MenuItem menuItem || menuItem.Tag is not string profileId)
+			return;
+
+		var profile = _colorProfileManager.GetProfileById(profileId);
+		if (profile == null) return;
+
+		HexTab.ActiveColorProfile = profile;
+
+		// Save preference
+		if (!string.IsNullOrEmpty(_currentFileTypeId))
+		{
+			_settings.Hex.ColorProfilePreferences[_currentFileTypeId] = profileId;
+			_settings.Save();
+		}
+
+		UpdateColorProfileMenuChecks();
+	}
+
+	private void UpdateColorProfileMenuChecks()
+	{
+		var activeId = HexTab.ActiveColorProfile?.ID;
+
+		foreach (var item in ColorProfileMenu.Items)
+		{
+			if (item is MenuItem mi)
+			{
+				bool isChecked;
+				if (mi == ColorProfileNoneMenuItem)
+					isChecked = activeId == null;
+				else
+					isChecked = mi.Tag is string id && id == activeId;
+
+				mi.Icon = isChecked
+					? new CheckBox { IsChecked = true, IsHitTestVisible = false }
+					: null;
+			}
+		}
 	}
 
 	private void UpdateThemeMenuChecks()

@@ -32,6 +32,10 @@
                     <MenuItem Header="Binary" Click="OnNumberFormatBinClick" />
                     <MenuItem Header="ASCII" Click="OnNumberFormatAsciiClick" />
                 </MenuItem>
+                <MenuItem x:Name="ColorProfileMenu" Header="Color Profile">
+                    <MenuItem x:Name="ColorProfileNoneMenuItem" Header="None" Click="OnColorProfileNoneClick" />
+                    <Separator x:Name="ColorProfileSeparator" IsVisible="False" />
+                </MenuItem>
                 <MenuItem Header="Theme">
                     <MenuItem x:Name="ThemeAutoMenuItem" Header="Auto" Click="OnThemeAutoClick" />
                     <MenuItem x:Name="ThemeLightMenuItem" Header="Light" Click="OnThemeLightClick" />
@@ -57,7 +61,8 @@
             Background="{DynamicResource UfexCommandBarBackgroundBrush}"
                 BorderBrush="{DynamicResource UfexCommandBarBorderBrush}" 
                 BorderThickness="0,0,0,1"
-                Padding="4">
+                Padding="4"
+                IsVisible="False">
             <DockPanel>
                 <!-- Left-aligned file buttons -->
                 <StackPanel Orientation="Horizontal" Spacing="4">

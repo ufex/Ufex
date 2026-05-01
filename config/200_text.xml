@@ -13,6 +13,14 @@
 			</Extensions>
 		</FileType>
 		<FileType>
+			<ID>TEXT_UTF8</ID>
+			<Description>UTF-8 Text File</Description>
+			<Category>Text</Category>
+			<Extensions>
+				<Extension>txt</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
 			<ID>TEXT_UNICODE</ID>
 			<Description>Unicode Text File</Description>
 			<Category>Text</Category>

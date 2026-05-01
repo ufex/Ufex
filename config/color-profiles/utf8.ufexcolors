@@ -1,0 +1,17 @@
+ID: utf8
+Name: UTF-8
+Description: Colors UTF-8 lead, continuation, and ASCII bytes distinctly.
+FileTypes: TEXT_*, CODE_*
+---
+# Null bytes — needs override: #1a1a1a is invisible on dark background
+b == 0x00                                          => #1a1a1a/#e5e5e5
+# Printable ASCII
+b >= 0x20 && b < 0x7F                              => #88cc88
+# UTF-8 lead byte (2-byte sequence) followed by a continuation byte
+(b & 0xE0) == 0xC0 && (at(1) & 0xC0) == 0x80       => #4488cc
+# UTF-8 continuation byte preceded by a 2-byte lead
+(at(-1) & 0xE0) == 0xC0 && (b & 0xC0) == 0x80      => #6699dd
+# High bytes that didn't match the UTF-8 patterns above
+b >= 0x80                                          => #cc8844
+# Everything else — slightly brighter on dark for readability
+_                                                  => #666666/#999999			

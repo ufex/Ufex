@@ -12,42 +12,9 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Ufex.Hex;
 
 namespace Ufex.Controls.Avalonia;
-
-/// <summary>
-/// Represents the state of a search operation within a HexView.
-/// Holds the search pattern, cached match positions, and current index.
-/// </summary>
-public class HexSearchState
-{
-	/// <summary>
-	/// The byte pattern that was searched for.
-	/// </summary>
-	public byte[] Pattern { get; }
-
-	/// <summary>
-	/// All match positions found in the stream.
-	/// </summary>
-	public List<long> Matches { get; }
-
-	/// <summary>
-	/// The index of the currently selected match, or -1 if none.
-	/// </summary>
-	public int CurrentIndex { get; set; }
-
-	/// <summary>
-	/// The total number of results found.
-	/// </summary>
-	public int TotalResults => Matches.Count;
-
-	public HexSearchState(byte[] pattern)
-	{
-		Pattern = pattern;
-		Matches = new List<long>();
-		CurrentIndex = -1;
-	}
-}
 
 /// <summary>
 /// Cross-platform hex viewer control for Avalonia.
@@ -90,9 +57,8 @@ public partial class HexView : UserControl
 	private bool _fileLoaded;
 
 	// Buffer management
-	private byte[]? _buffer;
-	private int _bufferSize = 65536; // 64KB buffer
-	private long _bufferStartPosition;
+	private HexBuffer? _hexBuffer;
+	private int _bufferSize = 262144; // 256KB buffer
 
 	// Current display state
 	private long _displayPosition;
@@ -134,20 +100,12 @@ public partial class HexView : UserControl
 	// Whether to use theme resources for colors (true by default)
 	private bool _useThemeColors = true;
 
-	// Pre-formatted hex lookup table (avoid per-cell string allocation)
-	private static readonly string[] HexUpper = new string[256];
-	private static readonly string[] HexLower = new string[256];
-	private static readonly string[] AsciiChars = new string[256];
-
-	static HexView()
-	{
-		for (int i = 0; i < 256; i++)
-		{
-			HexUpper[i] = i.ToString("X2");
-			HexLower[i] = i.ToString("x2");
-			AsciiChars[i] = (i >= 32 && i < 127) ? ((char)i).ToString() : ".";
-		}
-	}
+	// Color profile support
+	private ColorProfile? _colorProfile;
+	private ColorProfileEvaluator? _colorEvaluator;
+	private UInt32[]? _colorCache;
+	private long _colorCacheStart = -1;
+	private int _colorCacheCount;
 
 	public HexView()
 	{
@@ -262,6 +220,14 @@ public partial class HexView : UserControl
 
 	private void OnActualThemeVariantChanged(object? sender, EventArgs e)
 	{
+		// Update color profile evaluator with new theme
+		if (_colorProfile != null)
+		{
+			string? theme = GetCurrentThemeName();
+			_colorEvaluator = new ColorProfileEvaluator(_colorProfile, theme);
+			InvalidateColorCache();
+		}
+
 		ApplyColors();
 		RepaintAll();
 	}
@@ -452,10 +418,9 @@ public partial class HexView : UserControl
 		_scrollDebounceTimer?.Stop();
 		_fileStream = null;
 		_fileLoaded = false;
-		_buffer = null;
+		_hexBuffer = null;
 		_fileSize = 0;
 		_displayPosition = 0;
-		_bufferStartPosition = 0;
 		_dataAvailable = false;
 		_highlightStart = 0;
 		_highlightEnd = 0;
@@ -469,6 +434,7 @@ public partial class HexView : UserControl
 			_scrollBar.IsEnabled = false;
 		}
 
+		InvalidateColorCache();
 		RepaintAll();
 	}
 
@@ -484,9 +450,8 @@ public partial class HexView : UserControl
 		_numLines = (_fileSize + _calculatedCols - 1) / _calculatedCols;
 
 		// Initialize buffer
-		_buffer = new byte[_bufferSize];
-		_bufferStartPosition = 0;
-		LoadBuffer(0);
+		_hexBuffer = new HexBuffer(_fileStream, _bufferSize);
+		_hexBuffer.Load(0, _calculatedCols);
 		_dataAvailable = true;
 
 		UpdateScrollbar();
@@ -516,32 +481,8 @@ public partial class HexView : UserControl
 
 	private void LoadBuffer(long position)
 	{
-		if (_fileStream == null || _buffer == null) return;
-
-		// Calculate buffer start position (load some data before current position)
-		long bufferStart = Math.Max(0, position - _bufferSize / 4);
-
-		// Align to row boundary
-		bufferStart = (bufferStart / _calculatedCols) * _calculatedCols;
-
-		_bufferStartPosition = bufferStart;
-
-		// Read data into buffer
-		_fileStream.Seek(_bufferStartPosition, SeekOrigin.Begin);
-		int bytesToRead = (int)Math.Min(_bufferSize, _fileSize - _bufferStartPosition);
-		int bytesRead = 0;
-		while (bytesRead < bytesToRead)
-		{
-			int read = _fileStream.Read(_buffer, bytesRead, bytesToRead - bytesRead);
-			if (read == 0) break;
-			bytesRead += read;
-		}
-
-		// Clear any remaining buffer space
-		if (bytesRead < _bufferSize)
-		{
-			Array.Clear(_buffer, bytesRead, _bufferSize - bytesRead);
-		}
+		if (_fileStream == null || _hexBuffer == null) return;
+		_hexBuffer.Load(position, _calculatedCols);
 	}
 
 	private void OnScrollBarPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
@@ -558,13 +499,14 @@ public partial class HexView : UserControl
 
 		// Check if display data is within the current buffer
 		long displayEnd = _displayPosition + (_calculatedRows * _calculatedCols);
-		bool inBuffer = _displayPosition >= _bufferStartPosition &&
-		                displayEnd <= _bufferStartPosition + _bufferSize;
+		bool inBuffer = _hexBuffer != null &&
+		                _hexBuffer.Contains(_displayPosition, (int)(displayEnd - _displayPosition));
 
 		if (inBuffer)
 		{
 			_scrollDebounceTimer?.Stop();
 			_dataAvailable = true;
+			InvalidateColorCache();
 			RepaintAll();
 		}
 		else
@@ -749,13 +691,13 @@ public partial class HexView : UserControl
 			long filePos = pos + i;
 			if (filePos >= _fileSize) break;
 
-			byte value;
-			long bufferOffset = filePos - _bufferStartPosition;
-			if (_buffer != null && bufferOffset >= 0 && bufferOffset < _buffer.Length)
-			{
-				value = _buffer[bufferOffset];
-			}
+			int value;
+			if (_hexBuffer != null)
+				value = _hexBuffer.ReadByte(filePos);
 			else
+				value = -1;
+
+			if (value < 0)
 			{
 				// Need to read from file
 				lock (_fileStream)
@@ -763,12 +705,12 @@ public partial class HexView : UserControl
 					_fileStream.Seek(filePos, SeekOrigin.Begin);
 					int b = _fileStream.ReadByte();
 					if (b < 0) break;
-					value = (byte)b;
+					value = b;
 				}
 			}
 
 			if (i > 0) sb.Append(' ');
-			sb.Append(HexUpper[value]);
+			sb.Append(HexFormat.HexUpper[value]);
 		}
 
 		var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
@@ -880,7 +822,7 @@ public partial class HexView : UserControl
 		}
 
 		// Draw data text only if buffer data is available
-		if (!_dataAvailable || _buffer == null) return;
+		if (!_dataAvailable || _hexBuffer == null) return;
 
 		var textBrush = GetTextBrush();
 		var highlightBrush = new SolidColorBrush(Colors.Yellow);
@@ -888,7 +830,10 @@ public partial class HexView : UserControl
 		var selectionBrush = GetSelectionBrush();
 		bool hasHighlight = _highlightStart != _highlightEnd;
 		bool hasSelection = _selectionStart >= 0;
-		string[] hexTable = _hexCaps ? HexUpper : HexLower;
+		string[] hexTable = _hexCaps ? HexFormat.HexUpper : HexFormat.HexLower;
+
+		// Evaluate color profile for the displayed range
+		EnsureColorCache();
 
 		for (int row = 0; row < _calculatedRows; row++)
 		{
@@ -897,10 +842,10 @@ public partial class HexView : UserControl
 				long filePos = _displayPosition + (row * _calculatedCols) + col;
 				if (filePos >= _fileSize) return;
 
-				long bufferOffset = filePos - _bufferStartPosition;
-				if (bufferOffset < 0 || bufferOffset >= _buffer.Length) continue;
+				long bufferOffset = _hexBuffer.GetBufferOffset(filePos);
+				if (bufferOffset < 0) continue;
 
-				byte value = _buffer[bufferOffset];
+				byte value = _hexBuffer.Data[bufferOffset];
 				bool isHighlighted = hasHighlight && filePos >= _highlightStart && filePos <= _highlightEnd;
 				bool isSelected = hasSelection && filePos >= _selectionStart && filePos <= _selectionEnd;
 
@@ -918,6 +863,13 @@ public partial class HexView : UserControl
 					context.FillRectangle(selectionBrush, new Rect(x, y, _hexCellWidth, _cellHeight));
 				}
 
+				// Determine text brush: highlight > color profile > default
+				IBrush cellBrush;
+				if (isHighlighted)
+					cellBrush = highlightTextBrush;
+				else
+					cellBrush = GetColorProfileBrush(filePos) ?? textBrush;
+
 				// Draw hex text (centered)
 				var formattedText = new FormattedText(
 					hexTable[value],
@@ -925,7 +877,7 @@ public partial class HexView : UserControl
 					FlowDirection.LeftToRight,
 					_typeface,
 					_fontSize,
-					isHighlighted ? highlightTextBrush : textBrush);
+					cellBrush);
 
 				double textX = x + (_hexCellWidth - formattedText.Width) / 2;
 				double textY = y + (_cellHeight - formattedText.Height) / 2;
@@ -963,7 +915,7 @@ public partial class HexView : UserControl
 		}
 
 		// Draw data text only if buffer data is available
-		if (!_dataAvailable || _buffer == null) return;
+		if (!_dataAvailable || _hexBuffer == null) return;
 
 		var textBrush = GetTextBrush();
 		var highlightBrush = new SolidColorBrush(Colors.Yellow);
@@ -972,6 +924,8 @@ public partial class HexView : UserControl
 		bool hasHighlight = _highlightStart != _highlightEnd;
 		bool hasSelection = _selectionStart >= 0;
 
+		// Color cache is already populated by hex column render; reuse it
+
 		for (int row = 0; row < _calculatedRows; row++)
 		{
 			for (int col = 0; col < _calculatedCols; col++)
@@ -979,10 +933,10 @@ public partial class HexView : UserControl
 				long filePos = _displayPosition + (row * _calculatedCols) + col;
 				if (filePos >= _fileSize) return;
 
-				long bufferOffset = filePos - _bufferStartPosition;
-				if (bufferOffset < 0 || bufferOffset >= _buffer.Length) continue;
+				long bufferOffset = _hexBuffer.GetBufferOffset(filePos);
+				if (bufferOffset < 0) continue;
 
-				byte value = _buffer[bufferOffset];
+				byte value = _hexBuffer.Data[bufferOffset];
 				bool isHighlighted = hasHighlight && filePos >= _highlightStart && filePos <= _highlightEnd;
 				bool isSelected = hasSelection && filePos >= _selectionStart && filePos <= _selectionEnd;
 
@@ -1000,14 +954,21 @@ public partial class HexView : UserControl
 					context.FillRectangle(selectionBrush, new Rect(x, y, _asciiCellWidth, _cellHeight));
 				}
 
+				// Determine text brush: highlight > color profile > default
+				IBrush cellBrush;
+				if (isHighlighted)
+					cellBrush = highlightTextBrush;
+				else
+					cellBrush = GetColorProfileBrush(filePos) ?? textBrush;
+
 				// Draw ASCII text (centered)
 				var formattedText = new FormattedText(
-					AsciiChars[value],
+					HexFormat.AsciiChars[value],
 					CultureInfo.InvariantCulture,
 					FlowDirection.LeftToRight,
 					_typeface,
 					_fontSize,
-					isHighlighted ? highlightTextBrush : textBrush);
+					cellBrush);
 
 				double textX = x + (_asciiCellWidth - formattedText.Width) / 2;
 				double textY = y + (_cellHeight - formattedText.Height) / 2;
@@ -1046,35 +1007,14 @@ public partial class HexView : UserControl
 
 	private async void LoadBufferAsync(long position)
 	{
-		if (_fileStream == null || _buffer == null) return;
+		if (_fileStream == null || _hexBuffer == null) return;
 
-		long bufferStart = Math.Max(0, position - _bufferSize / 4);
-		bufferStart = (bufferStart / _calculatedCols) * _calculatedCols;
-
-		long bufStart = bufferStart;
-		int bytesToRead = (int)Math.Min(_bufferSize, _fileSize - bufStart);
-		byte[] tempBuffer = new byte[_bufferSize];
-
-		await Task.Run(() =>
-		{
-			lock (_fileStream)
-			{
-				_fileStream.Seek(bufStart, SeekOrigin.Begin);
-				int bytesRead = 0;
-				while (bytesRead < bytesToRead)
-				{
-					int read = _fileStream.Read(tempBuffer, bytesRead, bytesToRead - bytesRead);
-					if (read == 0) break;
-					bytesRead += read;
-				}
-			}
-		});
+		await _hexBuffer.LoadAsync(position, _calculatedCols);
 
 		if (!_fileLoaded) return;
 
-		_bufferStartPosition = bufStart;
-		Array.Copy(tempBuffer, _buffer, _bufferSize);
 		_dataAvailable = true;
+		InvalidateColorCache();
 		RepaintAll();
 	}
 
@@ -1107,8 +1047,7 @@ public partial class HexView : UserControl
 
 		// Reload buffer if needed
 		long displayEnd = _displayPosition + (_calculatedRows * _calculatedCols);
-		if (_displayPosition < _bufferStartPosition ||
-		    displayEnd > _bufferStartPosition + _bufferSize)
+		if (_hexBuffer == null || !_hexBuffer.Contains(_displayPosition, (int)(displayEnd - _displayPosition)))
 		{
 			LoadBuffer(_displayPosition);
 		}
@@ -1146,85 +1085,13 @@ public partial class HexView : UserControl
 	/// </summary>
 	public HexSearchState Find(byte[] pattern)
 	{
-		var state = new HexSearchState(pattern);
 		if (!_fileLoaded || _fileStream == null || pattern.Length == 0)
-			return state;
+			return new HexSearchState(pattern);
 
-		// Save current stream position
-		long savedPosition = _fileStream.Position;
+		var state = HexSearch.Find(_fileStream, pattern, _bufferSize);
 
-		try
-		{
-			_fileStream.Seek(0, SeekOrigin.Begin);
-
-			int searchBufferSize = Math.Max(_bufferSize, pattern.Length * 4);
-			byte[] searchBuffer = new byte[searchBufferSize];
-			long fileOffset = 0;
-			int overlap = pattern.Length - 1;
-			int carryOver = 0;
-
-			while (fileOffset < _fileSize)
-			{
-				// Read chunk (preserving overlap from previous chunk)
-				int bytesToRead = searchBufferSize - carryOver;
-				int bytesRead = 0;
-				while (bytesRead < bytesToRead)
-				{
-					int read = _fileStream.Read(searchBuffer, carryOver + bytesRead, bytesToRead - bytesRead);
-					if (read == 0) break;
-					bytesRead += read;
-				}
-
-				int totalBytes = carryOver + bytesRead;
-				if (totalBytes < pattern.Length) break;
-
-				// Search for pattern in buffer
-				long searchStartOffset = fileOffset - carryOver;
-				int searchLimit = totalBytes - pattern.Length + 1;
-
-				for (int i = 0; i < searchLimit; i++)
-				{
-					bool match = true;
-					for (int j = 0; j < pattern.Length; j++)
-					{
-						if (searchBuffer[i + j] != pattern[j])
-						{
-							match = false;
-							break;
-						}
-					}
-					if (match)
-					{
-						state.Matches.Add(searchStartOffset + i);
-					}
-				}
-
-				fileOffset += bytesRead;
-
-				// Preserve overlap for next iteration
-				if (bytesRead > 0 && fileOffset < _fileSize)
-				{
-					Array.Copy(searchBuffer, totalBytes - overlap, searchBuffer, 0, overlap);
-					carryOver = overlap;
-				}
-				else
-				{
-					carryOver = 0;
-				}
-			}
-		}
-		finally
-		{
-			// Restore stream position
-			_fileStream.Seek(savedPosition, SeekOrigin.Begin);
-		}
-
-		// Navigate to first result
 		if (state.TotalResults > 0)
-		{
-			state.CurrentIndex = 0;
 			NavigateToMatch(state);
-		}
 
 		return state;
 	}
@@ -1236,93 +1103,13 @@ public partial class HexView : UserControl
 	/// </summary>
 	public HexSearchState FindCaseInsensitive(byte[] pattern)
 	{
-		var state = new HexSearchState(pattern);
 		if (!_fileLoaded || _fileStream == null || pattern.Length == 0)
-			return state;
+			return new HexSearchState(pattern);
 
-		long savedPosition = _fileStream.Position;
-
-		try
-		{
-			_fileStream.Seek(0, SeekOrigin.Begin);
-
-			int searchBufferSize = Math.Max(_bufferSize, pattern.Length * 4);
-			byte[] searchBuffer = new byte[searchBufferSize];
-			long fileOffset = 0;
-			int overlap = pattern.Length - 1;
-			int carryOver = 0;
-
-			// Pre-compute lowercase pattern
-			byte[] lowerPattern = new byte[pattern.Length];
-			for (int k = 0; k < pattern.Length; k++)
-			{
-				byte b = pattern[k];
-				if (b >= (byte)'A' && b <= (byte)'Z')
-					lowerPattern[k] = (byte)(b + 32);
-				else
-					lowerPattern[k] = b;
-			}
-
-			while (fileOffset < _fileSize)
-			{
-				int bytesToRead = searchBufferSize - carryOver;
-				int bytesRead = 0;
-				while (bytesRead < bytesToRead)
-				{
-					int read = _fileStream.Read(searchBuffer, carryOver + bytesRead, bytesToRead - bytesRead);
-					if (read == 0) break;
-					bytesRead += read;
-				}
-
-				int totalBytes = carryOver + bytesRead;
-				if (totalBytes < pattern.Length) break;
-
-				long searchStartOffset = fileOffset - carryOver;
-				int searchLimit = totalBytes - pattern.Length + 1;
-
-				for (int i = 0; i < searchLimit; i++)
-				{
-					bool match = true;
-					for (int j = 0; j < pattern.Length; j++)
-					{
-						byte b = searchBuffer[i + j];
-						if (b >= (byte)'A' && b <= (byte)'Z')
-							b = (byte)(b + 32);
-						if (b != lowerPattern[j])
-						{
-							match = false;
-							break;
-						}
-					}
-					if (match)
-					{
-						state.Matches.Add(searchStartOffset + i);
-					}
-				}
-
-				fileOffset += bytesRead;
-
-				if (bytesRead > 0 && fileOffset < _fileSize)
-				{
-					Array.Copy(searchBuffer, totalBytes - overlap, searchBuffer, 0, overlap);
-					carryOver = overlap;
-				}
-				else
-				{
-					carryOver = 0;
-				}
-			}
-		}
-		finally
-		{
-			_fileStream.Seek(savedPosition, SeekOrigin.Begin);
-		}
+		var state = HexSearch.FindCaseInsensitive(_fileStream, pattern, _bufferSize);
 
 		if (state.TotalResults > 0)
-		{
-			state.CurrentIndex = 0;
 			NavigateToMatch(state);
-		}
 
 		return state;
 	}
@@ -1334,7 +1121,7 @@ public partial class HexView : UserControl
 	{
 		if (state.TotalResults == 0) return;
 
-		state.CurrentIndex = (state.CurrentIndex + 1) % state.TotalResults;
+		HexSearch.MoveNext(state);
 		NavigateToMatch(state);
 	}
 
@@ -1345,7 +1132,7 @@ public partial class HexView : UserControl
 	{
 		if (state.TotalResults == 0) return;
 
-		state.CurrentIndex = (state.CurrentIndex - 1 + state.TotalResults) % state.TotalResults;
+		HexSearch.MovePrevious(state);
 		NavigateToMatch(state);
 	}
 
@@ -1505,4 +1292,115 @@ public partial class HexView : UserControl
 	/// Gets whether a file is currently loaded.
 	/// </summary>
 	public bool IsFileLoaded => _fileLoaded;
+
+	/// <summary>
+	/// Gets or sets the active color profile. Set to null to disable coloring.
+	/// </summary>
+	public ColorProfile? ActiveColorProfile
+	{
+		get => _colorProfile;
+		set
+		{
+			_colorProfile = value;
+			if (value != null)
+			{
+				string? theme = GetCurrentThemeName();
+				_colorEvaluator = new ColorProfileEvaluator(value, theme);
+			}
+			else
+			{
+				_colorEvaluator = null;
+			}
+			InvalidateColorCache();
+			RepaintAll();
+		}
+	}
+
+	private string? GetCurrentThemeName()
+	{
+		var variant = ActualThemeVariant;
+		if (variant == ThemeVariant.Light) return "light";
+		if (variant == ThemeVariant.Dark) return "dark";
+		// For Default/auto, try to detect actual theme
+		if (variant == ThemeVariant.Default)
+		{
+			// Avalonia Default follows system; check background luminance heuristic
+			// Fall back to "light" if we can't determine
+			return null;
+		}
+		return null;
+	}
+
+	private void InvalidateColorCache()
+	{
+		_colorCache = null;
+		_colorCacheStart = -1;
+		_colorCacheCount = 0;
+	}
+
+	private void EnsureColorCache()
+	{
+		if (_colorEvaluator == null || _hexBuffer == null || !_dataAvailable)
+		{
+			_colorCache = null;
+			return;
+		}
+
+		int displayCount = _calculatedRows * _calculatedCols;
+		long displayEnd = Math.Min(_displayPosition + displayCount, _fileSize);
+		int actualCount = (int)(displayEnd - _displayPosition);
+
+		// Check if cache is still valid
+		if (_colorCache != null && _colorCacheStart == _displayPosition && _colorCacheCount == actualCount)
+			return;
+
+		// Build the context buffer: 128 bytes before + display bytes + 128 bytes after
+		const int ContextPadding = 128;
+		long contextStart = Math.Max(0, _displayPosition - ContextPadding);
+		long contextEnd = Math.Min(_fileSize, displayEnd + ContextPadding);
+		int contextSize = (int)(contextEnd - contextStart);
+		int displayOffset = (int)(_displayPosition - contextStart);
+
+		// Read context bytes from the hex buffer
+		byte[] contextBuffer = new byte[contextSize];
+		int filled = 0;
+		for (int i = 0; i < contextSize; i++)
+		{
+			long filePos = contextStart + i;
+			long bufOffset = _hexBuffer.GetBufferOffset(filePos);
+			if (bufOffset >= 0 && bufOffset < _hexBuffer.ValidBytes)
+			{
+				contextBuffer[i] = _hexBuffer.Data[bufOffset];
+				filled++;
+			}
+		}
+
+		if (filled == 0)
+		{
+			_colorCache = null;
+			return;
+		}
+
+		_colorCache = _colorEvaluator.Evaluate(contextBuffer, displayOffset, actualCount);
+		_colorCacheStart = _displayPosition;
+		_colorCacheCount = actualCount;
+	}
+
+	private IBrush? GetColorProfileBrush(long filePos)
+	{
+		if (_colorCache == null) return null;
+
+		int index = (int)(filePos - _colorCacheStart);
+		if (index < 0 || index >= _colorCacheCount) return null;
+
+		UInt32 color = _colorCache[index];
+		if (color == 0) return null;
+
+		// Color is RRGGBBAA
+		byte r = (byte)((color >> 24) & 0xFF);
+		byte g = (byte)((color >> 16) & 0xFF);
+		byte b = (byte)((color >> 8) & 0xFF);
+		byte a = (byte)(color & 0xFF);
+		return new SolidColorBrush(Color.FromArgb(a, r, g, b));
+	}
 }

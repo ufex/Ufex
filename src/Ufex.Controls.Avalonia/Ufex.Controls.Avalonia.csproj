@@ -6,7 +6,7 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<RootNamespace>Ufex.Controls.Avalonia</RootNamespace>
 		<AssemblyName>Ufex.Controls.Avalonia</AssemblyName>
-    <Version>2.1.0</Version>
+    <Version>2.2.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -16,6 +16,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Ufex.API\Ufex.API.csproj" />
+		<ProjectReference Include="..\Ufex.Hex\Ufex.Hex.csproj" />
 	</ItemGroup>
 
 </Project>

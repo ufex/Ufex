@@ -124,7 +124,7 @@
   <!-- File type ID must be uppercase with a known category prefix -->
   <xs:simpleType name="FileTypeIDType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="(APP|ARCH|AUDIO|DB|DOCS|EXEC|HIMG|IMAGE|CRYPTO|TEXT|VIDEO|BASE)_[A-Z0-9_]+" />
+      <xs:pattern value="(APP|ARCH|AUDIO|DB|DOCS|EXEC|HIMG|IMAGE|CRYPTO|CODE|TEXT|VIDEO|BASE)_[A-Z0-9_]+" />
     </xs:restriction>
   </xs:simpleType>
 

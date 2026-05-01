@@ -20,7 +20,7 @@ Downloads: https://github.com/ufex/Ufex/releases
 
 ## Plugin Architecture
 
-Ufex is designed to be extended via **.NET assembly plugins**. Each plugin teaches Ufex how to parse, display, and validate a specific file format (for example PNG, ZIP, BMP, or NES ROM).
+Ufex is designed to be extended via **.NET assembly plugins**. Each plugin teaches Ufex how to parse, display, and validate a specific file format (for example PNG, ZIP, BMP, or PDF).
 
 Plugins are standard .NET class library projects that reference the `Ufex.API` library and are loaded dynamically at runtime from the `plugins/` directory. This means third-party developers can add support for new file formats without modifying the core application.
 

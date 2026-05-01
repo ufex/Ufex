@@ -10,7 +10,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <ApplicationIcon>assets\icon.ico</ApplicationIcon>
-    <Version>2.1.0</Version>
+    <Version>2.2.0</Version>
   </PropertyGroup>
 
   <!-- App icon assets (PNG/SVG) available as Avalonia resources for window icons -->
@@ -46,6 +46,7 @@
     <ProjectReference Include="..\Ufex.API\Ufex.API.csproj" />
     <ProjectReference Include="..\Ufex.FileType\Ufex.FileType.csproj" />
     <ProjectReference Include="..\Ufex.Controls.Avalonia\Ufex.Controls.Avalonia.csproj" />
+    <ProjectReference Include="..\Ufex.Hex\Ufex.Hex.csproj" />
   </ItemGroup>
 
   <!-- Copy config files from project root to output directory -->
@@ -65,14 +66,14 @@
     <ItemGroup>
       <BuildConfigFiles Include="$(BuildConfigSourceDir)\**\*.*" Condition="Exists('$(BuildConfigSourceDir)')" />
     </ItemGroup>
-    <Copy SourceFiles="@(BuildConfigFiles)" DestinationFiles="@(BuildConfigFiles->'$(OutputPath)config\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="@(BuildConfigFiles->Count()) > 0" />
+    <Copy SourceFiles="@(BuildConfigFiles)" DestinationFiles="@(BuildConfigFiles->'$(OutputPath)config\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="@(BuildConfigFiles-&gt;Count()) &gt; 0" />
   </Target>
 
   <Target Name="CopyBuildConfigToPublishOutput" AfterTargets="Publish">
     <ItemGroup>
       <BuildConfigFilesPublish Include="$(BuildConfigSourceDir)\**\*.*" Condition="Exists('$(BuildConfigSourceDir)')" />
     </ItemGroup>
-    <Copy SourceFiles="@(BuildConfigFilesPublish)" DestinationFiles="@(BuildConfigFilesPublish->'$(PublishDir)config\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="@(BuildConfigFilesPublish->Count()) > 0" />
+    <Copy SourceFiles="@(BuildConfigFilesPublish)" DestinationFiles="@(BuildConfigFilesPublish->'$(PublishDir)config\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="@(BuildConfigFilesPublish-&gt;Count()) &gt; 0" />
   </Target>
 
   <!-- Copy any pre-built plugins from build/plugins to output plugins directory -->
@@ -84,18 +85,18 @@
     <ItemGroup>
       <PluginFiles Include="$(PluginSourceDir)\**\*.*" Condition="Exists('$(PluginSourceDir)')" />
     </ItemGroup>
-    <MakeDir Directories="$(OutputPath)plugins" Condition="@(PluginFiles->Count()) > 0" />
-    <Copy SourceFiles="@(PluginFiles)" DestinationFiles="@(PluginFiles->'$(OutputPath)plugins\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="@(PluginFiles->Count()) > 0" />
-    <Message Text="Copied %(PluginFiles.RecursiveDir)%(PluginFiles.Filename)%(PluginFiles.Extension) to plugins directory" Importance="normal" Condition="@(PluginFiles->Count()) > 0" />
+    <MakeDir Directories="$(OutputPath)plugins" Condition="@(PluginFiles-&gt;Count()) &gt; 0" />
+    <Copy SourceFiles="@(PluginFiles)" DestinationFiles="@(PluginFiles->'$(OutputPath)plugins\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="@(PluginFiles-&gt;Count()) &gt; 0" />
+    <Message Text="Copied %(PluginFiles.RecursiveDir)%(PluginFiles.Filename)%(PluginFiles.Extension) to plugins directory" Importance="normal" Condition="@(PluginFiles-&gt;Count()) &gt; 0" />
   </Target>
 
   <Target Name="CopyPluginsToPublishOutput" AfterTargets="Publish">
     <ItemGroup>
       <PluginFilesPublish Include="$(PluginSourceDir)\**\*.*" Condition="Exists('$(PluginSourceDir)')" />
     </ItemGroup>
-    <MakeDir Directories="$(PublishDir)plugins" Condition="@(PluginFilesPublish->Count()) > 0" />
-    <Copy SourceFiles="@(PluginFilesPublish)" DestinationFiles="@(PluginFilesPublish->'$(PublishDir)plugins\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="@(PluginFilesPublish->Count()) > 0" />
-    <Message Text="Copied %(PluginFilesPublish.RecursiveDir)%(PluginFilesPublish.Filename)%(PluginFilesPublish.Extension) to publish plugins directory" Importance="normal" Condition="@(PluginFilesPublish->Count()) > 0" />
+    <MakeDir Directories="$(PublishDir)plugins" Condition="@(PluginFilesPublish-&gt;Count()) &gt; 0" />
+    <Copy SourceFiles="@(PluginFilesPublish)" DestinationFiles="@(PluginFilesPublish->'$(PublishDir)plugins\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="@(PluginFilesPublish-&gt;Count()) &gt; 0" />
+    <Message Text="Copied %(PluginFilesPublish.RecursiveDir)%(PluginFilesPublish.Filename)%(PluginFilesPublish.Extension) to publish plugins directory" Importance="normal" Condition="@(PluginFilesPublish-&gt;Count()) &gt; 0" />
   </Target>
 
 </Project>

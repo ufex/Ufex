@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using System.IO;
 using Ufex.Controls.Avalonia;
+using Ufex.Hex;
 
 namespace Ufex.Desktop.Views;
 
@@ -113,5 +114,27 @@ public partial class HexTabView : UserControl
 	public void TriggerFindNext()
 	{
 		_hexSearchBar?.TriggerFindNext();
+	}
+
+	/// <summary>
+	/// Sets the buffer size for the hex viewer.
+	/// </summary>
+	public void SetBufferSize(int bufferSize)
+	{
+		if (_hexViewer != null)
+			_hexViewer.BufferSize = bufferSize;
+	}
+
+	/// <summary>
+	/// Gets or sets the active color profile for the hex viewer.
+	/// </summary>
+	public ColorProfile? ActiveColorProfile
+	{
+		get => _hexViewer?.ActiveColorProfile;
+		set
+		{
+			if (_hexViewer != null)
+				_hexViewer.ActiveColorProfile = value;
+		}
 	}
 }
