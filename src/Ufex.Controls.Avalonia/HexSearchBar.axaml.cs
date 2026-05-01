@@ -327,6 +327,16 @@ public partial class HexSearchBar : UserControl
 		}
 	}
 
+	/// <summary>
+	/// Resets the search state and UI. Call when a new file is loaded.
+	/// </summary>
+	public void ResetSearch()
+	{
+		_searchState = null;
+		UpdateResultsLabel();
+		UpdateNavigationButtons();
+	}
+
 	private static bool IsHexChar(char c)
 	{
 		return (c >= '0' && c <= '9') ||

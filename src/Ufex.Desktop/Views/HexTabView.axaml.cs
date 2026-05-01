@@ -42,6 +42,7 @@ public partial class HexTabView : UserControl
 		{
 			_hexViewer.LoadStream(stream);
 		}
+		_hexSearchBar?.ResetSearch();
 	}
 
 	/// <summary>
@@ -50,6 +51,7 @@ public partial class HexTabView : UserControl
 	public void LoadFile(string filePath)
 	{
 		_hexViewer?.LoadFile(filePath);
+		_hexSearchBar?.ResetSearch();
 	}
 
 	/// <summary>
@@ -58,6 +60,7 @@ public partial class HexTabView : UserControl
 	public void Clear()
 	{
 		_hexViewer?.UnloadFile();
+		_hexSearchBar?.ResetSearch();
 	}
 
 	/// <summary>

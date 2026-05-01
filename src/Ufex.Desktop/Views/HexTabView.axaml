@@ -4,7 +4,7 @@
              x:Class="Ufex.Desktop.Views.HexTabView">
 
     <DockPanel>
-        <controls:HexSearchBar x:Name="HexSearchBar" DockPanel.Dock="Top" HorizontalAlignment="Left" />
+        <controls:HexSearchBar x:Name="HexSearchBar" DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="0,4,0,4" />
         <controls:HexView x:Name="HexViewer" />
     </DockPanel>
 

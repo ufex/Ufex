@@ -457,6 +457,12 @@ public partial class HexView : UserControl
 		_displayPosition = 0;
 		_bufferStartPosition = 0;
 		_dataAvailable = false;
+		_highlightStart = 0;
+		_highlightEnd = 0;
+		_selectionStart = -1;
+		_selectionEnd = -1;
+		_selectionAnchor = -1;
+		_isSelecting = false;
 
 		if (_scrollBar != null)
 		{
@@ -784,6 +790,34 @@ public partial class HexView : UserControl
 	// DrawingContext rendering methods
 	// ========================================================================
 
+	/// <summary>
+	/// Computes a highlight rect that is inset by 1px on sides where the adjacent cell
+	/// is not part of the same highlight range, so the highlight doesn't paint over borders
+	/// at the edges of a match.
+	/// </summary>
+	private Rect GetInsetRect(long filePos, long rangeStart, long rangeEnd, double x, double y, double cellWidth, double cellHeight, int col)
+	{
+		double insetLeft = 0, insetRight = 0, insetBottom = 0;
+
+		// Left edge: no highlighted neighbor to the left on the same row
+		if (col == 0 || filePos - 1 < rangeStart)
+			insetLeft = 1;
+
+		// Right edge: no highlighted neighbor to the right on the same row
+		if (col == _calculatedCols - 1 || filePos + 1 > rangeEnd)
+			insetRight = 1;
+
+		// Bottom edge: no highlighted neighbor below
+		if (filePos + _calculatedCols > rangeEnd)
+			insetBottom = 1;
+
+		return new Rect(
+			x + insetLeft,
+			y,
+			cellWidth - insetLeft - insetRight,
+			cellHeight - insetBottom);
+	}
+
 	private void RenderPositionColumn(DrawingContext context)
 	{
 		if (!_fileLoaded) return;
@@ -876,7 +910,8 @@ public partial class HexView : UserControl
 				// Draw highlight background (search takes visual priority)
 				if (isHighlighted)
 				{
-					context.FillRectangle(highlightBrush, new Rect(x, y, _hexCellWidth, _cellHeight));
+					var highlightRect = GetInsetRect(filePos, _highlightStart, _highlightEnd, x, y, _hexCellWidth, _cellHeight, col);
+					context.FillRectangle(highlightBrush, highlightRect);
 				}
 				else if (isSelected)
 				{
@@ -957,7 +992,8 @@ public partial class HexView : UserControl
 				// Draw highlight background (search takes visual priority)
 				if (isHighlighted)
 				{
-					context.FillRectangle(highlightBrush, new Rect(x, y, _asciiCellWidth, _cellHeight));
+					var highlightRect = GetInsetRect(filePos, _highlightStart, _highlightEnd, x, y, _asciiCellWidth, _cellHeight, col);
+					context.FillRectangle(highlightBrush, highlightRect);
 				}
 				else if (isSelected)
 				{
