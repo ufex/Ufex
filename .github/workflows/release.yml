@@ -195,7 +195,7 @@ jobs:
       - name: Build MSI installer
         shell: pwsh
         run: |
-          wix build src/Ufex.Desktop/packaging/Ufex.wxs `
+          wix build -acceptEula wix7 src/Ufex.Desktop/packaging/Ufex.wxs `
             -ext WixToolset.UI.wixext `
             -bindpath src/Ufex.Desktop/packaging `
             -d MsiVersion=${{ steps.msi_version.outputs.msi_version }} `
