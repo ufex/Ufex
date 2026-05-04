@@ -42,16 +42,15 @@ jobs:
       checkout-path: ext/Ufex.Extensions.Core
       solution-file: ext/Ufex.Extensions.Core/Ufex.Extensions.Core.sln
 
-  # Build and future extension repos can be added here, e.g.:
-  # build-extensions-image:
-  #   uses: ./.github/workflows/build-extension.yml
-  #   with:
-  #     repository: ufex/Ufex.Extensions.Image
-  #     checkout-path: ext/Ufex.Extensions.Image
-  #     solution-file: ext/Ufex.Extensions.Image/Ufex.Extensions.Image.sln
+  build-extensions-retrogame:
+    uses: ./.github/workflows/build-extension.yml
+    with:
+      repository: offbycero/Ufex.Extensions.RetroGame
+      checkout-path: ext/Ufex.Extensions.RetroGame
+      solution-file: ext/Ufex.Extensions.RetroGame/Ufex.Extensions.RetroGame.sln
 
   build:
-    needs: [build-extensions]
+    needs: [build-extensions, build-extensions-retrogame]
     strategy:
       matrix:
         include:
