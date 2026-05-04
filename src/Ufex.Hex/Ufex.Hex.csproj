@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<RootNamespace>Ufex.Hex</RootNamespace>
-		<Version>2.1.0</Version>
+		<Version>2.2.0</Version>
 	</PropertyGroup>
 
 </Project>

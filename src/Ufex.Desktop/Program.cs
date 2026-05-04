@@ -1,5 +1,4 @@
 using Avalonia;
-using Avalonia.ReactiveUI;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -45,8 +44,7 @@ class Program
 		=> AppBuilder.Configure<App>()
 			.UsePlatformDetect()
 			.WithInterFont()
-			.LogToTrace()
-			.UseReactiveUI();
+			.LogToTrace();
 
 	/// <summary>
 	/// Writes an unhandled exception to the crash log file so release build
