@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:fi="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
              xmlns:local="clr-namespace:Ufex.Desktop.Views"
              x:Class="Ufex.Desktop.Views.ValidationTabView"
              x:DataType="local:ValidationEntryRow">
@@ -19,9 +20,11 @@
                 <DataGridTemplateColumn Header="" Width="32" CanUserResize="False">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="local:ValidationEntryRow">
-                            <ContentControl Content="{Binding Icon}" 
-                                            HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center" />
+                            <fi:SymbolIcon Symbol="{Binding IconSymbol}" 
+                                           Foreground="{Binding IconColor}"
+                                           FontSize="16"
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

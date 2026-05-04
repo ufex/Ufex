@@ -37,6 +37,7 @@ public partial class InfoTabView : UserControl
 {
 	private DataGrid? _dataGridInfo;
 	private bool _suppressFileTypeChanged;
+	private readonly Logger _logger = new Logger("Desktop_InfoTabView.log");
 
 	public event EventHandler<DetectionMatch?>? FileTypeChanged;
 
@@ -54,6 +55,7 @@ public partial class InfoTabView : UserControl
 		_suppressFileTypeChanged = true;
 		ComboFileType.ItemsSource = null;
 		ComboFileType.SelectedIndex = -1;
+		ComboFileType.IsEnabled = true;
 		_suppressFileTypeChanged = false;
 		BtnMatchInfo.IsVisible = false;
 		TextFilePath.Text = string.Empty;
@@ -101,7 +103,7 @@ public partial class InfoTabView : UserControl
 			};
 			ComboFileType.ItemsSource = items;
 			ComboFileType.SelectedIndex = 0;
-			ComboFileType.IsEnabled = false;
+			ComboFileType.IsEnabled = true;
 			BtnMatchInfo.IsVisible = false;
 		}
 		finally
@@ -138,7 +140,7 @@ public partial class InfoTabView : UserControl
 
 			ComboFileType.ItemsSource = items;
 			ComboFileType.SelectedIndex = Math.Min(selectedIndex, items.Count - 1);
-			ComboFileType.IsEnabled = items.Count > 1;
+			ComboFileType.IsEnabled = true;
 			BtnMatchInfo.IsVisible = true;
 		}
 		finally
@@ -162,8 +164,23 @@ public partial class InfoTabView : UserControl
 	{
 		if (ComboFileType.SelectedItem is FileTypeDropdownItem item)
 		{
-			var detailsWindow = new MatchDetailsWindow(item.Description, item.MatchDetailsText);
-			await detailsWindow.ShowDialog(this.VisualRoot as Window);
+			try
+			{
+				var detailsWindow = new MatchDetailsWindow(item.Description, item.MatchDetailsText);
+
+				if (TopLevel.GetTopLevel(this) is Window ownerWindow)
+				{
+					await detailsWindow.ShowDialog(ownerWindow);
+				}
+				else
+				{
+					detailsWindow.Show();
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.Error(ex, "InfoTabView.OnMatchInfoClick: Failed to show match details window");
+			}
 		}
 	}
 

@@ -13,17 +13,18 @@
     
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="12" Spacing="8">
-            
             <!-- File Type -->
-            <Grid ColumnDefinitions="100,*,Auto">
+            <Grid ColumnDefinitions="72,*,Auto">
                 <TextBlock Grid.Column="0" Text="Type:" FontWeight="SemiBold" VerticalAlignment="Center" />
                 <ComboBox Grid.Column="1" x:Name="ComboFileType"
+                          Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
                           HorizontalAlignment="Stretch"
                           SelectionChanged="OnFileTypeSelectionChanged">
                     <ComboBox.ItemTemplate>
                         <DataTemplate x:DataType="local:FileTypeDropdownItem">
                             <StackPanel Orientation="Horizontal" Spacing="6">
-                                <TextBlock Text="{Binding Description}" />
+                                <TextBlock Text="{Binding Description}"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
                                 <TextBlock Text="{Binding MatchMethodLabel}"
                                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                            FontStyle="Italic" />
@@ -41,13 +42,13 @@
             </Grid>
             
             <!-- File Path -->
-            <Grid ColumnDefinitions="100,*">
+            <Grid ColumnDefinitions="72,*">
                 <TextBlock Grid.Column="0" Text="Path:" FontWeight="SemiBold" VerticalAlignment="Center" />
                 <TextBox Grid.Column="1" x:Name="TextFilePath" IsReadOnly="True" />
             </Grid>
             
             <!-- File Name, Extension, Size Row -->
-            <Grid ColumnDefinitions="100,2*,80,*,70,*">
+            <Grid ColumnDefinitions="72,2*,80,*,70,*">
                 <TextBlock Grid.Column="0" Text="Name:" FontWeight="SemiBold" VerticalAlignment="Center" />
                 <TextBox Grid.Column="1" x:Name="TextFileName" IsReadOnly="True" Margin="0,0,8,0" />
                 

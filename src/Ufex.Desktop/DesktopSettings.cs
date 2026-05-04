@@ -27,6 +27,17 @@ public class HexSettings
 	/// The font family name for the hex viewer.
 	/// </summary>
 	public string FontFamily { get; set; } = "Consolas";
+
+	/// <summary>
+	/// The hex viewer buffer size in bytes.
+	/// </summary>
+	public int BufferSize { get; set; } = 262144; // 256KB
+
+	/// <summary>
+	/// Preferred color profile ID per file type ID.
+	/// Key = file type ID (e.g. "IMG_PNG"), Value = color profile ID (e.g. "rainbow").
+	/// </summary>
+	public Dictionary<string, string> ColorProfilePreferences { get; set; } = new();
 }
 
 /// <summary>

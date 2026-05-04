@@ -16,6 +16,17 @@
 			</Signatures>
 		</FileType>
 		<FileType>
+			<ID>BASE_ISOBMFF</ID>
+			<Description>ISO Base Media File Format</Description>
+			<Category>Container</Category>
+			<Wikipedia>ISO_base_media_file_format</Wikipedia>
+			<Signatures>
+				<Signature minSize="12">
+					<Rule type="string" offset="4">ftyp</Rule>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
 			<ID>BASE_CFB</ID>
 			<Description>Microsoft Compound File Binary Format</Description>
 			<Category>Container</Category>

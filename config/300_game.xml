@@ -2,7 +2,7 @@
 <Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<FileTypes>
 		<FileType>
-			<ID>EXEC_NES</ID>
+			<ID>ROM_NES</ID>
 			<Description>iNES ROM Image</Description>
 			<Category>ROM</Category>
 			<Wikipedia>Nintendo_Entertainment_System</Wikipedia>
@@ -131,7 +131,7 @@
 			</Signatures>
 		</FileType>
 		<FileType>
-			<ID>ROM_BIZHAWK_CDL</ID>
+			<ID>APP_BIZHAWK_CDL</ID>
 			<Description>BizHawk Code/Data Logger File</Description>
 			<Category>Game</Category>
 			<Extensions>
@@ -139,7 +139,7 @@
 			</Extensions>
 			<Signatures>
 				<Signature>
-					<Rule type="string" offset="0">BIZHAWK-CDL-2</Rule>
+					<Rule type="string" offset="1">BIZHAWK-CDL-2</Rule>
 				</Signature>
 			</Signatures>
 		</FileType>

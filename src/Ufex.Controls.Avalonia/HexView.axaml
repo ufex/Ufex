@@ -1,35 +1,36 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:Ufex.Controls.Avalonia"
              x:Class="Ufex.Controls.Avalonia.HexView"
              Background="Transparent">
     
     <Grid x:Name="MainGrid" ColumnDefinitions="Auto,Auto,Auto,Auto">
         
-        <!-- Position Column Grid -->
+        <!-- Position Column -->
         <Border x:Name="PositionBorder"
                 Grid.Column="0"
                 BorderThickness="1"
-                Margin="0,0,6,0">
-            <Canvas x:Name="PositionCanvas"
-                    ClipToBounds="True" />
+                Margin="0,0,6,0"
+                ClipToBounds="True">
+            <local:HexViewPanel x:Name="PositionPanel" />
         </Border>
         
-        <!-- Hex Data Column Grid -->
+        <!-- Hex Data Column -->
         <Border x:Name="HexBorder"
                 Grid.Column="1"
                 BorderThickness="1"
-                Margin="0,0,6,0">
-            <Canvas x:Name="HexCanvas"
-                    ClipToBounds="True" />
+                Margin="0,0,6,0"
+                ClipToBounds="True">
+            <local:HexViewPanel x:Name="HexPanel" />
         </Border>
         
-        <!-- ASCII Text Column Grid -->
+        <!-- ASCII Text Column -->
         <Border x:Name="AsciiBorder"
                 Grid.Column="2"
                 BorderThickness="1"
-                Margin="0,0,6,0">
-            <Canvas x:Name="AsciiCanvas"
-                    ClipToBounds="True" />
+                Margin="0,0,6,0"
+                ClipToBounds="True">
+            <local:HexViewPanel x:Name="AsciiPanel" />
         </Border>
         
         <!-- Vertical Scrollbar -->
@@ -38,6 +39,7 @@
                    Orientation="Vertical"
                    Minimum="0"
                    SmallChange="1"
+                   AllowAutoHide="False"
                    IsEnabled="False" />
         
     </Grid>

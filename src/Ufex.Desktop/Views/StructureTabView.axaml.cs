@@ -2,9 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 using AvaloniaEdit;
 using FluentIcons.Avalonia;
 using FluentIcons.Common;
@@ -277,12 +279,15 @@ public partial class StructureTabView : UserControl
 		// Mark as no longer deferred so repeated expansion doesn't retrigger
 		viewNode.IsDeferred = false;
 
-		// Show loading indicator
-		viewNode.Children.Clear();
-		viewNode.Children.Add(new StructureTreeNode
+		// Show loading indicator on UI thread.
+		await Dispatcher.UIThread.InvokeAsync(() =>
 		{
-			Text = "Loading...",
-			Icon = Symbol.ArrowSyncCircle
+			viewNode.Children.Clear();
+			viewNode.Children.Add(new StructureTreeNode
+			{
+				Text = "Loading...",
+				Icon = Symbol.ArrowSyncCircle
+			});
 		});
 
 		try
@@ -303,21 +308,31 @@ public partial class StructureTabView : UserControl
 				viewNode.SourceNode.LoadChildren(context);
 			});
 
-			// Back on UI thread — replace placeholder with real children
-			viewNode.Children.Clear();
-			foreach (var child in viewNode.SourceNode.Nodes)
+			var convertedChildren = viewNode.SourceNode.Nodes
+				.Select(ConvertToViewNode)
+				.ToList();
+
+			// Replace placeholder with real children on UI thread.
+			await Dispatcher.UIThread.InvokeAsync(() =>
 			{
-				viewNode.Children.Add(ConvertToViewNode(child));
-			}
+				viewNode.Children.Clear();
+				foreach (var child in convertedChildren)
+				{
+					viewNode.Children.Add(child);
+				}
+			});
 		}
 		catch (Exception ex)
 		{
 			Logger.Error($"Error loading deferred children for node '{viewNode.Text}': {ex}");
-			viewNode.Children.Clear();
-			viewNode.Children.Add(new StructureTreeNode
+			await Dispatcher.UIThread.InvokeAsync(() =>
 			{
-				Text = $"Error: {ex.Message}",
-				Icon = Symbol.ErrorCircle
+				viewNode.Children.Clear();
+				viewNode.Children.Add(new StructureTreeNode
+				{
+					Text = $"Error: {ex.Message}",
+					Icon = Symbol.ErrorCircle
+				});
 			});
 		}
 	}
@@ -499,6 +514,9 @@ public partial class StructureTabView : UserControl
 			FontFamily = new FontFamily("Courier New")
 		};
 
+		// Allow users to double-click a cell and select/copy text within it.
+		dataGrid.DoubleTapped += OnDataGridDoubleTapped;
+
 		// Store reference to the current data grid for column width persistence
 		_currentDataGrid = dataGrid;
 
@@ -614,10 +632,10 @@ public partial class StructureTabView : UserControl
 				width = new DataGridLength(150);
 			}
 
-			dataGrid.Columns.Add(new DataGridTextColumn
+			dataGrid.Columns.Add(new DataGridTemplateColumn
 			{
 				Header = column.ColumnName,
-				Binding = new Binding(colBindings[i]),
+				CellTemplate = CreateSelectableCellTemplate(colBindings[i]),
 				Width = width
 			});
 		}
@@ -654,6 +672,52 @@ public partial class StructureTabView : UserControl
 		}
 
 		dataGrid.ItemsSource = rows;
+	}
+
+	private static IDataTemplate CreateSelectableCellTemplate(string bindingPath)
+	{
+		return new FuncDataTemplate<StructureDataRow>((_, _) =>
+		{
+			var textBox = new TextBox
+			{
+				IsReadOnly = true,
+				Background = Brushes.Transparent,
+				BorderThickness = new Avalonia.Thickness(0),
+				Padding = new Avalonia.Thickness(4, 2),
+				VerticalContentAlignment = VerticalAlignment.Center,
+				HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch
+			};
+
+			textBox.Bind(TextBox.TextProperty, new Binding(bindingPath)
+			{
+				Mode = BindingMode.OneWay
+			});
+
+			return textBox;
+		}, true);
+	}
+
+	private void OnDataGridDoubleTapped(object? sender, TappedEventArgs e)
+	{
+		if (e.Source is not Control sourceControl)
+			return;
+
+		var cell = sourceControl.FindAncestorOfType<DataGridCell>();
+		var textBox = cell?
+			.GetVisualDescendants()
+			.OfType<TextBox>()
+			.FirstOrDefault();
+
+		if (textBox == null)
+			return;
+
+		Dispatcher.UIThread.Post(() =>
+		{
+			textBox.Focus();
+			textBox.SelectAll();
+		}, DispatcherPriority.Input);
+
+		e.Handled = true;
 	}
 
 	/// <summary>

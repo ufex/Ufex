@@ -20,6 +20,7 @@
 		</FileType>
 		<FileType>
 			<ID>TEXT_JSON</ID>
+			<ParentID>TEXT_UTF8</ParentID>
 			<Description>JSON</Description>
 			<Category>Text</Category>
 			<MIMETypes>

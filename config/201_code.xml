@@ -2,7 +2,19 @@
 <Ufex xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<FileTypes>
 		<FileType>
-			<ID>TEXT_C</ID>
+			<ID>CODE_PYTHON</ID>
+			<Description>Python Source Code</Description>
+			<Category>Source Code</Category>
+			<MIMETypes>
+				<MIMEType>text/x-python</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Python_(programming_language)</Wikipedia>
+			<Extensions>
+				<Extension>py</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>CODE_C</ID>
 			<Description>C Source Code</Description>
 			<Category>Source Code</Category>
 			<MIMETypes>
@@ -14,7 +26,7 @@
 			</Extensions>
 		</FileType>
 		<FileType>
-			<ID>TEXT_CPP</ID>
+			<ID>CODE_CPP</ID>
 			<Description>C++ Source Code</Description>
 			<Category>Source Code</Category>
 			<MIMETypes>
@@ -27,43 +39,19 @@
 			</Extensions>
 		</FileType>
 		<FileType>
-			<ID>TEXT_JS</ID>
-			<Description>JavaScript Source Code</Description>
+			<ID>CODE_JAVA</ID>
+			<Description>Java Source Code</Description>
 			<Category>Source Code</Category>
 			<MIMETypes>
-				<MIMEType>application/x-javascript</MIMEType>
+				<MIMEType>application/x-java</MIMEType>
 			</MIMETypes>
-			<Wikipedia>Javascript</Wikipedia>
+			<Wikipedia>Java_(programming_language)</Wikipedia>
 			<Extensions>
-				<Extension>js</Extension>
+				<Extension>java</Extension>
 			</Extensions>
 		</FileType>
 		<FileType>
-			<ID>TEXT_MARKDOWN</ID>
-			<Description>Markdown Text File</Description>
-			<Category>Document</Category>
-			<MIMETypes>
-				<MIMEType>text/markdown</MIMEType>
-			</MIMETypes>
-			<Wikipedia>Markdown</Wikipedia>
-			<Extensions>
-				<Extension>md</Extension>
-			</Extensions>
-		</FileType>
-		<FileType>
-			<ID>TEXT_VBS</ID>
-			<Description>Visual Basic Script Source Code</Description>
-			<Category>Source Code</Category>
-			<MIMETypes>
-				<MIMEType>text/plain</MIMEType>
-			</MIMETypes>
-			<Wikipedia>VBScript</Wikipedia>
-			<Extensions>
-				<Extension>vbs</Extension>
-			</Extensions>
-		</FileType>
-		<FileType>
-			<ID>TEXT_CSHARP</ID>
+			<ID>CODE_CSHARP</ID>
 			<Description>C# Source Code</Description>
 			<Category>Source Code</Category>
 			<MIMETypes>
@@ -75,7 +63,63 @@
 			</Extensions>
 		</FileType>
 		<FileType>
-			<ID>TEXT_RUBY</ID>
+			<ID>CODE_JS</ID>
+			<Description>JavaScript Source Code</Description>
+			<Category>Source Code</Category>
+			<MIMETypes>
+				<MIMEType>text/javascript</MIMEType>
+				<MIMEType>application/javascript</MIMEType> <!-- DEPRECATED -->
+			</MIMETypes>
+			<Wikipedia>Javascript</Wikipedia>
+			<Extensions>
+				<Extension>js</Extension>
+				<Extension>mjs</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>CODE_VISUAL_BASIC</ID>
+			<Description>Visual Basic Source Code</Description>
+			<Category>Source Code</Category>
+			<Wikipedia>Visual_Basic</Wikipedia>
+			<Extensions>
+				<Extension>vb</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>CODE_SQL</ID>
+			<Description>SQL Source Code</Description>
+			<Category>Source Code</Category>
+			<Wikipedia>SQL</Wikipedia>
+			<Extensions>
+				<Extension>sql</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>CODE_MARKDOWN</ID>
+			<Description>Markdown Text File</Description>
+			<Category>Document</Category>
+			<MIMETypes>
+				<MIMEType>text/markdown</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Markdown</Wikipedia>
+			<Extensions>
+				<Extension>md</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>CODE_VBS</ID>
+			<Description>Visual Basic Script Source Code</Description>
+			<Category>Source Code</Category>
+			<MIMETypes>
+				<MIMEType>text/plain</MIMEType>
+			</MIMETypes>
+			<Wikipedia>VBScript</Wikipedia>
+			<Extensions>
+				<Extension>vbs</Extension>
+			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>CODE_RUBY</ID>
 			<Description>Ruby Source Code</Description>
 			<Category>Source Code</Category>
 			<MIMETypes>
@@ -84,18 +128,6 @@
 			<Wikipedia>Ruby_(programming_language)</Wikipedia>
 			<Extensions>
 				<Extension>rb</Extension>
-			</Extensions>
-		</FileType>
-		<FileType>
-			<ID>TEXT_PYTHON</ID>
-			<Description>Python Source Code</Description>
-			<Category>Source Code</Category>
-			<MIMETypes>
-				<MIMEType>text/x-python</MIMEType>
-			</MIMETypes>
-			<Wikipedia>Python_(programming_language)</Wikipedia>
-			<Extensions>
-				<Extension>py</Extension>
 			</Extensions>
 		</FileType>
 		<FileType>
@@ -110,6 +142,12 @@
 				<Extension>htm</Extension>
 				<Extension>html</Extension>
 			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="0">&lt;!DOCTYPE html&gt;</Rule>
+					<SearchRule type="string" offset="0" maxLength="1024">&lt;html </SearchRule>
+				</Signature>
+			</Signatures>
 		</FileType>
 		<FileType>
 			<ID>TEXT_CSS</ID>
@@ -122,6 +160,32 @@
 			<Extensions>
 				<Extension>css</Extension>
 			</Extensions>
+		</FileType>
+		<FileType>
+			<ID>CODE_SHELL</ID>
+			<Description>Shell Script</Description>
+			<Category>Source Code</Category>
+			<MIMETypes>
+				<MIMEType>application/x-sh</MIMEType>
+			</MIMETypes>
+			<Wikipedia>Shell_script</Wikipedia>
+			<Extensions>
+				<Extension>sh</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="string" offset="0">#!/bin/sh</Rule>
+				</Signature>
+				<Signature>
+					<Rule type="string" offset="0">#!/bin/bash</Rule>
+				</Signature>
+				<Signature>
+					<Rule type="string" offset="0">#!/bin/dash</Rule>
+				</Signature>
+				<Signature>
+					<Rule type="string" offset="0">#!/bin/zsh</Rule>
+				</Signature>
+			</Signatures>
 		</FileType>
 	</FileTypes>
 </Ufex>

@@ -22,6 +22,7 @@
         <!-- Tab Control -->
         <TabControl>
             <!-- General Tab -->
+						<!--
             <TabItem Header="General">
                 <StackPanel Margin="16">
                     <TextBlock Text="No settings available yet." 
@@ -29,7 +30,8 @@
                                FontStyle="Italic" />
                 </StackPanel>
             </TabItem>
-            
+            -->
+
             <!-- Hex Tab -->
             <TabItem Header="Hex">
                 <StackPanel Margin="16" Spacing="8">

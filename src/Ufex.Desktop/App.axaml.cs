@@ -25,30 +25,10 @@ public partial class App : Application
     }
 
     /// <summary>
-    /// Toggles between Light and Dark theme variants.
-    /// </summary>
-    public void ToggleTheme()
-    {
-        if (RequestedThemeVariant == ThemeVariant.Dark)
-        {
-            RequestedThemeVariant = ThemeVariant.Light;
-        }
-        else
-        {
-            RequestedThemeVariant = ThemeVariant.Dark;
-        }
-    }
-
-    /// <summary>
     /// Sets the theme to a specific variant.
     /// </summary>
     public void SetTheme(ThemeVariant theme)
     {
         RequestedThemeVariant = theme;
     }
-
-    /// <summary>
-    /// Gets whether the current theme is dark.
-    /// </summary>
-    public bool IsDarkTheme => RequestedThemeVariant == ThemeVariant.Dark;
 }

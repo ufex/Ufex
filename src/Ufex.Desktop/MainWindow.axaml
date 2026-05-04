@@ -32,6 +32,15 @@
                     <MenuItem Header="Binary" Click="OnNumberFormatBinClick" />
                     <MenuItem Header="ASCII" Click="OnNumberFormatAsciiClick" />
                 </MenuItem>
+                <MenuItem x:Name="ColorProfileMenu" Header="Color Profile">
+                    <MenuItem x:Name="ColorProfileNoneMenuItem" Header="None" Click="OnColorProfileNoneClick" />
+                    <Separator x:Name="ColorProfileSeparator" IsVisible="False" />
+                </MenuItem>
+                <MenuItem Header="Theme">
+                    <MenuItem x:Name="ThemeAutoMenuItem" Header="Auto" Click="OnThemeAutoClick" />
+                    <MenuItem x:Name="ThemeLightMenuItem" Header="Light" Click="OnThemeLightClick" />
+                    <MenuItem x:Name="ThemeDarkMenuItem" Header="Dark" Click="OnThemeDarkClick" />
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="_Search">
                 <MenuItem Header="_Find" InputGesture="Ctrl+F" Click="OnFindClick" />
@@ -49,19 +58,12 @@
         </Menu>
         <!-- Toolbar -->
         <Border DockPanel.Dock="Top" 
-                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" 
+            Background="{DynamicResource UfexCommandBarBackgroundBrush}"
+                BorderBrush="{DynamicResource UfexCommandBarBorderBrush}" 
                 BorderThickness="0,0,0,1"
-                Padding="4">
+                Padding="4"
+                IsVisible="False">
             <DockPanel>
-                <!-- Right-aligned theme toggle button -->
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4">
-                    <Button x:Name="ThemeToggleButton" Click="OnThemeToggleClick" ToolTip.Tip="Toggle Light/Dark Theme">
-                        <StackPanel Orientation="Horizontal" Spacing="4">
-                            <fi:SymbolIcon x:Name="ThemeIcon" Symbol="WeatherMoon" FontSize="16" Width="16" Height="16" />
-                            <TextBlock x:Name="ThemeButtonText" Text="Dark" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
                 <!-- Left-aligned file buttons -->
                 <StackPanel Orientation="Horizontal" Spacing="4">
                     <Button Click="OnOpenClick" ToolTip.Tip="Open File (Ctrl+O)">

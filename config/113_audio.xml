@@ -203,23 +203,5 @@
 				<Extension>mp2</Extension>
 			</Extensions>
 		</FileType>
-		<FileType>
-			<ID>AUDIO_3GP</ID>
-			<Description>3GPP Multimedia Audio</Description>
-			<Category>Audio</Category>
-			<MIMETypes>
-				<MIMEType>audio/3gpp</MIMEType>
-			</MIMETypes>
-			<Wikipedia>3GP_and_3G2</Wikipedia>
-			<Extensions>
-				<Extension>3gp</Extension>
-				<Extension>3gpp</Extension>
-			</Extensions>
-			<Signatures>
-				<Signature>
-					<Rule type="string" offset="4">ftyp3gp</Rule>
-				</Signature>
-			</Signatures>
-		</FileType>
 	</FileTypes>
 </Ufex>

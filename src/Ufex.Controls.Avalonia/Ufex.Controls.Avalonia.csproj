@@ -6,16 +6,17 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<RootNamespace>Ufex.Controls.Avalonia</RootNamespace>
 		<AssemblyName>Ufex.Controls.Avalonia</AssemblyName>
-    <Version>2.1.0</Version>
+    <Version>2.2.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Avalonia" Version="11.2.3" />
-		<PackageReference Include="Avalonia.Svg.Skia" Version="11.2.0.2" />
+		<PackageReference Include="Avalonia" Version="12.0.1" />
+		<PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Ufex.API\Ufex.API.csproj" />
+		<ProjectReference Include="..\Ufex.Hex\Ufex.Hex.csproj" />
 	</ItemGroup>
 
 </Project>

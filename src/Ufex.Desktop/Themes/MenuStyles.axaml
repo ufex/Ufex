@@ -15,24 +15,52 @@
 	<Styles.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.ThemeDictionaries>
-				<!-- Light Theme - Override Fluent theme resource keys -->
 				<ResourceDictionary x:Key="Light">
+					<!-- Theme.md: Menu/MenuItem (Light) -->
+					<SolidColorBrush x:Key="UfexMenuBackground" Color="#F3F3F3" />
+					<SolidColorBrush x:Key="UfexMenuHoverBackground" Color="#EAEAEA" />
+					<SolidColorBrush x:Key="UfexMenuPressedBackground" Color="#EDEDED" />
+					<SolidColorBrush x:Key="UfexMenuText" Color="#1A1B1B" />
+					<SolidColorBrush x:Key="UfexMenuItemBackground" Color="#F9FBFB" />
+					<SolidColorBrush x:Key="UfexMenuItemHoverBackground" Color="#F0F3F3" />
+					<SolidColorBrush x:Key="UfexMenuItemText" Color="#1A1B1B" />
+					<SolidColorBrush x:Key="UfexMenuItemBorder" Color="#DEE0E0" />
 
+					<!-- Fluent resource overrides for popup menu items -->
+					<SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="#F9FBFB" />
+					<SolidColorBrush x:Key="MenuFlyoutPresenterBorderBrush" Color="#DEE0E0" />
+					<SolidColorBrush x:Key="MenuFlyoutItemBackground" Color="#F9FBFB" />
+					<SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="#F0F3F3" />
+					<SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="#EDEDED" />
+					<SolidColorBrush x:Key="MenuFlyoutItemBackgroundDisabled" Color="#F9FBFB" />
+					<SolidColorBrush x:Key="MenuFlyoutItemForeground" Color="#1A1B1B" />
+					<SolidColorBrush x:Key="MenuFlyoutItemForegroundPointerOver" Color="#1A1B1B" />
+					<SolidColorBrush x:Key="MenuFlyoutItemForegroundPressed" Color="#1A1B1B" />
+					<SolidColorBrush x:Key="MenuFlyoutItemForegroundDisabled" Color="#8A8A8A" />
+					<SolidColorBrush x:Key="MenuFlyoutItemKeyboardAcceleratorTextForeground" Color="#1A1B1B" />
+					<SolidColorBrush x:Key="MenuFlyoutItemKeyboardAcceleratorTextForegroundPointerOver" Color="#1A1B1B" />
+					<SolidColorBrush x:Key="MenuFlyoutItemKeyboardAcceleratorTextForegroundPressed" Color="#1A1B1B" />
+					<SolidColorBrush x:Key="MenuFlyoutItemKeyboardAcceleratorTextForegroundDisabled" Color="#8A8A8A" />
+					<SolidColorBrush x:Key="MenuFlyoutSubItemChevron" Color="#1A1B1B" />
+					<SolidColorBrush x:Key="MenuFlyoutSubItemChevronPointerOver" Color="#1A1B1B" />
+					<SolidColorBrush x:Key="MenuFlyoutSubItemChevronPressed" Color="#1A1B1B" />
+					<SolidColorBrush x:Key="MenuFlyoutSubItemChevronDisabled" Color="#8A8A8A" />
+					<SolidColorBrush x:Key="MenuFlyoutSubItemChevronSubMenuOpened" Color="#1A1B1B" />
 				</ResourceDictionary>
-				<!-- Dark Theme - Override Fluent theme resource keys -->
 				<ResourceDictionary x:Key="Dark">
-					<!-- Menu bar background -->
-					<SolidColorBrush x:Key="MenuBarBackground" Color="#202020" />
-					<SolidColorBrush x:Key="MenuBarItemBackground" Color="Transparent" />
-					<SolidColorBrush x:Key="MenuBarItemBackgroundPointerOver" Color="#292929" />
-					<SolidColorBrush x:Key="MenuBarItemBackgroundPressed" Color="#292929" />
-					<SolidColorBrush x:Key="MenuBarItemBackgroundSelected" Color="#292929" />
-					
-					<!-- Menu flyout/popup background -->
+					<!-- Theme.md: Menu/MenuItem (Dark) -->
+					<SolidColorBrush x:Key="UfexMenuBackground" Color="#202020" />
+					<SolidColorBrush x:Key="UfexMenuHoverBackground" Color="#2D2D2D" />
+					<SolidColorBrush x:Key="UfexMenuPressedBackground" Color="#292929" />
+					<SolidColorBrush x:Key="UfexMenuText" Color="#FFFFFF" />
+					<SolidColorBrush x:Key="UfexMenuItemBackground" Color="#313232" />
+					<SolidColorBrush x:Key="UfexMenuItemHoverBackground" Color="#3C4141" />
+					<SolidColorBrush x:Key="UfexMenuItemText" Color="#FFFFFF" />
+					<SolidColorBrush x:Key="UfexMenuItemBorder" Color="#191919" />
+
+					<!-- Fluent resource overrides for popup menu items -->
 					<SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="#313232" />
-					<SolidColorBrush x:Key="MenuFlyoutPresenterBorderBrush" Color="#B2B3B3" />
-					
-					<!-- MenuItem colors -->
+					<SolidColorBrush x:Key="MenuFlyoutPresenterBorderBrush" Color="#191919" />
 					<SolidColorBrush x:Key="MenuFlyoutItemBackground" Color="#313232" />
 					<SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="#3C4141" />
 					<SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="#292929" />
@@ -41,66 +69,75 @@
 					<SolidColorBrush x:Key="MenuFlyoutItemForegroundPointerOver" Color="#FFFFFF" />
 					<SolidColorBrush x:Key="MenuFlyoutItemForegroundPressed" Color="#FFFFFF" />
 					<SolidColorBrush x:Key="MenuFlyoutItemForegroundDisabled" Color="#6A6A6A" />
-					
-					<!-- Submenu item background when open -->
-					<SolidColorBrush x:Key="MenuFlyoutSubItemBackground" Color="#313232" />
-					<SolidColorBrush x:Key="MenuFlyoutSubItemBackgroundPointerOver" Color="#3C4141" />
-					
-					<!-- Custom ufex keys for additional styling -->
-					<SolidColorBrush x:Key="UfexMenuBackground" Color="#202020" />
-					<SolidColorBrush x:Key="UfexMenuText" Color="#FFFFFF" />
-					<SolidColorBrush x:Key="UfexMenuSelected" Color="#292929" />
-					<SolidColorBrush x:Key="UfexMenuItemBackground" Color="#313232" />
-					<SolidColorBrush x:Key="UfexMenuItemHoverBackground" Color="#3C4141" />
-					<SolidColorBrush x:Key="UfexMenuItemText" Color="#FFFFFF" />
-					<SolidColorBrush x:Key="UfexMenuItemBorder" Color="#B2B3B3" />
+					<SolidColorBrush x:Key="MenuFlyoutItemKeyboardAcceleratorTextForeground" Color="#FFFFFF" />
+					<SolidColorBrush x:Key="MenuFlyoutItemKeyboardAcceleratorTextForegroundPointerOver" Color="#FFFFFF" />
+					<SolidColorBrush x:Key="MenuFlyoutItemKeyboardAcceleratorTextForegroundPressed" Color="#FFFFFF" />
+					<SolidColorBrush x:Key="MenuFlyoutItemKeyboardAcceleratorTextForegroundDisabled" Color="#6A6A6A" />
+					<SolidColorBrush x:Key="MenuFlyoutSubItemChevron" Color="#FFFFFF" />
+					<SolidColorBrush x:Key="MenuFlyoutSubItemChevronPointerOver" Color="#FFFFFF" />
+					<SolidColorBrush x:Key="MenuFlyoutSubItemChevronPressed" Color="#FFFFFF" />
+					<SolidColorBrush x:Key="MenuFlyoutSubItemChevronDisabled" Color="#6A6A6A" />
+					<SolidColorBrush x:Key="MenuFlyoutSubItemChevronSubMenuOpened" Color="#FFFFFF" />
 				</ResourceDictionary>
 			</ResourceDictionary.ThemeDictionaries>
 		</ResourceDictionary>
 	</Styles.Resources>
 
-	<!-- Menu Style -->
+	<!-- Menu bar -->
 	<Style Selector="Menu">
 		<Setter Property="Background" Value="{DynamicResource UfexMenuBackground}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource UfexCommandBarBorderBrush}" />
+		<Setter Property="BorderThickness" Value="0,0,0,1" />
+		<Setter Property="Foreground" Value="{DynamicResource UfexMenuText}" />
 	</Style>
 
-	<!-- Top-level MenuItem in Menu bar -->
+	<!-- Top-level menu items in menu bar -->
 	<Style Selector="Menu > MenuItem">
+		<Setter Property="Background" Value="{DynamicResource UfexMenuBackground}" />
 		<Setter Property="Foreground" Value="{DynamicResource UfexMenuText}" />
+	</Style>
+
+	<Style Selector="Menu > MenuItem /template/ Border#PART_LayoutRoot">
+		<Setter Property="Background" Value="{DynamicResource UfexMenuBackground}" />
 	</Style>
 	
 	<Style Selector="Menu > MenuItem:pointerover /template/ Border#PART_LayoutRoot">
-		<Setter Property="Background" Value="{DynamicResource UfexMenuSelected}" />
+		<Setter Property="Background" Value="{DynamicResource UfexMenuHoverBackground}" />
 	</Style>
 
-	<!-- MenuItem popup/submenu items -->
+	<Style Selector="Menu > MenuItem:pressed /template/ Border#PART_LayoutRoot:pointerover">
+		<Setter Property="Background" Value="{DynamicResource UfexMenuPressedBackground}" />
+	</Style>
+
+	<Style Selector="Menu > MenuItem:selected /template/ Border#PART_LayoutRoot">
+		<Setter Property="Background" Value="{DynamicResource UfexMenuPressedBackground}" />
+	</Style>
+
+	<!-- Popup/submenu text color -->
 	<Style Selector="MenuItem">
 		<Setter Property="Foreground" Value="{DynamicResource UfexMenuItemText}" />
 	</Style>
 
-	<Style Selector="MenuItem /template/ Border#PART_LayoutRoot">
-		<Setter Property="Background" Value="{DynamicResource UfexMenuItemBackground}" />
+	<!-- Ensure popup item borders match theme.md -->
+	<Style Selector="MenuItem MenuItem /template/ Border#PART_LayoutRoot">
 		<Setter Property="BorderBrush" Value="{DynamicResource UfexMenuItemBorder}" />
 	</Style>
 
-	<Style Selector="MenuItem:pointerover /template/ Border#PART_LayoutRoot">
-		<Setter Property="Background" Value="{DynamicResource UfexMenuItemHoverBackground}" />
+	<Style Selector="ContextMenu MenuItem /template/ Border#PART_LayoutRoot">
+		<Setter Property="BorderBrush" Value="{DynamicResource UfexMenuItemBorder}" />
 	</Style>
 
-	<Style Selector="MenuItem:selected /template/ Border#PART_LayoutRoot">
-		<Setter Property="Background" Value="{DynamicResource UfexMenuSelected}" />
+	<Style Selector="MenuItem Separator">
+		<Setter Property="Background" Value="{DynamicResource UfexMenuItemBorder}" />
 	</Style>
 
-	<!-- ContextMenu popup background -->
+	<Style Selector="ContextMenu Separator">
+		<Setter Property="Background" Value="{DynamicResource UfexMenuItemBorder}" />
+	</Style>
+
 	<Style Selector="ContextMenu">
-		<Setter Property="Background" Value="{DynamicResource UfexMenuItemBackground}" />
-		<Setter Property="BorderBrush" Value="{DynamicResource UfexMenuItemBorder}" />
-	</Style>
-
-	<!-- MenuFlyoutPresenter (popup container for submenus) -->
-	<Style Selector="MenuFlyoutPresenter">
-		<Setter Property="Background" Value="{DynamicResource UfexMenuItemBackground}" />
-		<Setter Property="BorderBrush" Value="{DynamicResource UfexMenuItemBorder}" />
+		<Setter Property="Background" Value="{DynamicResource MenuFlyoutPresenterBackground}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource MenuFlyoutPresenterBorderBrush}" />
 	</Style>
 
 </Styles>

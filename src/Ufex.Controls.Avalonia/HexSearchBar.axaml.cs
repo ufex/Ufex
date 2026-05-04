@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using System;
 using System.Globalization;
 using System.Text;
+using Ufex.Hex;
 
 namespace Ufex.Controls.Avalonia;
 
@@ -164,7 +165,7 @@ public partial class HexSearchBar : UserControl
 		bool isHexMode = _searchModeCombo.SelectedIndex == 0;
 
 		byte[]? pattern = isHexMode
-			? ParseHexString(searchText)
+			? HexFormat.ParseHexString(searchText)
 			: Encoding.UTF8.GetBytes(searchText);
 
 		if (pattern == null || pattern.Length == 0)
@@ -261,49 +262,6 @@ public partial class HexSearchBar : UserControl
 	}
 
 	/// <summary>
-	/// Parses a hex string (e.g. "504B0304" or "50 4B 03 04") into a byte array.
-	/// Returns null if the input is invalid.
-	/// </summary>
-	private static byte[]? ParseHexString(string hex)
-	{
-		// Remove spaces, dashes, and other separators
-		var cleaned = new StringBuilder();
-		foreach (char c in hex)
-		{
-			if (IsHexChar(c))
-			{
-				cleaned.Append(c);
-			}
-			else if (c == ' ' || c == '-' || c == ':')
-			{
-				// Skip separators
-			}
-			else
-			{
-				// Invalid character
-				return null;
-			}
-		}
-
-		string hexStr = cleaned.ToString();
-
-		// Must have even number of hex characters
-		if (hexStr.Length == 0 || hexStr.Length % 2 != 0)
-			return null;
-
-		byte[] bytes = new byte[hexStr.Length / 2];
-		for (int i = 0; i < bytes.Length; i++)
-		{
-			if (!byte.TryParse(hexStr.AsSpan(i * 2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out bytes[i]))
-			{
-				return null;
-			}
-		}
-
-		return bytes;
-	}
-
-	/// <summary>
 	/// Focuses the search text box.
 	/// </summary>
 	public void FocusSearchBox()
@@ -327,10 +285,13 @@ public partial class HexSearchBar : UserControl
 		}
 	}
 
-	private static bool IsHexChar(char c)
+	/// <summary>
+	/// Resets the search state and UI. Call when a new file is loaded.
+	/// </summary>
+	public void ResetSearch()
 	{
-		return (c >= '0' && c <= '9') ||
-		       (c >= 'a' && c <= 'f') ||
-		       (c >= 'A' && c <= 'F');
+		_searchState = null;
+		UpdateResultsLabel();
+		UpdateNavigationButtons();
 	}
 }
