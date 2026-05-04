@@ -5,6 +5,7 @@ using System.Collections;
 using System.IO;
 using System.Runtime.Loader;
 using Ufex.API;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Ufex.FileType;
@@ -28,7 +29,9 @@ public class PluginLoadContext : AssemblyLoadContext
 	// Shared cache for plugin dependency assemblies (e.g. EXIF) that may be
 	// needed by multiple plugins. Loading the same DLL file into separate
 	// collectible ALCs can fail when the first ALC already holds the image.
-	private static readonly Dictionary<string, Assembly> sharedDependencyCache = new(StringComparer.OrdinalIgnoreCase);
+	// Note: holding Assembly refs here prevents collectible ALC unloading,
+	// but that's acceptable since nothing currently unloads plugins.
+	private static readonly ConcurrentDictionary<string, Assembly> sharedDependencyCache = new(StringComparer.OrdinalIgnoreCase);
 
 	public PluginLoadContext(string pluginPath) : base(isCollectible: true)
 	{
