@@ -179,8 +179,9 @@ jobs:
 
       - name: Install WiX Toolset
         run: |
-          dotnet tool install --global wix
-          wix extension add WixToolset.UI.wixext/6.0.2
+          dotnet tool install --global wix --version 7.0.0
+          wix eula accept wix7
+          wix extension add WixToolset.UI.wixext/7.0.0
 
       - name: Compute MSI version
         id: msi_version
