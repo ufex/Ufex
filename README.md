@@ -2,6 +2,8 @@
 
 Ufex is a cross-platform desktop application for inspecting the internal structure and metadata of many different file formats. Open any file and instantly see its hex data, parsed structure, visual layout, and validation results — all in one place.
 
+![Demo](https://www.ufexapp.com/screenshots/demo.gif)
+
 ## Getting Started
 
 Downloads: https://github.com/ufex/Ufex/releases
@@ -10,13 +12,14 @@ Downloads: https://github.com/ufex/Ufex/releases
 
 - **File Format Identification** — Automatically identifies file types using a signature-based database of magic bytes, file extensions, and MIME types. The database is defined in XML config files and can be extended without writing any code.
 - **Hex Viewer** — Browse the raw bytes of any file with synchronized hex and ASCII columns.
-- **Info Tab** — View file system attributes (size, timestamps, permissions) and format-specific metadata at a glance.
-- **Structure Tab** — Explore parsed file segments in an interactive tree view. Select any node to see its fields, offsets, and decoded values in a detail panel.
-- **Visual Tab** — See graphical representations of file data such as file maps that show how a file is divided into segments, embedded image previews, and more.
-- **Validation Tab** — Review format-specific validation results (info, warnings, errors) to check if a file conforms to its specification.
+- **Info** — View file system attributes (size, timestamps, permissions) and format-specific metadata at a glance.
+- **Structure** — Explore parsed file segments in an interactive tree view. Select any node to see its fields, offsets, and decoded values in a detail panel.
+- **Visual** — See graphical representations of file data such as file maps that show how a file is divided into segments, embedded image previews, and more.
+- **Validation** — Review format-specific validation results (info, warnings, errors) to check if a file conforms to its specification.
 - **Number Format Toggle** — Switch between hexadecimal, decimal, binary, and ASCII display modes for numeric values throughout the UI.
 - **Drag & Drop** — Open files by dragging them onto the window or by using the file browser.
 - **Search** — Find byte patterns and text within files.
+- **Supported Formats** - JPEG, GIF, PNG, BMP, HEIF, PDF, DOCX, XLSX, PPTX, ZIP, GZIP, WAV, AVI, 3GP, and more...
 
 ## Plugin Architecture
 
@@ -47,6 +50,7 @@ ufex/
 │   ├── Ufex.Desktop           # Main desktop application (Avalonia)
 │   ├── Ufex.API               # Public API & base classes for plugins
 │   ├── Ufex.FileType          # File type identification engine
+│   ├── Ufex.Hex               # Hex viewer library
 │   └── Ufex.Controls.Avalonia # Reusable Avalonia UI controls
 ├── config/                    # XML file-type signature database
 ├── ext/                       # Extension plugin source (git submodules)
@@ -55,7 +59,7 @@ ufex/
 └── .github/workflows/         # CI/CD pipeline
 ```
 
-## Getting Started
+## Getting Started (Development)
 
 ### Prerequisites
 
@@ -79,21 +83,6 @@ dotnet run --project src/Ufex.Desktop
 
 ```bash
 dotnet test ufex.sln
-```
-
-### Publish a Self-Contained Release
-
-Ufex release builds are self-contained — users do not need to install the .NET runtime separately.
-
-```bash
-# Windows
-dotnet publish src/Ufex.Desktop/Ufex.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
-
-# macOS (Apple Silicon)
-dotnet publish src/Ufex.Desktop/Ufex.Desktop.csproj -c Release -r osx-arm64 --self-contained true -p:PublishSingleFile=true
-
-# Linux
-dotnet publish src/Ufex.Desktop/Ufex.Desktop.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true
 ```
 
 ## Contributing
