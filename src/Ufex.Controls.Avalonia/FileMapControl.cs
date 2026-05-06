@@ -2,6 +2,7 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Styling;
 using Ufex.API.Visual;
 using Ufex.API;
 
@@ -65,9 +66,11 @@ public class FileMapControl : Control
 		double height = Bounds.Height;
 		double extraWidth = Bounds.Width / 2;
 
-		var blackPen = new Pen(Brushes.Black, 1);
+		var lineBrush = ActualThemeVariant == ThemeVariant.Dark ? Brushes.White : Brushes.Black;
+		var blackPen = new Pen(lineBrush, 1);
 		var typeface = new Typeface(FontFamily.Default);
 		double fontSize = 12;
+		var labelForeground = lineBrush;
 
 		// Draw outer rectangle
 		context.DrawRectangle(null, blackPen, new Rect(0, 0, width - 1, height - 1));
@@ -113,7 +116,7 @@ public class FileMapControl : Control
 					FlowDirection.LeftToRight,
 					typeface,
 					fontSize,
-					Brushes.Black);
+					labelForeground);
 
 				if (sectHeight >= formattedText.Height + 4)
 				{
@@ -136,7 +139,7 @@ public class FileMapControl : Control
 						FlowDirection.LeftToRight,
 						typeface,
 						fontSize * 0.9,
-						Brushes.Black);
+						labelForeground);
 
 					double labelHeight = labelText.Height;
 					double labelY = sectionMiddleY - 15; // Initial desired position
