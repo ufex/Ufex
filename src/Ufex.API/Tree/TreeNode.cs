@@ -5,6 +5,10 @@ using Ufex.API.Visual;
 
 namespace Ufex.API.Tree;
 
+// Action-related types are in separate files:
+// ActionContext.cs, ActionInput.cs, ActionProgress.cs,
+// ActionResult.cs, NodeAction.cs, NodeActionGroup.cs
+
 /// <summary>
 /// Represents a node in a tree structure.
 /// Designed to be structurally similar to System.Windows.Forms.TreeNode
@@ -45,6 +49,17 @@ public class TreeNode
 	/// Gets whether <see cref="LoadChildren"/> has already been called.
 	/// </summary>
 	public bool ChildrenLoaded { get; private set; }
+
+	/// <summary>
+	/// Resets the deferred children state so <see cref="LoadChildren"/> can be called again.
+	/// Clears <see cref="ChildrenLoaded"/> and removes all child nodes.
+	/// Used by the host when <see cref="ActionResult.RefreshChildren"/> is true.
+	/// </summary>
+	public void ResetChildren()
+	{
+		ChildrenLoaded = false;
+		Nodes.Clear();
+	}
 
 	/// <summary>
 	/// Called by the UI when the user expands this node for the first time.
@@ -209,6 +224,23 @@ public class TreeNode
 	{
 		Parent?.Nodes.Remove(this);
 	}
+
+	/// <summary>
+	/// Returns the list of context menu actions available on this node.
+	/// Called lazily when the user right-clicks. Runs on the UI thread and must return quickly.
+	/// </summary>
+	public virtual IReadOnlyList<NodeAction> GetActions() => [];
+
+	/// <summary>
+	/// Executes the action identified by <paramref name="actionId"/>.
+	/// Called on a background thread. The node reads the file via
+	/// <see cref="ActionContext.FileContext"/> and accesses collected
+	/// inputs via <see cref="ActionContext.Inputs"/>.
+	/// </summary>
+	/// <param name="actionId">The <see cref="NodeAction.Id"/> of the action to execute.</param>
+	/// <param name="context">Context providing file access, inputs, progress, and cancellation.</param>
+	public virtual ActionResult ExecuteAction(string actionId, ActionContext context) =>
+		ActionResult.Failure("Not implemented");
 
 	public override string ToString() => Text;
 }

@@ -75,6 +75,12 @@ public partial class MainWindow : Window
 		// Subscribe to InfoTab file type changed event
 		InfoTab.FileTypeChanged += OnInfoTabFileTypeChanged;
 
+		// Subscribe to hex tab selection changes
+		HexTab.SelectionChanged += OnHexSelectionChanged;
+
+		// Subscribe to tab changes to show/hide selection status
+		MainTabControl.SelectionChanged += OnMainTabSelectionChanged;
+
 		UpdateThemeMenuChecks();
 	}
 
@@ -180,6 +186,34 @@ public partial class MainWindow : Window
 	{
 		Logger.Info(message);
 		StatusBar.Text = message;
+	}
+
+	// Cached selection range for the hex tab
+	private long _hexSelStart = -1;
+	private long _hexSelEnd = -1;
+
+	private void OnHexSelectionChanged(object? sender, (long Start, long End) sel)
+	{
+		_hexSelStart = sel.Start;
+		_hexSelEnd = sel.End;
+		UpdateSelectionStatus();
+	}
+
+	private void OnMainTabSelectionChanged(object? sender, SelectionChangedEventArgs e)
+	{
+		UpdateSelectionStatus();
+	}
+
+	private void UpdateSelectionStatus()
+	{
+		if (MainTabControl.SelectedItem == TabHex && _hexSelStart >= 0)
+		{
+			StatusBarRight.Text = $"Sel: 0x{_hexSelStart:X} - 0x{_hexSelEnd:X}";
+		}
+		else
+		{
+			StatusBarRight.Text = "";
+		}
 	}
 
 	/// <summary>

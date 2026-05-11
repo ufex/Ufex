@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using AvaloniaEdit;
 using FluentIcons.Avalonia;
@@ -15,6 +16,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using Ufex.API;
@@ -89,6 +91,7 @@ public partial class StructureTabView : UserControl
 		{
 			_treeView.SelectionChanged += OnTreeSelectionChanged;
 			_treeView.AddHandler(TreeViewItem.ExpandedEvent, OnTreeViewItemExpanded);
+			_treeView.AddHandler(PointerReleasedEvent, OnTreeViewPointerReleased, RoutingStrategies.Tunnel);
 
 			// Set up the item template for the tree view
 			_treeView.ItemTemplate = new FuncTreeDataTemplate<StructureTreeNode>(
@@ -829,5 +832,310 @@ public partial class StructureTabView : UserControl
 		{
 			// Ignore errors during refresh
 		}
+	}
+
+	// -------------------------------------------------------------------
+	// Node Actions — context menu for right-clicking tree nodes
+	// -------------------------------------------------------------------
+
+	/// <summary>
+	/// Handles right-click (pointer released with right button) on the tree view
+	/// to show node action context menus.
+	/// </summary>
+	private void OnTreeViewPointerReleased(object? sender, PointerReleasedEventArgs e)
+	{
+		if (e.InitialPressMouseButton != MouseButton.Right)
+			return;
+
+		// Find the TreeViewItem under the pointer
+		var source = e.Source as Control;
+		var treeViewItem = source?.FindAncestorOfType<TreeViewItem>();
+		if (treeViewItem?.DataContext is not StructureTreeNode viewNode)
+			return;
+
+		var actions = viewNode.SourceNode.GetActions();
+		if (actions == null || actions.Count == 0)
+			return;
+
+		var contextMenu = BuildContextMenu(actions, viewNode);
+		contextMenu.Open(treeViewItem);
+		e.Handled = true;
+	}
+
+	/// <summary>
+	/// Builds an Avalonia ContextMenu from a list of NodeActions, grouped by NodeActionGroup
+	/// with separators between groups.
+	/// </summary>
+	private ContextMenu BuildContextMenu(IReadOnlyList<NodeAction> actions, StructureTreeNode viewNode)
+	{
+		var menu = new ContextMenu();
+		var items = new List<Control>();
+
+		// Group actions by NodeActionGroup in enum order
+		var groups = actions
+			.GroupBy(a => a.Group)
+			.OrderBy(g => g.Key);
+
+		bool firstGroup = true;
+		foreach (var group in groups)
+		{
+			if (!firstGroup)
+			{
+				items.Add(new Separator());
+			}
+			firstGroup = false;
+
+			foreach (var action in group)
+			{
+				var menuItem = new MenuItem
+				{
+					Header = action.Label,
+					IsEnabled = action.IsEnabled,
+					Tag = action
+				};
+
+				if (!action.IsEnabled && action.DisabledReason != null)
+				{
+					ToolTip.SetTip(menuItem, action.DisabledReason);
+				}
+
+				var capturedAction = action;
+				var capturedViewNode = viewNode;
+				menuItem.Click += (_, _) => _ = ExecuteNodeActionAsync(capturedAction, capturedViewNode);
+
+				items.Add(menuItem);
+			}
+		}
+
+		menu.ItemsSource = items;
+		return menu;
+	}
+
+	/// <summary>
+	/// Collects user inputs, then executes a node action on a background thread.
+	/// </summary>
+	private async Task ExecuteNodeActionAsync(NodeAction action, StructureTreeNode viewNode)
+	{
+		if (_fileType == null)
+			return;
+
+		// Collect inputs
+		var inputs = new Dictionary<string, object>();
+		if (action.Inputs.Count > 0)
+		{
+			foreach (var input in action.Inputs)
+			{
+				var (collected, value) = await CollectInputAsync(input);
+				if (!collected)
+					return; // User cancelled
+				inputs[input.Key] = value!;
+			}
+		}
+
+		// Execute action on background thread
+		var fileType = _fileType;
+
+		try
+		{
+			ActionResult result;
+
+			result = await Task.Run(() =>
+			{
+				using var backgroundStream = new FileStream(
+					fileType.FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+				var fileContext = new FileContext(backgroundStream, fileType.NumFormat);
+				var context = new ActionContext
+				{
+					FileContext = fileContext,
+					Inputs = inputs,
+					CancellationToken = CancellationToken.None
+				};
+				return viewNode.SourceNode.ExecuteAction(action.Id, context);
+			});
+
+			await Dispatcher.UIThread.InvokeAsync(() => HandleActionResult(result, viewNode));
+		}
+		catch (Exception ex)
+		{
+			Logger.Error($"Error executing action '{action.Id}' on node '{viewNode.Text}': {ex}");
+			await Dispatcher.UIThread.InvokeAsync(() =>
+			{
+				ShowNotification($"Error: {ex.Message}");
+			});
+		}
+	}
+
+	/// <summary>
+	/// Collects a single user input via the appropriate platform dialog.
+	/// Returns (true, value) if collected, or (false, null) if the user cancelled.
+	/// </summary>
+	private async Task<(bool Collected, object? Value)> CollectInputAsync(ActionInput input)
+	{
+		var topLevel = TopLevel.GetTopLevel(this);
+		if (topLevel == null)
+			return (false, null);
+
+		switch (input)
+		{
+			case SaveFileInput saveInput:
+			{
+				var filters = new List<FilePickerFileType>();
+				if (saveInput.Filters != null)
+				{
+					foreach (var f in saveInput.Filters)
+					{
+						filters.Add(new FilePickerFileType(f.Name)
+						{
+							Patterns = f.Extensions.Select(ext => $"*.{ext}").ToList()
+						});
+					}
+				}
+				filters.Add(new FilePickerFileType("All Files") { Patterns = ["*.*"] });
+
+				var result = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+				{
+					Title = saveInput.Prompt,
+					SuggestedFileName = saveInput.SuggestedFileName,
+					FileTypeChoices = filters
+				});
+
+				var path = result?.TryGetLocalPath();
+				return path != null ? (true, path) : (false, null);
+			}
+
+			case FolderInput:
+			{
+				var results = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+				{
+					Title = input.Prompt,
+					AllowMultiple = false
+				});
+
+				var path = results.Count > 0 ? results[0].TryGetLocalPath() : null;
+				return path != null ? (true, path) : (false, null);
+			}
+
+			case ConfirmInput:
+			{
+				var confirmed = await ShowConfirmDialogAsync(input.Prompt);
+				return confirmed ? (true, true) : (false, null);
+			}
+
+			default:
+				Logger.Error($"Unknown ActionInput type: {input.GetType().Name}");
+				return (false, null);
+		}
+	}
+
+	/// <summary>
+	/// Shows a simple confirmation dialog. Returns true if the user clicked OK.
+	/// </summary>
+	private async Task<bool> ShowConfirmDialogAsync(string message)
+	{
+		var topLevel = TopLevel.GetTopLevel(this);
+		if (topLevel is not Window ownerWindow)
+			return false;
+
+		bool confirmed = false;
+
+		var dialog = new Window
+		{
+			Title = "Confirm",
+			Width = 400,
+			Height = 160,
+			WindowStartupLocation = WindowStartupLocation.CenterOwner,
+			CanResize = false,
+			Content = new StackPanel
+			{
+				Margin = new Thickness(16),
+				Spacing = 16,
+				Children =
+				{
+					new TextBlock
+					{
+						Text = message,
+						TextWrapping = Avalonia.Media.TextWrapping.Wrap
+					},
+				new StackPanel
+					{
+						Orientation = Orientation.Horizontal,
+						HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
+						Spacing = 8,
+						Children =
+						{
+							new Button { Content = "OK", Tag = "ok", Width = 80 },
+							new Button { Content = "Cancel", Tag = "cancel", Width = 80 }
+						}
+					}
+				}
+			}
+		};
+
+		// Wire button clicks
+		dialog.AddHandler(Button.ClickEvent, (_, args) =>
+		{
+			if (args.Source is Button btn)
+			{
+				confirmed = btn.Tag as string == "ok";
+				dialog.Close();
+			}
+		});
+
+		await dialog.ShowDialog(ownerWindow);
+		return confirmed;
+	}
+
+	/// <summary>
+	/// Handles the result of a node action execution.
+	/// </summary>
+	private void HandleActionResult(ActionResult result, StructureTreeNode viewNode)
+	{
+		switch (result.Status)
+		{
+			case ActionResultStatus.Success:
+				if (result.Message != null)
+					ShowNotification(result.Message);
+				break;
+
+			case ActionResultStatus.Failure:
+				if (result.Message != null)
+					ShowNotification($"Error: {result.Message}");
+				break;
+
+			case ActionResultStatus.Cancelled:
+				break;
+		}
+
+		if (result.RefreshChildren)
+		{
+			RefreshNodeChildren(viewNode);
+		}
+	}
+
+	/// <summary>
+	/// Resets a node's deferred children state and re-triggers loading.
+	/// </summary>
+	private void RefreshNodeChildren(StructureTreeNode viewNode)
+	{
+		viewNode.SourceNode.ResetChildren();
+		viewNode.IsDeferred = true;
+		viewNode.Children.Clear();
+		viewNode.Children.Add(new StructureTreeNode
+		{
+			Text = "Loading...",
+			Icon = Symbol.MoreHorizontal
+		});
+
+		_ = LoadDeferredChildrenAsync(viewNode);
+	}
+
+	/// <summary>
+	/// Shows a notification message in the status bar.
+	/// </summary>
+	private void ShowNotification(string message)
+	{
+		// Walk up to the MainWindow to access SetStatus
+		var mainWindow = TopLevel.GetTopLevel(this) as MainWindow;
+		mainWindow?.SetStatus(message);
 	}
 }
