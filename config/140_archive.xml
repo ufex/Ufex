@@ -273,5 +273,26 @@
 				</Signature>
 			</Signatures>
 		</FileType>
+		<FileType>
+			<ID>ARCH_ISCAB</ID>
+			<Description>InstallShield Cabinet File</Description>
+			<Category>Archive</Category>
+			<Extensions>
+				<Extension>cab</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="bytes" offset="0">0x49536328</Rule>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
+			<ID>ARCH_SGIINST</ID>
+			<Description>SGI inst Software Distribution</Description>
+			<Category>Archive</Category>
+			<Extensions>
+				<Extension>idb</Extension>
+			</Extensions>
+		</FileType>
 	</FileTypes>
 </Ufex>
