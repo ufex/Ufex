@@ -91,14 +91,13 @@ namespace Ufex.API.Tests
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(InvalidDataException))]
 		public void ByteConstructor_TooManyBytes_Throws()
 		{
 			// 17 continuation bytes → shift reaches 112 (MaxBytes * 7), should throw
-			var leb = new Leb128UInt([
+			Assert.ThrowsExactly<InvalidDataException>(() => new Leb128UInt([
 				0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
 				0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80
-			]);
+			]));
 		}
 
 		// --- Constructor from BigInteger ---
@@ -251,26 +250,23 @@ namespace Ufex.API.Tests
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(OverflowException))]
 		public void ExplicitConversion_FromNegativeInt_Throws()
 		{
-			Leb128UInt leb = (Leb128UInt)(-1);
+			Assert.ThrowsExactly<OverflowException>(() => (Leb128UInt)(-1));
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(OverflowException))]
 		public void BigIntegerConstructor_Negative_Throws()
 		{
-			var leb = new Leb128UInt(new BigInteger(-1));
+			Assert.ThrowsExactly<OverflowException>(() => new Leb128UInt(new BigInteger(-1)));
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(OverflowException))]
 		public void Subtraction_Underflow_Throws()
 		{
 			var a = new Leb128UInt(new BigInteger(10));
 			var b = new Leb128UInt(new BigInteger(20));
-			var result = a - b;
+			Assert.ThrowsExactly<OverflowException>(() => a - b);
 		}
 
 		// --- Equality operators ---
@@ -388,11 +384,10 @@ namespace Ufex.API.Tests
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(ArgumentException))]
 		public void CompareTo_WrongType_Throws()
 		{
 			var a = new Leb128UInt(new BigInteger(10));
-			a.CompareTo("not a leb128");
+			Assert.ThrowsExactly<ArgumentException>(() => a.CompareTo("not a leb128"));
 		}
 
 		// --- Shift overflow bug test ---

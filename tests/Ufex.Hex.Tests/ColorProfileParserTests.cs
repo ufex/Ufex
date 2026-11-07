@@ -55,42 +55,42 @@ public class ColorProfileParserTests
 	[TestMethod]
 	public void Parse_MissingID_Throws()
 	{
-		Assert.ThrowsException<ColorProfileParseException>(
+		Assert.ThrowsExactly<ColorProfileParseException>(
 			() => ColorProfileParser.Parse("Name: Test\n---\n_ => #000000"));
 	}
 
 	[TestMethod]
 	public void Parse_MissingName_Throws()
 	{
-		Assert.ThrowsException<ColorProfileParseException>(
+		Assert.ThrowsExactly<ColorProfileParseException>(
 			() => ColorProfileParser.Parse("ID: test\n---\n_ => #000000"));
 	}
 
 	[TestMethod]
 	public void Parse_MissingSeparator_Throws()
 	{
-		Assert.ThrowsException<ColorProfileParseException>(
+		Assert.ThrowsExactly<ColorProfileParseException>(
 			() => ColorProfileParser.Parse("ID: test\nName: Test\n_ => #000000"));
 	}
 
 	[TestMethod]
 	public void Parse_DuplicateKey_Throws()
 	{
-		Assert.ThrowsException<ColorProfileParseException>(
+		Assert.ThrowsExactly<ColorProfileParseException>(
 			() => ColorProfileParser.Parse("ID: test\nID: test2\nName: Test\n---\n_ => #000000"));
 	}
 
 	[TestMethod]
 	public void Parse_EmptyFileTypes_Throws()
 	{
-		Assert.ThrowsException<ColorProfileParseException>(
+		Assert.ThrowsExactly<ColorProfileParseException>(
 			() => ColorProfileParser.Parse("ID: test\nName: Test\nFileTypes: \n---\n_ => #000000"));
 	}
 
 	[TestMethod]
 	public void Parse_NoRules_Throws()
 	{
-		Assert.ThrowsException<ColorProfileParseException>(
+		Assert.ThrowsExactly<ColorProfileParseException>(
 			() => ColorProfileParser.Parse("ID: test\nName: Test\n---\n"));
 	}
 
