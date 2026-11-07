@@ -28,8 +28,20 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Type" Binding="{Binding TypeText}" Width="80" />
-                <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*" />
+                <DataGridTemplateColumn Header="Type" Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="local:ValidationEntryRow">
+                            <SelectableTextBlock Text="{Binding TypeText}" VerticalAlignment="Center" Margin="12,0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Message" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="local:ValidationEntryRow">
+                            <SelectableTextBlock Text="{Binding Message}" VerticalAlignment="Center" Margin="12,0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
         

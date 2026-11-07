@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using System;
 using System.IO;
 using Ufex.Controls.Avalonia;
 using Ufex.Hex;
@@ -9,6 +10,11 @@ public partial class HexTabView : UserControl
 {
 	private HexView? _hexViewer;
 	private HexSearchBar? _hexSearchBar;
+
+	/// <summary>
+	/// Raised when the hex view selection changes.
+	/// </summary>
+	public event EventHandler<(long Start, long End)>? SelectionChanged;
 
 	public HexTabView()
 	{
@@ -25,6 +31,9 @@ public partial class HexTabView : UserControl
 			{
 				_hexSearchBar.Width = width;
 			};
+
+			// Forward selection changed events
+			_hexViewer.SelectionChanged += (_, sel) => SelectionChanged?.Invoke(this, sel);
 		}
 	}
 

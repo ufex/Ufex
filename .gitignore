@@ -355,3 +355,4 @@ MigrationBackup/
 docs
 tmp
 ext/*
+.dotnet/
