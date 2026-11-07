@@ -88,10 +88,16 @@
                 BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                 BorderThickness="0,1,0,0"
                 Padding="8,4">
-            <TextBlock x:Name="StatusBar" 
-                       Text="Ready"
-                       VerticalAlignment="Center"
-                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+            <DockPanel>
+                <TextBlock x:Name="StatusBarRight"
+                           DockPanel.Dock="Right"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                <TextBlock x:Name="StatusBar" 
+                           Text="Ready"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+            </DockPanel>
         </Border>
         
         <!-- Main Content Area - Panel lets both children fill the remaining space -->

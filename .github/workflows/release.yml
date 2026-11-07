@@ -49,8 +49,22 @@ jobs:
       checkout-path: ext/Ufex.Extensions.RetroGame
       solution-file: ext/Ufex.Extensions.RetroGame/Ufex.Extensions.RetroGame.sln
 
+  build-extensions-archive:
+    uses: ./.github/workflows/build-extension.yml
+    with:
+      repository: ufex/Ufex.Extensions.Archive
+      checkout-path: ext/Ufex.Extensions.Archive
+      solution-file: ext/Ufex.Extensions.Archive/Ufex.Extensions.Archive.slnx
+
+  build-extensions-audio:
+    uses: ./.github/workflows/build-extension.yml
+    with:
+      repository: ufex/Ufex.Extensions.Audio
+      checkout-path: ext/Ufex.Extensions.Audio
+      solution-file: ext/Ufex.Extensions.Audio/Ufex.Extensions.Audio.slnx
+
   build:
-    needs: [build-extensions, build-extensions-retrogame]
+    needs: [build-extensions, build-extensions-retrogame, build-extensions-archive, build-extensions-audio]
     strategy:
       matrix:
         include:

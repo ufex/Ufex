@@ -14,20 +14,20 @@ namespace Ufex.API.Tests
 			HexNumberFormatter nf = new HexNumberFormatter(true, true);
 			nf.LeadZeros = true;
 			nf.Endian = Endian.Big;
-			Assert.AreEqual(nf.UInt8(0x09), "0x09");
-			Assert.AreEqual(nf.UInt8(0x17), "0x17");
-			Assert.AreEqual(nf.UInt8(0xFF), "0xFF");
-			Assert.AreEqual(nf.UInt16(0x0004), "0x0004");
-			Assert.AreEqual(nf.UInt16(0x0074), "0x0074");
-			Assert.AreEqual(nf.UInt16(0x014A), "0x014A");
-			Assert.AreEqual(nf.UInt16(0x1234), "0x1234");
-			Assert.AreEqual(nf.UInt24((UInt24)0x001234u), "0x001234");
-			Assert.AreEqual(nf.UInt24((UInt24)0xABCDEFu), "0xABCDEF");
-			Assert.AreEqual(nf.UInt32(0x0004), "0x00000004");
-			Assert.AreEqual(nf.UInt32(0x0074), "0x00000074");
-			Assert.AreEqual(nf.UInt32(0x014A), "0x0000014A");
-			Assert.AreEqual(nf.UInt32(0x1234), "0x00001234");
-			Assert.AreEqual(nf.UInt32(0x1000123C), "0x1000123C");
+			Assert.AreEqual("0x09", nf.UInt8(0x09));
+			Assert.AreEqual("0x17", nf.UInt8(0x17));
+			Assert.AreEqual("0xFF", nf.UInt8(0xFF));
+			Assert.AreEqual("0x0004", nf.UInt16(0x0004));
+			Assert.AreEqual("0x0074", nf.UInt16(0x0074));
+			Assert.AreEqual("0x014A", nf.UInt16(0x014A));
+			Assert.AreEqual("0x1234", nf.UInt16(0x1234));
+			Assert.AreEqual("0x001234", nf.UInt24((UInt24)0x001234u));
+			Assert.AreEqual("0xABCDEF", nf.UInt24((UInt24)0xABCDEFu));
+			Assert.AreEqual("0x00000004", nf.UInt32(0x0004));
+			Assert.AreEqual("0x00000074", nf.UInt32(0x0074));
+			Assert.AreEqual("0x0000014A", nf.UInt32(0x014A));
+			Assert.AreEqual("0x00001234", nf.UInt32(0x1234));
+			Assert.AreEqual("0x1000123C", nf.UInt32(0x1000123C));
 		}
 
 		[TestMethod]

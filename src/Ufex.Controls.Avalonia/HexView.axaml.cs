@@ -88,6 +88,11 @@ public partial class HexView : UserControl
 	/// </summary>
 	public event EventHandler<double>? ContentWidthChanged;
 
+	/// <summary>
+	/// Raised when the selection changes. The value is (Start, End) or (-1, -1) if cleared.
+	/// </summary>
+	public event EventHandler<(long Start, long End)>? SelectionChanged;
+
 	// Format settings
 	private bool _hexCaps = true;
 
@@ -577,6 +582,7 @@ public partial class HexView : UserControl
 		_highlightEnd = 0;
 		Focus();
 		RepaintAll();
+		SelectionChanged?.Invoke(this, (_selectionStart, _selectionEnd));
 	}
 
 	private void UpdateSelection(long filePos)
@@ -585,6 +591,7 @@ public partial class HexView : UserControl
 		_selectionStart = Math.Min(_selectionAnchor, filePos);
 		_selectionEnd = Math.Max(_selectionAnchor, filePos);
 		RepaintAll();
+		SelectionChanged?.Invoke(this, (_selectionStart, _selectionEnd));
 	}
 
 	private void EndSelection()
@@ -657,6 +664,7 @@ public partial class HexView : UserControl
 		_selectionAnchor = -1;
 		_isSelecting = false;
 		RepaintAll();
+		SelectionChanged?.Invoke(this, (-1L, -1L));
 	}
 
 	/// <summary>
@@ -669,6 +677,7 @@ public partial class HexView : UserControl
 		_selectionEnd = _fileSize - 1;
 		_selectionAnchor = 0;
 		RepaintAll();
+		SelectionChanged?.Invoke(this, (_selectionStart, _selectionEnd));
 	}
 
 	/// <summary>
