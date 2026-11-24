@@ -141,6 +141,32 @@
 			</Signatures>
 		</FileType>
 		<FileType>
+			<ID>AUDIO_EXS</ID>
+			<Description>Logic Pro EXS Sampler Instrument</Description>
+			<Category>Audio</Category>
+			<Extensions>
+				<Extension>exs</Extension>
+			</Extensions>
+			<Signatures>
+				<Signature>
+					<Rule type="bytes" offset="0">0x010100</Rule>
+					<Rule type="string" offset="16">TBOS</Rule>
+				</Signature>
+				<Signature>
+					<Rule type="bytes" offset="0">0x010100</Rule>
+					<Rule type="string" offset="16">JBOS</Rule>
+				</Signature>
+				<Signature>
+					<Rule type="bytes" offset="0">0x000100</Rule>
+					<Rule type="string" offset="16">SOBT</Rule>
+				</Signature>
+				<Signature>
+					<Rule type="bytes" offset="0">0x000100</Rule>
+					<Rule type="string" offset="16">SOBJ</Rule>
+				</Signature>
+			</Signatures>
+		</FileType>
+		<FileType>
 			<ID>AUDIO_AAC</ID>
 			<Description>Advanced Audio Coding</Description>
 			<Category>Audio</Category>
